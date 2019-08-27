@@ -1,0 +1,92 @@
+﻿using System.Runtime.InteropServices;
+
+namespace lcmsNET
+{
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIEXYZ
+    {
+        [MarshalAs(UnmanagedType.R8)]
+        public double X;
+        [MarshalAs(UnmanagedType.R8)]
+        public double Y;
+        [MarshalAs(UnmanagedType.R8)]
+        public double Z;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIExyY
+    {
+        [MarshalAs(UnmanagedType.R8)]
+        public double x;
+        [MarshalAs(UnmanagedType.R8)]
+        public double y;
+        [MarshalAs(UnmanagedType.R8)]
+        public double Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIELab
+    {
+        [MarshalAs(UnmanagedType.R8)]
+        public double L;
+        [MarshalAs(UnmanagedType.R8)]
+        public double a;
+        [MarshalAs(UnmanagedType.R8)]
+        public double b;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIELCh
+    {
+        [MarshalAs(UnmanagedType.R8)]
+        public double L;
+        [MarshalAs(UnmanagedType.R8)]
+        public double C;
+        [MarshalAs(UnmanagedType.R8)]
+        public double h;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct JCh
+    {
+        [MarshalAs(UnmanagedType.R8)]
+        public double J;
+        [MarshalAs(UnmanagedType.R8)]
+        public double C;
+        [MarshalAs(UnmanagedType.R8)]
+        public double h;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIEXYZTRIPLE
+    {
+        public CIEXYZ Red;
+        public CIEXYZ Green;
+        public CIEXYZ Blue;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CIExyYTRIPLE
+    {
+        public CIExyY Red;
+        public CIExyY Green;
+        public CIExyY Blue;
+    }
+
+    public sealed class Colorimetric
+    {
+        public static CIELab XYZ2Lab(CIEXYZ whitePoint, CIEXYZ xyz)
+        {
+            CIELab lab = new CIELab { };
+            Interop.XYZ2Lab(whitePoint, ref lab, xyz);
+            return lab;
+        }
+
+        public static CIEXYZ Lab2XYZ(CIEXYZ whitePoint, CIELab lab)
+        {
+            CIEXYZ xyz = new CIEXYZ { };
+            Interop.Lab2XYZ(whitePoint, ref xyz, lab);
+            return xyz;
+        }
+    }
+}

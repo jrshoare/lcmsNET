@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\CIELABD50.icc" />
+    <None Remove="Resources\D50_XYZ.icc" />
+    <None Remove="Resources\Lab.icc" />
+    <None Remove="Resources\sRGB Color Space Profile.icm" />
+    <None Remove="Resources\sRGB.icc" />
+    <None Remove="Resources\sRGB_ICC_v4_Appearance.icc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\D50_XYZ.icc" />
+    <EmbeddedResource Include="Resources\Lab.icc" />
+    <EmbeddedResource Include="Resources\sRGB.icc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\lcmsNET\lcmsNET.csproj" />
+  </ItemGroup>
+
+</Project>
