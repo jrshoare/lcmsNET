@@ -158,6 +158,21 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void IDTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            {
+                // Assert
+                Assert.AreNotEqual(0, context.ID);
+            }
+        }
+
+        [TestMethod()]
         public void RegisterPluginsTest()
         {
             // Arrange
@@ -217,6 +232,33 @@ namespace lcmsNET.Tests
                 context.UnregisterPlugins();
 
                 // Assert
+            }
+        }
+
+        [TestMethod()]
+        public void SetErrorHandlerTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            {
+                // Act
+                context.SetErrorHandler(HandleError);
+
+                TestContext.WriteLine($"context.ID: {context.ID}");
+                // force error to observe output in Test Explorer results window for this test
+                try { Profile.Open(context, @"???", "r"); } catch { }
+
+                // restore default error handler
+                context.SetErrorHandler(null);
+            }
+
+            // Assert
+            void HandleError(IntPtr contextID, int errorCode, string errorText)
+            {
+                TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
             }
         }
     }

@@ -61,5 +61,15 @@ namespace lcmsNET
         {
             UnregisterPluginsTHR_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SetLogErrorHandlerTHR_Internal(
+            IntPtr contextID,
+            ErrorHandler handler);
+
+        internal static void SetContextErrorHandler(IntPtr handle, ErrorHandler handler)
+        {
+            SetLogErrorHandlerTHR_Internal(handle, handler);
+        }
     }
 }

@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void ErrorHandler(IntPtr contextID, [MarshalAs(UnmanagedType.U4)] int errorCode, [MarshalAs(UnmanagedType.LPStr)] string errorText);
+
     /// <summary>
     /// Defines the intents.
     /// </summary>
@@ -290,6 +294,11 @@ namespace lcmsNET
     public sealed class Cms
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();
+
+        public static void SetErrorHandler(ErrorHandler handler)
+        {
+            Interop.SetErrorHandler(handler);
+        }
 
         #region Representations
         public static readonly int TYPE_GRAY_8

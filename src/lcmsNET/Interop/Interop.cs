@@ -13,5 +13,14 @@ namespace lcmsNET
         {
             return GetEncodedCMMVersion_Internal();
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandler", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SetLogErrorHandler_Internal(
+            ErrorHandler handler);
+
+        internal static void SetErrorHandler(ErrorHandler handler)
+        {
+            SetLogErrorHandler_Internal(handler);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace lcmsNET.Tests
 {
@@ -235,6 +236,27 @@ namespace lcmsNET.Tests
             Assert.AreNotEqual(0, Cms.TYPE_YUVK_16);
             Assert.AreNotEqual(0, Cms.TYPE_YUVK_8);
             Assert.AreNotEqual(0, Cms.TYPE_Yxy_16);
+        }
+
+        [TestMethod()]
+        public void SetErrorHandlerTest()
+        {
+            // Arrange
+
+            // Act
+            Cms.SetErrorHandler(HandleError);
+
+            // force error to observe output in Test Explorer results window for this test
+            try { Profile.Open(@"???", "r"); } catch { }
+
+            // restore default error handler
+            Cms.SetErrorHandler(null);
+
+            // Assert
+            void HandleError(IntPtr contextID, int errorCode, string errorText)
+            {
+                TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
+            }
         }
     }
 }

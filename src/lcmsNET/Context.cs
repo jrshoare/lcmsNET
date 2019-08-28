@@ -42,7 +42,14 @@ namespace lcmsNET
             Interop.UnregisterContextPlugins(_handle);
         }
 
+        public void SetErrorHandler(ErrorHandler handler)
+        {
+            Interop.SetContextErrorHandler(_handle, handler);
+        }
+
         public IntPtr UserData => Interop.GetContextUserData(_handle);
+
+        public IntPtr ID => _handle;
 
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
