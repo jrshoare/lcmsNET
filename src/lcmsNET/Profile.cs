@@ -1,6 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using lcmsNET.Impl;
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -12,29 +11,20 @@ namespace lcmsNET
 
         internal Profile(IntPtr handle, Context context = null)
         {
-            Debug.Assert(handle != IntPtr.Zero);
+            Helper.CheckCreated<Profile>(handle);
+
             _handle = handle;
             Context = context;
         }
 
         public static Profile Open(string filepath, string access)
         {
-            IntPtr handle = Interop.OpenProfile(filepath, access);
-            if (handle == IntPtr.Zero)
-            {
-                throw new IOException();
-            }
-            return new Profile(handle);
+            return new Profile(Interop.OpenProfile(filepath, access));
         }
 
         public static Profile Open(Context context, string filepath, string access)
         {
-            IntPtr handle = Interop.OpenProfile(context.Handle, filepath, access);
-            if (handle == IntPtr.Zero)
-            {
-                throw new IOException();
-            }
-            return new Profile(handle, context);
+            return new Profile(Interop.OpenProfile(context.Handle, filepath, access), context);
         }
 
         public bool Save(string filepath)

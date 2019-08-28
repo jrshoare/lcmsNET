@@ -1,5 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using lcmsNET.Impl;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -12,30 +12,21 @@ namespace lcmsNET
 
         internal Context(IntPtr handle)
         {
-            Debug.Assert(handle != IntPtr.Zero);
+            Helper.CheckCreated<Context>(handle);
+
             _handle = handle;
         }
 
         public static Context Create(IntPtr plugin, IntPtr userData)
         {
-            IntPtr handle = Interop.CreateContext(plugin, userData);
-            if (handle == IntPtr.Zero)
-            {
-                throw new IOException();
-            }
-            return new Context(handle);
+            return new Context(Interop.CreateContext(plugin, userData));
         }
 
         public Context Duplicate(IntPtr userData)
         {
             EnsureNotDisposed();
 
-            IntPtr handle = Interop.DuplicateContext(_handle, userData);
-            if (handle == IntPtr.Zero)
-            {
-                throw new IOException();
-            }
-            return new Context(handle);
+            return new Context(Interop.DuplicateContext(_handle, userData));
         }
 
         public IntPtr UserData => Interop.GetContextUserData(_handle);

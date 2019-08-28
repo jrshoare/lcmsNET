@@ -495,19 +495,23 @@ namespace lcmsNET
         public static readonly int TYPE_ABGR_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
 
+        /// <summary>
+        /// Defines the pixel types.
+        /// </summary>
         [Flags]
         public enum PixelType : int
         {
-            Any = 0,
+            Any = 0,    // Don't check colorspace
+            // Enumeration values 1 & 2 are reserved
             Gray = 3,
             RGB = 4,
             CMY = 5,
             CMYK = 6,
             YCbCr = 7,
-            YUV = 8,
+            YUV = 8,    // Lu'v'
             XYZ = 9,
             Lab = 10,
-            YUVK = 11,
+            YUVK = 11,  // Lu'v'K
             HSV = 12,
             HLS = 13,
             Yxy = 14,
