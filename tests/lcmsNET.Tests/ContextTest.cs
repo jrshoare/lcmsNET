@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
-using static lcmsNET.Cms;
 
 namespace lcmsNET.Tests
 {

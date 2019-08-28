@@ -220,7 +220,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            var expected = Cms.PixelType.RGB;
+            var expected = PixelType.RGB;
 
             try
             {
@@ -276,7 +276,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            var expected = Cms.PixelType.XYZ;
+            var expected = PixelType.XYZ;
 
             try
             {

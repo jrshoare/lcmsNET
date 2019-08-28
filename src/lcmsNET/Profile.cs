@@ -38,11 +38,11 @@ namespace lcmsNET
 
         public int ColorSpaceSignature => Interop.GetColorSpaceSignature(_handle);
 
-        public Cms.PixelType ColorSpace => (Cms.PixelType)Interop.GetColorSpace(_handle);
+        public PixelType ColorSpace => (PixelType)Interop.GetColorSpace(_handle);
 
         public int PCSSignature => Interop.GetPCSSignature(_handle);
 
-        public Cms.PixelType PCS => (Cms.PixelType)Interop.GetPCS(_handle);
+        public PixelType PCS => (PixelType)Interop.GetPCS(_handle);
 
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;

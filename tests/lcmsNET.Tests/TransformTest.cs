@@ -92,7 +92,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -125,7 +125,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -158,7 +158,7 @@ namespace lcmsNET.Tests
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var proofing = Profile.Open(proofingpath, "r"))
                 using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, CmsIntent.Perceptual, CmsIntent.AbsoluteColorimetric, CmsFlags.None))
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -194,7 +194,7 @@ namespace lcmsNET.Tests
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var proofing = Profile.Open(proofingpath, "r"))
                 using (var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, CmsIntent.Perceptual, CmsIntent.AbsoluteColorimetric, CmsFlags.None))
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -222,7 +222,7 @@ namespace lcmsNET.Tests
                 Profile[] profiles = new Profile[1];
                 using (profiles[0] = Profile.Open(srgbpath, "r"))
                 using (var transform = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
-                            CmsIntent.RelativeColorimetric, CmsFlags.None))
+                            Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -253,7 +253,7 @@ namespace lcmsNET.Tests
                 using (var context = Context.Create(plugin, userData))
                 using (profiles[0] = Profile.Open(srgbpath, "r"))
                 using (var transform = Transform.Create(context, profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
-                            CmsIntent.RelativeColorimetric, CmsFlags.None))
+                            Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     // Assert
                     Assert.IsNotNull(transform);
@@ -282,7 +282,7 @@ namespace lcmsNET.Tests
                 // Act
                 Profile[] profiles = new Profile[1];
                 bool[] bpc = new bool[] { true };
-                CmsIntent[] intents = new CmsIntent[] { CmsIntent.RelativeColorimetric };
+                Intent[] intents = new Intent[] { Intent.RelativeColorimetric };
                 double[] adaptationStates = new double[] { 1.0 };
                 Profile gamut = null;
                 int gamutPCSPosition = 0;
@@ -322,7 +322,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
                 {
                     byte[] inputBuffer = new byte[] { 255, 147, 226 };
                     byte[] outputBuffer = new byte[3];
@@ -355,7 +355,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var xyz = Profile.Open(xyzpath, "r"))
                 using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                            Cms.TYPE_RGB_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
                 {
                     byte[] inputBuffer = new byte[] { 255, 255, 255 };
                     byte[] outputBuffer = new byte[3];
@@ -394,7 +394,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var xyz = Profile.Open(xyzpath, "r"))
                 using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                            Cms.TYPE_RGB_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
                 {
                     byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
                     byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
@@ -426,7 +426,7 @@ namespace lcmsNET.Tests
                 Profile[] profiles = new Profile[1];
                 using (profiles[0] = Profile.Open(srgbpath, "r"))
                 using (var transform = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
-                        CmsIntent.RelativeColorimetric, CmsFlags.None))
+                        Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     byte[] inputBuffer = new byte[] { 255, 255, 255 };
                     byte[] outputBuffer = new byte[6];
@@ -462,7 +462,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
                 {
                     var actual = transform.Context;
 
@@ -497,7 +497,7 @@ namespace lcmsNET.Tests
                 using (var srgb = Profile.Open(srgbpath, "r"))
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, CmsIntent.Perceptual, CmsFlags.None))
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
                 {
                     var actual = transform.Context;
 
@@ -535,7 +535,7 @@ namespace lcmsNET.Tests
                 using (var lab = Profile.Open(labpath, "r"))
                 using (var proofing = Profile.Open(proofingpath, "r"))
                 using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, CmsIntent.Perceptual, CmsIntent.AbsoluteColorimetric, CmsFlags.None))
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
                 {
                     var actual = transform.Context;
 
