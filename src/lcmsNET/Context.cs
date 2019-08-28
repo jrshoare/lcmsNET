@@ -1,6 +1,5 @@
 ﻿using lcmsNET.Impl;
 using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -27,6 +26,20 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             return new Context(Interop.DuplicateContext(_handle, userData));
+        }
+
+        public bool RegisterPlugins(IntPtr plugin)
+        {
+            EnsureNotDisposed();
+
+            return Interop.RegisterContextPlugins(_handle, plugin) == 1;
+        }
+
+        public void UnregisterPlugins()
+        {
+            EnsureNotDisposed();
+
+            Interop.UnregisterContextPlugins(_handle);
         }
 
         public IntPtr UserData => Interop.GetContextUserData(_handle);

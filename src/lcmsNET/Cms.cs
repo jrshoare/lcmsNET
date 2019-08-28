@@ -132,6 +132,7 @@ namespace lcmsNET
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();
 
+        #region Representations
         public static readonly int TYPE_GRAY_8
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(1);
         public static readonly int TYPE_GRAY_8_REV
@@ -494,6 +495,7 @@ namespace lcmsNET
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|SWAPFIRST_SH(1);
         public static readonly int TYPE_ABGR_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
+        #endregion
 
         /// <summary>
         /// Defines the pixel types.
@@ -531,6 +533,127 @@ namespace lcmsNET
             MCH14 = 28,
             MCH15 = 29,
             LabV2 = 30
+        }
+
+        /// <summary>
+        /// Defines the base ICC tag definitions.
+        /// </summary>
+        public enum TagSignature : int
+        {
+            AToB0                           = 0x41324230,  // 'A2B0'
+            AToB1                           = 0x41324231,  // 'A2B1'
+            AToB2                           = 0x41324232,  // 'A2B2'
+            BlueColorant                    = 0x6258595A,  // 'bXYZ'
+            BlueMatrixColumn                = 0x6258595A,  // 'bXYZ'
+            BlueTRC                         = 0x62545243,  // 'bTRC'
+            BToA0                           = 0x42324130,  // 'B2A0'
+            BToA1                           = 0x42324131,  // 'B2A1'
+            BToA2                           = 0x42324132,  // 'B2A2'
+            CalibrationDateTime             = 0x63616C74,  // 'calt'
+            CharTarget                      = 0x74617267,  // 'targ'
+            ChromaticAdaptation             = 0x63686164,  // 'chad'
+            Chromaticity                    = 0x6368726D,  // 'chrm'
+            ColorantOrder                   = 0x636C726F,  // 'clro'
+            ColorantTable                   = 0x636C7274,  // 'clrt'
+            ColorantTableOut                = 0x636C6F74,  // 'clot'
+            ColorimetricIntentImageState    = 0x63696973,  // 'ciis'
+            Copyright                       = 0x63707274,  // 'cprt'
+            CrdInfo                         = 0x63726469,  // 'crdi'
+            Data                            = 0x64617461,  // 'data'
+            DateTime                        = 0x6474696D,  // 'dtim'
+            DeviceMfgDesc                   = 0x646D6E64,  // 'dmnd'
+            DeviceModelDesc                 = 0x646D6464,  // 'dmdd'
+            DeviceSettings                  = 0x64657673,  // 'devs'
+            DToB0                           = 0x44324230,  // 'D2B0'
+            DToB1                           = 0x44324231,  // 'D2B1'
+            DToB2                           = 0x44324232,  // 'D2B2'
+            DToB3                           = 0x44324233,  // 'D2B3'
+            BToD0                           = 0x42324430,  // 'B2D0'
+            BToD1                           = 0x42324431,  // 'B2D1'
+            BToD2                           = 0x42324432,  // 'B2D2'
+            BToD3                           = 0x42324433,  // 'B2D3'
+            Gamut                           = 0x67616D74,  // 'gamt'
+            GrayTRC                         = 0x6b545243,  // 'kTRC'
+            GreenColorant                   = 0x6758595A,  // 'gXYZ'
+            GreenMatrixColumn               = 0x6758595A,  // 'gXYZ'
+            GreenTRC                        = 0x67545243,  // 'gTRC'
+            Luminance                       = 0x6C756d69,  // 'lumi'
+            Measurement                     = 0x6D656173,  // 'meas'
+            MediaBlackPoint                 = 0x626B7074,  // 'bkpt'
+            MediaWhitePoint                 = 0x77747074,  // 'wtpt'
+            NamedColor                      = 0x6E636f6C,  // 'ncol' // Deprecated by the ICC
+            NamedColor2                     = 0x6E636C32,  // 'ncl2'
+            OutputResponse                  = 0x72657370,  // 'resp'
+            PerceptualRenderingIntentGamut  = 0x72696730,  // 'rig0'
+            Preview0                        = 0x70726530,  // 'pre0'
+            Preview1                        = 0x70726531,  // 'pre1'
+            Preview2                        = 0x70726532,  // 'pre2'
+            ProfileDescription              = 0x64657363,  // 'desc'
+            ProfileDescriptionML            = 0x6473636d,  // 'dscm'
+            ProfileSequenceDesc             = 0x70736571,  // 'pseq'
+            ProfileSequenceId               = 0x70736964,  // 'psid'
+            Ps2CRD0                         = 0x70736430,  // 'psd0'
+            Ps2CRD1                         = 0x70736431,  // 'psd1'
+            Ps2CRD2                         = 0x70736432,  // 'psd2'
+            Ps2CRD3                         = 0x70736433,  // 'psd3'
+            Ps2CSA                          = 0x70733273,  // 'ps2s'
+            Ps2RenderingIntent              = 0x70733269,  // 'ps2i'
+            RedColorant                     = 0x7258595A,  // 'rXYZ'
+            RedMatrixColumn                 = 0x7258595A,  // 'rXYZ'
+            RedTRC                          = 0x72545243,  // 'rTRC'
+            SaturationRenderingIntentGamut  = 0x72696732,  // 'rig2'
+            ScreeningDesc                   = 0x73637264,  // 'scrd'
+            Screening                       = 0x7363726E,  // 'scrn'
+            Technology                      = 0x74656368,  // 'tech'
+            UcrBg                           = 0x62666420,  // 'bfd '
+            ViewingCondDesc                 = 0x76756564,  // 'vued'
+            ViewingConditions               = 0x76696577,  // 'view'
+            Vcgt                            = 0x76636774,  // 'vcgt'
+            Meta                            = 0x6D657461,  // 'meta'
+            ArgyllArts                      = 0x61727473   // 'arts'
+        }
+
+        /// <summary>
+        /// Defines the base ICC type definitions.
+        /// </summary>
+        public enum TagTypeSignature : int
+        {
+            Chromaticity                    = 0x6368726D,  // 'chrm'
+            ColorantOrder                   = 0x636C726F,  // 'clro'
+            ColorantTable                   = 0x636C7274,  // 'clrt'
+            CrdInfo                         = 0x63726469,  // 'crdi'
+            Curve                           = 0x63757276,  // 'curv'
+            Data                            = 0x64617461,  // 'data'
+            Dict                            = 0x64696374,  // 'dict'
+            DateTime                        = 0x6474696D,  // 'dtim'
+            DeviceSettings                  = 0x64657673,  // 'devs'
+            Lut16                           = 0x6d667432,  // 'mft2'
+            Lut8                            = 0x6d667431,  // 'mft1'
+            LutAtoB                         = 0x6d414220,  // 'mAB '
+            LutBtoA                         = 0x6d424120,  // 'mBA '
+            Measurement                     = 0x6D656173,  // 'meas'
+            MultiLocalizedUnicode           = 0x6D6C7563,  // 'mluc'
+            MultiProcessElement             = 0x6D706574,  // 'mpet'
+            NamedColor                      = 0x6E636f6C,  // 'ncol' -- DEPRECATED!
+            NamedColor2                     = 0x6E636C32,  // 'ncl2'
+            ParametricCurve                 = 0x70617261,  // 'para'
+            ProfileSequenceDesc             = 0x70736571,  // 'pseq'
+            ProfileSequenceId               = 0x70736964,  // 'psid'
+            ResponseCurveSet16              = 0x72637332,  // 'rcs2'
+            S15Fixed16Array                 = 0x73663332,  // 'sf32'
+            Screening                       = 0x7363726E,  // 'scrn'
+            Signature                       = 0x73696720,  // 'sig '
+            Text                            = 0x74657874,  // 'text'
+            TextDescription                 = 0x64657363,  // 'desc'
+            U16Fixed16Array                 = 0x75663332,  // 'uf32'
+            UcrBg                           = 0x62666420,  // 'bfd '
+            UInt16Array                     = 0x75693136,  // 'ui16'
+            UInt32Array                     = 0x75693332,  // 'ui32'
+            UInt64Array                     = 0x75693634,  // 'ui64'
+            UInt8Array                      = 0x75693038,  // 'ui08'
+            Vcgt                            = 0x76636774,  // 'vcgt'
+            ViewingConditions               = 0x76696577,  // 'view'
+            XYZ                             = 0x58595A20   // 'XYZ '
         }
 
         private static int FLOAT_SH(int s) { return s << 22; }

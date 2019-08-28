@@ -42,5 +42,24 @@ namespace lcmsNET
         {
             return GetContextUserData_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsPluginTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern int PluginTHR_Internal(
+            IntPtr contextID,
+            IntPtr plugin);
+
+        internal static int RegisterContextPlugins(IntPtr handle, IntPtr plugin)
+        {
+            return PluginTHR_Internal(handle, plugin);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsUnregisterPluginsTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern int UnregisterPluginsTHR_Internal(
+            IntPtr contextID);
+
+        internal static void UnregisterContextPlugins(IntPtr handle)
+        {
+            UnregisterPluginsTHR_Internal(handle);
+        }
     }
 }
