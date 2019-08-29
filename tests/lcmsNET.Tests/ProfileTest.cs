@@ -74,6 +74,18 @@ namespace lcmsNET.Tests
             }
         }
 
+        private MemoryStream Save(string resourceName)
+        {
+            MemoryStream ms = new MemoryStream();
+            var thisExe = Assembly.GetExecutingAssembly();
+            var assemblyName = new AssemblyName(thisExe.FullName);
+            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
+            {
+                s.CopyTo(ms);
+            }
+            return ms;
+        }
+
         [TestMethod()]
         public void OpenTest()
         {
@@ -128,6 +140,40 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void OpenTest3()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                // Act
+                using (var profile = Profile.Open(ms.GetBuffer()))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void OpenTest4()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                // Act
+                using (var context = Context.Create(plugin, userData))
+                using (var profile = Profile.Open(context, ms.GetBuffer()))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
         public void SaveTest()
         {
             // Arrange
@@ -153,6 +199,49 @@ namespace lcmsNET.Tests
             finally
             {
                 Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest2()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var srcProfile = Profile.Open(memory))
+                {
+                    var expected = memory.Length + 1; // add 1 for '\0' termination
+                    byte[] destProfile = new byte[expected];
+
+                    // Act
+                    var result = srcProfile.Save(destProfile, out int actual);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest3()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var profile = Profile.Open(memory))
+                {
+                    // oddly the method returns the size of the profile ignoring
+                    // the fact that it always terminates with `\0`
+                    var expected = memory.Length;
+
+                    // Act
+                    var result = profile.Save(null, out int actual);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
             }
         }
 

@@ -27,11 +27,28 @@ namespace lcmsNET
             return new Profile(Interop.OpenProfile(context.Handle, filepath, access), context);
         }
 
+        public static Profile Open(byte[] memory)
+        {
+            return new Profile(Interop.OpenProfile(memory));
+        }
+
+        public static Profile Open(Context context, byte[] memory)
+        {
+            return new Profile(Interop.OpenProfile(context.Handle, memory));
+        }
+
         public bool Save(string filepath)
         {
             EnsureNotDisposed();
 
             return 0 != Interop.SaveProfile(_handle, filepath);
+        }
+
+        public bool Save(byte[] profile, out int bytesNeeded)
+        {
+            EnsureNotDisposed();
+
+            return 0 != Interop.SaveProfile(_handle, profile, out bytesNeeded);
         }
 
         public Context Context { get; private set; }
