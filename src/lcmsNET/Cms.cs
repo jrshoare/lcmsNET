@@ -455,6 +455,17 @@ namespace lcmsNET
         SegmentedCurve = 0x63757266  // 'curf'
     }
 
+    /// <summary>
+    /// Localized information.
+    /// </summary>
+    public enum InfoType : int
+    {
+        Description = 0,
+        Manufacturer = 1,
+        Model = 2,
+        Copyright = 3
+    }
+
     public sealed class Cms
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();

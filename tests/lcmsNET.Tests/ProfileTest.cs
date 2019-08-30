@@ -796,5 +796,45 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void GetProfileInfoTest()
+        {
+            // Arrange
+            var expected = "sRGB IEC61966-2.1";
+
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var profile = Profile.Open(memory))
+                {
+                    // Act
+                    var actual = profile.GetProfileInfo(InfoType.Description, "en", "US");
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void GetProfileInfoASCIITest()
+        {
+            // Arrange
+            var expected = "sRGB IEC61966-2.1";
+
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var profile = Profile.Open(memory))
+                {
+                    // Act
+                    var actual = profile.GetProfileInfoASCII(InfoType.Description, "en", "US");
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+        }
     }
 }

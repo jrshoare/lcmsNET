@@ -173,6 +173,22 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Obtain localized information
+        public string GetProfileInfo(InfoType info, string languageCode, string countryCode)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetProfileInfo(_handle, Convert.ToInt32(info), languageCode, countryCode);
+        }
+
+        public string GetProfileInfoASCII(InfoType info, string languageCode, string countryCode)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetProfileInfoASCII(_handle, Convert.ToInt32(info), languageCode, countryCode);
+        }
+        #endregion
+
         public Context Context { get; private set; }
 
         public ColorSpaceSignature ColorSpaceSignature => (ColorSpaceSignature)Interop.GetColorSpaceSignature(_handle);

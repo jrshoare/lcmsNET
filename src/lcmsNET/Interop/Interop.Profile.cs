@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace lcmsNET
 {
@@ -354,6 +355,62 @@ namespace lcmsNET
         internal static int GetPCS(IntPtr handle)
         {
             return LCMSColorSpace_Internal(GetPCS_Internal(handle));
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetProfileInfo", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetProfileInfo_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int info,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] int bufferSize);
+
+        internal static string GetProfileInfo(IntPtr handle, int info, string languageCode, string countryCode)
+        {
+            byte[] language = Encoding.ASCII.GetBytes(languageCode);
+            byte[] country = Encoding.ASCII.GetBytes(countryCode);
+
+            IntPtr buffer = IntPtr.Zero;
+            int bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
+            buffer = Marshal.AllocHGlobal(bytes);
+            try
+            {
+                GetProfileInfo_Internal(handle, info, language, country, buffer, bytes);
+                return Marshal.PtrToStringAuto(buffer);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetProfileInfoASCII", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetProfileInfoASCII_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int info,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] int bufferSize);
+
+        internal static string GetProfileInfoASCII(IntPtr handle, int info, string languageCode, string countryCode)
+        {
+            byte[] language = Encoding.ASCII.GetBytes(languageCode);
+            byte[] country = Encoding.ASCII.GetBytes(countryCode);
+
+            IntPtr buffer = IntPtr.Zero;
+            int bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);
+            buffer = Marshal.AllocHGlobal(bytes);
+            try
+            {
+                GetProfileInfoASCII_Internal(handle, info, language, country, buffer, bytes);
+                return Marshal.PtrToStringAnsi(buffer);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
     }
 }
