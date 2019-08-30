@@ -341,6 +341,120 @@ namespace lcmsNET
         LuvKData = 0x4C75764B   // 'LuvK'
     }
 
+    /// <summary>
+    /// Defines the ICC profile class.
+    /// </summary>
+    public enum ProfileClassSignature : int
+    {
+        InputClass = 0x73636E72,  // 'scnr'
+        DisplayClass = 0x6D6E7472,  // 'mntr'
+        OutputClass = 0x70727472,  // 'prtr'
+        LinkClass = 0x6C696E6B,  // 'link'
+        AbstractClass = 0x61627374,  // 'abst'
+        ColorSpaceClass = 0x73706163,  // 'spac'
+        NamedColorClass = 0x6e6d636c   // 'nmcl'
+    }
+
+    /// <summary>
+    /// Defines the ICC technology tag.
+    /// </summary>
+    public enum TechnologySignature : int
+    {
+        DigitalCamera = 0x6463616D,  // 'dcam'
+        FilmScanner = 0x6673636E,  // 'fscn'
+        ReflectiveScanner = 0x7273636E,  // 'rscn'
+        InkJetPrinter = 0x696A6574,  // 'ijet'
+        ThermalWaxPrinter = 0x74776178,  // 'twax'
+        ElectrophotographicPrinter = 0x6570686F,  // 'epho'
+        ElectrostaticPrinter = 0x65737461,  // 'esta'
+        DyeSublimationPrinter = 0x64737562,  // 'dsub'
+        PhotographicPaperPrinter = 0x7270686F,  // 'rpho'
+        FilmWriter = 0x6670726E,  // 'fprn'
+        VideoMonitor = 0x7669646D,  // 'vidm'
+        VideoCamera = 0x76696463,  // 'vidc'
+        ProjectionTelevision = 0x706A7476,  // 'pjtv'
+        CRTDisplay = 0x43525420,  // 'CRT '
+        PMDisplay = 0x504D4420,  // 'PMD '
+        AMDisplay = 0x414D4420,  // 'AMD '
+        PhotoCD = 0x4B504344,  // 'KPCD'
+        PhotoImageSetter = 0x696D6773,  // 'imgs'
+        Gravure = 0x67726176,  // 'grav'
+        OffsetLithography = 0x6F666673,  // 'offs'
+        Silkscreen = 0x73696C6B,  // 'silk'
+        Flexography = 0x666C6578,  // 'flex'
+        MotionPictureFilmScanner = 0x6D706673,  // 'mpfs'
+        MotionPictureFilmRecorder = 0x6D706672,  // 'mpfr'
+        DigitalMotionPictureCamera = 0x646D7063,  // 'dmpc'
+        DigitalCinemaProjector = 0x64636A70   // 'dcpj'
+    }
+
+    /// <summary>
+    /// Defines the ICC profile class.
+    /// </summary>
+    public enum ProfileSignature : int
+    {
+        InputClass = 0x73636E72,  // 'scnr'
+        DisplayClass = 0x6D6E7472,  // 'mntr'
+        OutputClass = 0x70727472,  // 'prtr'
+        LinkClass = 0x6C696E6B,  // 'link'
+        AbstractClass = 0x61627374,  // 'abst'
+        ColorSpaceClass = 0x73706163,  // 'spac'
+        NamedColorClass = 0x6e6d636c   // 'nmcl'
+    }
+
+    /// <summary>
+    /// Defines the ICC platforms.
+    /// </summary>
+    public enum PlatformSignature : int
+    {
+        Macintosh = 0x4150504C,  // 'APPL'
+        Microsoft = 0x4D534654,  // 'MSFT'
+        Solaris = 0x53554E57,  // 'SUNW'
+        SGI = 0x53474920,  // 'SGI '
+        Taligent = 0x54474E54,  // 'TGNT'
+        Unices = 0x2A6E6978   // '*nix'   // From argyll -- Not official
+    }
+
+    /// <summary>
+    /// Defines the multi process element types.
+    /// </summary>
+    public enum StageSignature : int
+    {
+        CurveSetElemType = 0x63767374,  //'cvst'
+        MatrixElemType = 0x6D617466,  //'matf'
+        CLutElemType = 0x636C7574,  //'clut'
+
+        BAcsElemType = 0x62414353,  // 'bACS'
+        EAcsElemType = 0x65414353,  // 'eACS'
+
+        // Custom from here, not in the ICC Spec
+        XYZ2LabElemType = 0x6C327820,  // 'l2x '
+        Lab2XYZElemType = 0x78326C20,  // 'x2l '
+        NamedColorElemType = 0x6E636C20,  // 'ncl '
+        LabV2toV4 = 0x32203420,  // '2 4 '
+        LabV4toV2 = 0x34203220,  // '4 2 '
+
+        // Identities
+        IdentityElemType = 0x69646E20,  // 'idn '
+
+        // Float to floatPCS
+        Lab2FloatPCS = 0x64326C20,  // 'd2l '
+        FloatPCS2Lab = 0x6C326420,  // 'l2d '
+        XYZ2FloatPCS = 0x64327820,  // 'd2x '
+        FloatPCS2XYZ = 0x78326420,  // 'x2d '  
+        ClipNegativesElemType = 0x636c7020   // 'clp '
+    }
+
+    /// <summary>
+    /// Defines the types of curve elements.
+    /// </summary>
+    public enum CurveSegSignature : int
+    {
+        FormulaCurveSeg = 0x70617266, // 'parf'
+        SampledCurveSeg = 0x73616D66, // 'samf'
+        SegmentedCurve = 0x63757266  // 'curf'
+    }
+
     public sealed class Cms
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();
