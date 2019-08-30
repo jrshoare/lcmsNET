@@ -22,5 +22,23 @@ namespace lcmsNET
         {
             SetLogErrorHandler_Internal(handler);
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsLCMScolorSpace", CallingConvention = CallingConvention.StdCall)]
+        private static extern int LCMSColorSpace_Internal(
+                [MarshalAs(UnmanagedType.U4)] int iccColorSpaceSignature);
+
+        internal static int GetLCMSColorSpace(int iccColorSpaceSignature)
+        {
+            return LCMSColorSpace_Internal(iccColorSpaceSignature);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsICCcolorSpace", CallingConvention = CallingConvention.StdCall)]
+        private static extern int ICCColorSpace_Internal(
+                [MarshalAs(UnmanagedType.U4)] int lcmsColorSpaceSignature);
+
+        internal static int GetICCColorSpace(int lcmsColorSpaceSignature)
+        {
+            return ICCColorSpace_Internal(lcmsColorSpaceSignature);
+        }
     }
 }

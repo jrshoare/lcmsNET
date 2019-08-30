@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
@@ -18,6 +19,22 @@ namespace lcmsNET
         internal static void Lab2XYZ(CIEXYZ whitePoint, ref CIEXYZ xyz, CIELab lab)
         {
             Lab2XYZ_Internal(ref whitePoint, ref xyz, ref lab);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsD50_XYZ", CallingConvention = CallingConvention.StdCall)]
+        private static extern ref CIEXYZ D50_XYZ_Internal();
+
+        internal static CIEXYZ GetD50_XYZ()
+        {
+            return D50_XYZ_Internal();
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsD50_xyY", CallingConvention = CallingConvention.StdCall)]
+        private static extern ref CIExyY D50_xyY_Internal();
+
+        internal static CIExyY GetD50_xyY()
+        {
+            return D50_xyY_Internal();
         }
     }
 }

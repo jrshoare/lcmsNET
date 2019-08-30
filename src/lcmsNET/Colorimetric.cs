@@ -88,5 +88,9 @@ namespace lcmsNET
             Interop.Lab2XYZ(whitePoint, ref xyz, lab);
             return xyz;
         }
+
+        public static CIEXYZ D50_XYZ => Interop.GetD50_XYZ();
+
+        public static CIExyY D50_xyY => Interop.GetD50_xyY();
     }
 }

@@ -258,5 +258,33 @@ namespace lcmsNET.Tests
                 TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
             }
         }
+
+        [TestMethod()]
+        public void ToColorSpaceSignatureTest()
+        {
+            // Arrange
+            PixelType pixelType = PixelType.RGB;
+            ColorSpaceSignature expected = ColorSpaceSignature.RgbData;
+
+            // Act
+            var actual = Cms.ToColorSpaceSignature(pixelType);
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void ToPixelTypeTest()
+        {
+            // Arrange
+            ColorSpaceSignature space = ColorSpaceSignature.YCbCrData;
+            PixelType expected = PixelType.YCbCr;
+
+            // Act
+            var actual = Cms.ToPixelType(space);
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

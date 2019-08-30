@@ -87,6 +87,416 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CreatePlaceholderTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateRGBTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+            CIExyYTRIPLE primaries = new CIExyYTRIPLE
+            {
+                Red = new CIExyY { x = 0.64, y = 0.33, Y = 1 },
+                Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
+                Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
+            };
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
+            {
+                ToneCurve[] transferFunction = new ToneCurve[]
+                {
+                    toneCurve, toneCurve, toneCurve
+                };
+
+                // Act
+                using (var profile = Profile.CreateRGB(whitePoint, primaries, transferFunction))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateRGBTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+            CIExyYTRIPLE primaries = new CIExyYTRIPLE
+            {
+                Red = new CIExyY { x = 0.64, y = 0.33, Y = 1 },
+                Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
+                Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
+            };
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
+            {
+                ToneCurve[] transferFunction = new ToneCurve[]
+                {
+                    toneCurve, toneCurve, toneCurve
+                };
+
+                // Act
+                using (var profile = Profile.CreateRGB(context, whitePoint, primaries, transferFunction))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateGrayTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
+            {
+                // Act
+                using (var profile = Profile.CreateGray(whitePoint, toneCurve))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateGrayTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
+            {
+                // Act
+                using (var profile = Profile.CreateGray(context, whitePoint, toneCurve))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLinearizationDeviceLinkTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+            ColorSpaceSignature space = ColorSpaceSignature.CmykData;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 3.0))
+            {
+                ToneCurve[] transferFunction = new ToneCurve[]
+                {
+                    toneCurve, toneCurve, toneCurve, toneCurve
+                };
+
+                // Act
+                using (var profile = Profile.CreateLinearizationDeviceLink(space, transferFunction))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLinearizationDeviceLinkTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            CIExyY whitePoint = Colorimetric.D50_xyY;
+            ColorSpaceSignature space = ColorSpaceSignature.CmykData;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var toneCurve = ToneCurve.BuildGamma(context, 3.0))
+            {
+                ToneCurve[] transferFunction = new ToneCurve[]
+                {
+                    toneCurve, toneCurve, toneCurve, toneCurve
+                };
+
+                // Act
+                using (var profile = Profile.CreateLinearizationDeviceLink(context, space, transferFunction))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CreateInkLimitingDeviceLinkTest()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateInkLimitingDeviceLinkTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateDeviceLinkTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+                var labpath = Path.Combine(tempPath, "lab.icc");
+                Save(".Resources.Lab.icc", labpath);
+
+                // Act
+                using (var srgb = Profile.Open(srgbpath, "r"))
+                using (var lab = Profile.Open(labpath, "r"))
+                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
+                using (var profile = Profile.CreateDeviceLink(transform, 3.4, CmsFlags.None))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLab2Test()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.CreateLab2(Colorimetric.D50_xyY))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLab2Test2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateLab2(context, Colorimetric.D50_xyY))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLab4Test()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.CreateLab4(Colorimetric.D50_xyY))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateLab4Test2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateLab4(context, Colorimetric.D50_xyY))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateXYZTest()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.CreateXYZ())
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateXYZTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateXYZ(context))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void Create_sRGBTest()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.Create_sRGB())
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void Create_sRGBTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.Create_sRGB(context))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateNullTest()
+        {
+            // Arrange
+
+            // Act
+            using (var profile = Profile.CreateNull())
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateNullTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateNull(context))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateBCHSWabstractTest()
+        {
+            // Arrange
+            int nLutPoints = 17;
+            double bright = 0.0, contrast = 1.2, hue = 0.0, saturation = 3.0;
+            int tempSrc = 5000, tempDest = 5000;
+
+            // Act
+            using (var profile = Profile.CreateBCHSWabstract(nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateBCHSWabstractTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            int nLutPoints = 17;
+            double bright = 0.0, contrast = 1.2, hue = 0.0, saturation = 3.0;
+            int tempSrc = 5000, tempDest = 5000;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateBCHSWabstract(context, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
         public void OpenTest()
         {
             // Arrange
@@ -281,7 +691,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            var expected = 0x52474220;  // 'RGB '
+            var expected = ColorSpaceSignature.RgbData;
 
             try
             {
@@ -337,7 +747,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            var expected = 0x58595A20;  // 'XYZ '
+            var expected = ColorSpaceSignature.XYZData;
 
             try
             {

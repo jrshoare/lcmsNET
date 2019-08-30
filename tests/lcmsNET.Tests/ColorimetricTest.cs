@@ -84,5 +84,33 @@ namespace lcmsNET.Tests
             Assert.AreEqual(1.0, xyz.Y);
             Assert.AreEqual(0.8249, xyz.Z);
         }
+
+        [TestMethod()]
+        public void D50_XYZTest()
+        {
+            // Arrange
+
+            // Act
+            var d50 = Colorimetric.D50_XYZ;
+
+            // Assert
+            Assert.AreEqual(0.9642, d50.X, double.Epsilon);
+            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+            Assert.AreEqual(0.8249, d50.Z, double.Epsilon);
+        }
+
+        [TestMethod()]
+        public void D50_xyYTest()
+        {
+            // Arrange
+
+            // Act
+            var d50 = Colorimetric.D50_xyY;
+
+            // Assert
+            Assert.AreEqual(0.3457, d50.x, 0.0001);
+            Assert.AreEqual(0.3585, d50.y, 0.0001);
+            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+        }
     }
 }
