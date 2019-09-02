@@ -261,5 +261,48 @@ namespace lcmsNET.Tests
                 TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
             }
         }
+
+        [TestMethod()]
+        public void AlarmCodesTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            {
+                ushort[] alarmCodes = new ushort[16] { 10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678 };
+
+                // Act
+                context.AlarmCodes = alarmCodes;
+                var values = context.AlarmCodes;
+
+                // Assert
+                for (int i = 0; i < alarmCodes.Length; i++)
+                {
+                    Assert.AreEqual(alarmCodes[i], values[i]);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void AdaptationStateTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            {
+                double expected = 0.53;
+
+                // Act
+                context.AdaptationState = expected;
+
+                // Assert
+                double actual = context.AdaptationState;
+                Assert.AreEqual(expected, actual);
+            }
+        }
     }
 }

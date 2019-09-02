@@ -49,5 +49,32 @@ namespace lcmsNET
         {
             return ChannelsOf_Internal(colorSpace);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetAlarmCodes", CallingConvention = CallingConvention.StdCall)]
+        private static extern void GetAlarmCodes_Internal(
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+
+        internal static void GetAlarmCodes(ref ushort[] alarmCodes)
+        {
+            GetAlarmCodes_Internal(alarmCodes);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetAlarmCodes", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetAlarmCodes_Internal(
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+
+        internal static void SetAlarmCodes(ushort[] alarmCodes)
+        {
+            SetAlarmCodes_Internal(alarmCodes);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetAdaptationState", CallingConvention = CallingConvention.StdCall)]
+        private static extern double SetAdaptationState_Internal(
+                [MarshalAs(UnmanagedType.R8)] double adaptationState);
+
+        internal static double SetAdaptationState(double adaptationState)
+        {
+            return SetAdaptationState_Internal(adaptationState);
+        }
     }
 }

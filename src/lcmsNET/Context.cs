@@ -44,7 +44,45 @@ namespace lcmsNET
 
         public void SetErrorHandler(ErrorHandler handler)
         {
+            EnsureNotDisposed();
+
             Interop.SetContextErrorHandler(_handle, handler);
+        }
+
+        public ushort[] AlarmCodes
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                ushort[] alarmCodes = new ushort[16];
+                Interop.GetAlarmCodesTHR(_handle, ref alarmCodes);
+                return alarmCodes;
+            }
+            set
+            {
+                if (value?.Length != 16) throw new ArgumentException($"'{nameof(value)}' array size must equal 16.");
+
+                EnsureNotDisposed();
+
+                Interop.SetAlarmCodesTHR(_handle, value);
+            }
+        }
+
+        public double AdaptationState
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                return Interop.SetAdaptationStateTHR(_handle, -1.0);
+            }
+            set
+            {
+                EnsureNotDisposed();
+
+                Interop.SetAdaptationStateTHR(_handle, value);
+            }
         }
 
         public IntPtr UserData => Interop.GetContextUserData(_handle);

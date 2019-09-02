@@ -45,7 +45,7 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsPluginTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern int PluginTHR_Internal(
-            IntPtr contextID,
+            IntPtr handle,
             IntPtr plugin);
 
         internal static int RegisterContextPlugins(IntPtr handle, IntPtr plugin)
@@ -55,7 +55,7 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsUnregisterPluginsTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern int UnregisterPluginsTHR_Internal(
-            IntPtr contextID);
+            IntPtr handle);
 
         internal static void UnregisterContextPlugins(IntPtr handle)
         {
@@ -64,12 +64,42 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern int SetLogErrorHandlerTHR_Internal(
-            IntPtr contextID,
+            IntPtr handle,
             ErrorHandler handler);
 
         internal static void SetContextErrorHandler(IntPtr handle, ErrorHandler handler)
         {
             SetLogErrorHandlerTHR_Internal(handle, handler);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetAlarmCodesTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern void GetAlarmCodesTHR_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+
+        internal static void GetAlarmCodesTHR(IntPtr handle, ref ushort[] alarmCodes)
+        {
+            GetAlarmCodesTHR_Internal(handle, alarmCodes);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetAlarmCodesTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetAlarmCodesTHR_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+
+        internal static void SetAlarmCodesTHR(IntPtr handle, ushort[] alarmCodes)
+        {
+            SetAlarmCodesTHR_Internal(handle, alarmCodes);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetAdaptationStateTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern double SetAdaptationStateTHR_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R8)] double adaptationState);
+
+        internal static double SetAdaptationStateTHR(IntPtr handle, double adaptationState)
+        {
+            return SetAdaptationStateTHR_Internal(handle, adaptationState);
         }
     }
 }

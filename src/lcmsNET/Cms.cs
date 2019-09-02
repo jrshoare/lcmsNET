@@ -490,6 +490,34 @@ namespace lcmsNET
 
         public static uint ChannelsOf(ColorSpaceSignature space) => Interop.ChannelsOf(Convert.ToInt32(space));
 
+        public static ushort[] AlarmCodes
+        {
+            get
+            {
+                ushort[] alarmCodes = new ushort[16];
+                Interop.GetAlarmCodes(ref alarmCodes);
+                return alarmCodes;
+            }
+            set
+            {
+                if (value?.Length != 16) throw new ArgumentException($"'{nameof(value)}' array size must equal 16.");
+
+                Interop.SetAlarmCodes(value);
+            }
+        }
+
+        public static double AdaptationState
+        {
+            get
+            {
+                return Interop.SetAdaptationState(-1.0);
+            }
+            set
+            {
+                Interop.SetAdaptationState(value);
+            }
+        }
+
         #region Representations
         public static readonly int TYPE_GRAY_8
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(1);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 
 namespace lcmsNET.Tests
 {
@@ -298,6 +299,37 @@ namespace lcmsNET.Tests
             uint actual = Cms.ChannelsOf(space);
 
             // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void AlarmCodesTest()
+        {
+            // Arrange
+            ushort[] alarmCodes = new ushort[16] { 10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678 };
+
+            // Act
+            Cms.AlarmCodes = alarmCodes;
+            var values = Cms.AlarmCodes;
+
+            // Assert
+            for (int i = 0; i < alarmCodes.Length; i++)
+            {
+                Assert.AreEqual(alarmCodes[i], values[i]);
+            }
+        }
+
+        [TestMethod()]
+        public void SetAdaptationStateTest()
+        {
+            // Arrange
+            double expected = 0.7;
+
+            // Act
+            Cms.AdaptationState = expected;
+
+            // Assert
+            double actual = Cms.AdaptationState;
             Assert.AreEqual(expected, actual);
         }
     }
