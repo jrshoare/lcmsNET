@@ -686,40 +686,12 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ColorSpaceSignatureTest()
+        public void ColorSpaceGetTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
             var expected = ColorSpaceSignature.RgbData;
-
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-
-                // Act
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    var actual = profile.ColorSpaceSignature;
-
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
-        }
-
-        [TestMethod()]
-        public void ColorSpaceTest()
-        {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            var expected = PixelType.RGB;
 
             try
             {
@@ -742,7 +714,27 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void PCSSignatureTest()
+        public void ColorSpaceSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            var expected = ColorSpaceSignature.CmykData;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.ColorSpace = expected;
+
+                // Assert
+                var actual = profile.ColorSpace;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void PCSGetTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -754,10 +746,10 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                // Act
                 using (var profile = Profile.Open(srgbpath, "r"))
                 {
-                    var actual = profile.PCSSignature;
+                    // Act
+                    var actual = profile.PCS;
 
                     // Assert
                     Assert.AreEqual(expected, actual);
@@ -770,24 +762,25 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void PCSTest()
+        public void PCSSetTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            var expected = PixelType.XYZ;
+            var expected = ColorSpaceSignature.XYZData;
 
             try
             {
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                // Act
                 using (var profile = Profile.Open(srgbpath, "r"))
                 {
-                    var actual = profile.PCS;
+                    // Act
+                    profile.PCS = expected;
 
                     // Assert
+                    var actual = profile.PCS;
                     Assert.AreEqual(expected, actual);
                 }
             }
@@ -834,6 +827,430 @@ namespace lcmsNET.Tests
                     // Assert
                     Assert.AreEqual(expected, actual);
                 }
+            }
+        }
+
+        [TestMethod()]
+        public void DetectBlackPointTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            CIEXYZ blackPoint = new CIEXYZ { X = 0.0, Y = 0.0, Z = 0.0 };
+            Intent intent = Intent.RelativeColorimetric;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    bool detected = profile.DetectBlackPoint(ref blackPoint, intent);
+
+                    // Assert
+                    Assert.IsTrue(detected);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void DetectDestinationBlackPointTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            CIEXYZ blackPoint = new CIEXYZ { X = 0.0, Y = 0.0, Z = 0.0 };
+            Intent intent = Intent.RelativeColorimetric;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "D50_XYZ.icc");
+                Save(".Resources.D50_XYZ.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    bool detected = profile.DetectDestinationBlackPoint(ref blackPoint, intent);
+
+                    // Assert
+                    Assert.IsTrue(detected);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void TotalAreaCoverageTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            double expected = 0.0;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.DeviceClass = ProfileClassSignature.Output;
+
+                // Act
+                double actual = profile.TotalAreaCoverage;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void DeviceClassGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            var expected = ProfileClassSignature.Abstract;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.DeviceClass = expected;
+
+                // Act
+                var actual = profile.DeviceClass;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void DeviceClassSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            var expected = ProfileClassSignature.Display;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.DeviceClass = expected;
+
+                // Assert
+                var actual = profile.DeviceClass;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void GetProfileHeaderDateTimeTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            var notExpected = DateTime.MinValue;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                bool obtained = profile.GetHeaderCreationDateTime(out DateTime actual);
+
+                // Assert
+                Assert.IsTrue(obtained);
+                Assert.AreNotEqual(notExpected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderFlagsGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x2;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.HeaderFlags = expected;
+
+                // Act
+                var actual = profile.HeaderFlags;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderFlagsSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x1;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.HeaderFlags = expected;
+
+                // Assert
+                var actual = profile.HeaderFlags;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderManufacturerGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x54657374; // 'Test'
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.HeaderManufacturer = expected;
+
+                // Act
+                var actual = profile.HeaderManufacturer;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderManufacturerSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x54657374; // 'Test'
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.HeaderManufacturer = expected;
+
+                // Assert
+                var actual = profile.HeaderManufacturer;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderModelGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x6D6F646C; // 'modl'
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.HeaderModel = expected;
+
+                // Act
+                var actual = profile.HeaderModel;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderModelSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x6D6F646C; // 'modl'
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.HeaderModel = expected;
+
+                // Assert
+                var actual = profile.HeaderModel;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderAttributesGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            DeviceAttributes expected = DeviceAttributes.Reflective | DeviceAttributes.Matte;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.HeaderAttributes = expected;
+
+                // Act
+                var actual = profile.HeaderAttributes;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderAttributesSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            DeviceAttributes expected = DeviceAttributes.Transparency;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.HeaderAttributes = expected;
+
+                // Assert
+                var actual = profile.HeaderAttributes;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void VersionGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            double expected = 4.3;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.Version = expected;
+
+                // Act
+                var actual = profile.Version;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void VersionSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            double expected = 4.3;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.Version = expected;
+
+                // Assert
+                var actual = profile.Version;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void EncodedICCVersionGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x4000000;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                profile.EncodedICCVersion = expected;
+
+                // Act
+                var actual = profile.EncodedICCVersion;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void EncodedICCVersionSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            uint expected = 0x4000000;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.EncodedICCVersion = expected;
+
+                // Assert
+                var actual = profile.EncodedICCVersion;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void IsMatrixShaperTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                bool isMatrixShaper = profile.IsMatrixShaper;
+
+                // Assert
+                Assert.IsFalse(isMatrixShaper);
+            }
+        }
+
+        [TestMethod()]
+        public void IsCLUTTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            Intent intent = Intent.RelativeColorimetric;
+            UsedDirection usedDirection = UsedDirection.AsInput;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                bool isCLUT = profile.IsCLUT(intent, usedDirection);
+
+                // Assert
+                Assert.IsFalse(isCLUT);
             }
         }
     }

@@ -5,6 +5,29 @@ using System.Text;
 
 namespace lcmsNET
 {
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct Tm
+    {
+        [MarshalAs(UnmanagedType.I4)]
+        public int sec;
+        [MarshalAs(UnmanagedType.I4)]
+        public int min;
+        [MarshalAs(UnmanagedType.I4)]
+        public int hour;
+        [MarshalAs(UnmanagedType.I4)]
+        public int mday;
+        [MarshalAs(UnmanagedType.I4)]
+        public int mon;
+        [MarshalAs(UnmanagedType.I4)]
+        public int year;
+        [MarshalAs(UnmanagedType.I4)]
+        public int wday;
+        [MarshalAs(UnmanagedType.I4)]
+        public int yday;
+        [MarshalAs(UnmanagedType.I4)]
+        public int isdst;
+    }
+
     internal static partial class Interop
     {
         [DllImport(Liblcms, EntryPoint = "cmsCreateProfilePlaceholder", CallingConvention = CallingConvention.StdCall)]
@@ -338,23 +361,38 @@ namespace lcmsNET
         private static extern int GetColorSpace_Internal(
                 IntPtr profile);
 
-        internal static int GetColorSpaceSignature(IntPtr handle)
+        internal static int GetColorSpace(IntPtr handle)
         {
             return GetColorSpace_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetColorSpace", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SetColorSpace_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int sig);
+
+        internal static int SetColorSpace(IntPtr handle, int sig)
+        {
+            return SetColorSpace_Internal(handle, sig);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetPCS", CallingConvention = CallingConvention.StdCall)]
         private static extern int GetPCS_Internal(
                 IntPtr profile);
 
-        internal static int GetPCSSignature(IntPtr handle)
+        internal static int GetPCS(IntPtr handle)
         {
             return GetPCS_Internal(handle);
         }
 
-        internal static int GetPCS(IntPtr handle)
+        [DllImport(Liblcms, EntryPoint = "cmsSetPCS", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetPCS_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int pcs);
+
+        internal static void SetPCS(IntPtr handle, int pcs)
         {
-            return LCMSColorSpace_Internal(GetPCS_Internal(handle));
+            SetPCS_Internal(handle, pcs);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetProfileInfo", CallingConvention = CallingConvention.StdCall)]
@@ -411,6 +449,215 @@ namespace lcmsNET
             {
                 Marshal.FreeHGlobal(buffer);
             }
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsDetectBlackPoint", CallingConvention = CallingConvention.StdCall)]
+        private static extern int DetectBlackPoint_Internal(
+                ref CIEXYZ blackPoint,
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] int intent,
+                [MarshalAs(UnmanagedType.U4)] int flags);
+
+        internal static int DetectBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, int intent, int flags)
+        {
+            return DetectBlackPoint_Internal(ref blackPoint, handle, intent, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsDetectDestinationBlackPoint", CallingConvention = CallingConvention.StdCall)]
+        private static extern int DetectDestinationBlackPoint_Internal(
+                ref CIEXYZ blackPoint,
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] int intent,
+                [MarshalAs(UnmanagedType.U4)] int flags);
+
+        internal static int DetectDestinationBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, int intent, int flags)
+        {
+            return DetectDestinationBlackPoint_Internal(ref blackPoint, handle, intent, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsDetectTAC", CallingConvention = CallingConvention.StdCall)]
+        private static extern double DetectTAC_Internal(
+                IntPtr profile);
+
+        internal static double DetectTAC(IntPtr handle)
+        {
+            return DetectTAC_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetDeviceClass", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetDeviceClass_Internal(
+                IntPtr profile);
+
+        internal static int GetDeviceClass(IntPtr handle)
+        {
+            return GetDeviceClass_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetDeviceClass", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetDeviceClass_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int sig);
+
+        internal static void SetDeviceClass(IntPtr handle, int sig)
+        {
+            SetDeviceClass_Internal(handle, sig);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderCreationDateTime", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetHeaderCreationDateTime_Internal(
+                IntPtr profile,
+                ref Tm tm);
+
+        internal static int GetHeaderCreationDateTime(IntPtr handle, out DateTime dest)
+        {
+            Tm tm = new Tm();
+            int result = GetHeaderCreationDateTime_Internal(handle, ref tm);
+            if (result != 0)
+            {
+                dest = new DateTime(tm.year + 1900, tm.mon + 1, tm.mday, tm.hour, tm.min, tm.sec);
+            }
+            else
+            {
+                dest = DateTime.MinValue;
+            }
+            return result;
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderFlags", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetHeaderFlags_Internal(
+                IntPtr profile);
+
+        internal static uint GetHeaderFlags(IntPtr handle)
+        {
+            return GetHeaderFlags_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderFlags", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetHeaderFlags_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static void SetHeaderFlags(IntPtr handle, uint flags)
+        {
+            SetHeaderFlags_Internal(handle, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderManufacturer", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetHeaderManufacturer_Internal(
+                IntPtr profile);
+
+        internal static uint GetHeaderManufacturer(IntPtr handle)
+        {
+            return GetHeaderManufacturer_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderManufacturer", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetHeaderManufacturer_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static void SetHeaderManufacturer(IntPtr handle, uint flags)
+        {
+            SetHeaderManufacturer_Internal(handle, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderModel", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetHeaderModel_Internal(
+                IntPtr profile);
+
+        internal static uint GetHeaderModel(IntPtr handle)
+        {
+            return GetHeaderModel_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderModel", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetHeaderModel_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static void SetHeaderModel(IntPtr handle, uint flags)
+        {
+            SetHeaderModel_Internal(handle, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderAttributes", CallingConvention = CallingConvention.StdCall)]
+        private static extern void GetHeaderAttributes_Internal(
+                IntPtr profile,
+                ref ulong flags);
+
+        internal static ulong GetHeaderAttributes(IntPtr handle)
+        {
+            ulong flags = 0;
+            GetHeaderAttributes_Internal(handle, ref flags);
+            return flags;
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderAttributes", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetHeaderAttributes_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U8)] ulong flags);
+
+        internal static void SetHeaderAttributes(IntPtr handle, ulong flags)
+        {
+            SetHeaderAttributes_Internal(handle, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetProfileVersion", CallingConvention = CallingConvention.StdCall)]
+        private static extern double GetProfileVersion_Internal(
+                IntPtr profile);
+
+        internal static double GetProfileVersion(IntPtr handle)
+        {
+            return GetProfileVersion_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetProfileVersion", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetProfileVersion_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.R8)] double version);
+
+        internal static void SetProfileVersion(IntPtr handle, double version)
+        {
+            SetProfileVersion_Internal(handle, version);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetEncodedICCversion", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetEncodedICCVersion_Internal(
+                IntPtr profile);
+
+        internal static uint GetEncodedICCVersion(IntPtr handle)
+        {
+            return GetEncodedICCVersion_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetEncodedICCversion", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetEncodedICCVersion_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] uint version);
+
+        internal static void SetEncodedICCVersion(IntPtr handle, uint version)
+        {
+            SetEncodedICCVersion_Internal(handle, version);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIsMatrixShaper", CallingConvention = CallingConvention.StdCall)]
+        private static extern int IsMatrixShaper_Internal(
+                IntPtr profile);
+
+        internal static int IsMatrixShaper(IntPtr handle)
+        {
+            return IsMatrixShaper_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIsCLUT", CallingConvention = CallingConvention.StdCall)]
+        private static extern int IsCLUT_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] int intent,
+                [MarshalAs(UnmanagedType.U4)] int usedDirection);
+
+        internal static int IsCLUT(IntPtr handle, int intent, int usedDirection)
+        {
+            return IsCLUT_Internal(handle, intent, usedDirection);
         }
     }
 }

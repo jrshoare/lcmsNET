@@ -86,6 +86,90 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void Lab2LChTest()
+        {
+            // Arrange
+            CIELab lab = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+
+            // Act
+            CIELCh lch = Colorimetric.Lab2LCh(lab);
+
+            // Assert
+            Assert.AreEqual(100.0, lch.L);
+            Assert.AreEqual(0.0, lch.C);
+            Assert.AreEqual(0.0, lch.h);
+        }
+
+        [TestMethod()]
+        public void LCh2LabTest()
+        {
+            // Arrange
+            CIELCh lch = new CIELCh { L = 100.0, C = 0.0, h = 0.0 };
+
+            // Act
+            CIELab lab = Colorimetric.LCh2Lab(lch);
+
+            // Assert
+            Assert.AreEqual(100.0, lab.L);
+            Assert.AreEqual(0.0, lab.a);
+            Assert.AreEqual(0.0, lab.b);
+        }
+
+        [TestMethod()]
+        public void LabV4EncodingTest()
+        {
+            ushort[] inWLab = new ushort[3];
+            for (ushort u = 0; u < ushort.MaxValue; u++)
+            {
+                inWLab[0] = inWLab[1] = inWLab[2] = u;
+
+                CIELab lab = Colorimetric.LabEncoded2Float(inWLab);
+                ushort[] outWLab = Colorimetric.Float2LabEncoded(lab);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Assert.AreEqual(u, outWLab[i]);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void LabV2EncodingTest()
+        {
+            ushort[] inWLab = new ushort[3];
+            for (ushort u = 0; u < ushort.MaxValue; u++)
+            {
+                inWLab[0] = inWLab[1] = inWLab[2] = u;
+
+                CIELab lab = Colorimetric.LabEncoded2FloatV2(inWLab);
+                ushort[] outWLab = Colorimetric.Float2LabEncodedV2(lab);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Assert.AreEqual(u, outWLab[i]);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void XYZEncodingTest()
+        {
+            ushort[] inXyz = new ushort[3];
+            for (ushort u = 0; u < ushort.MaxValue; u++)
+            {
+                inXyz[0] = inXyz[1] = inXyz[2] = u;
+
+                CIEXYZ fxyz = Colorimetric.XYZEncoded2Float(inXyz);
+                ushort[] outXyz = Colorimetric.Float2XYZEncoded(fxyz);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Assert.AreEqual(u, outXyz[i]);
+                }
+            }
+        }
+
+        [TestMethod()]
         public void D50_XYZTest()
         {
             // Arrange

@@ -189,15 +189,97 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Feature detection
+        public bool DetectBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
+        {
+            return Interop.DetectBlackPoint(_handle, ref blackPoint, Convert.ToInt32(intent), Convert.ToInt32(flags)) != 0;
+        }
+
+        public bool DetectDestinationBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
+        {
+            return Interop.DetectDestinationBlackPoint(_handle, ref blackPoint, Convert.ToInt32(intent), Convert.ToInt32(flags)) != 0;
+        }
+        #endregion
+
+        #region Access profile header
+        public bool GetHeaderCreationDateTime(out DateTime dest)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetHeaderCreationDateTime(_handle, out dest) != 0;
+        }
+        #endregion
+
+        #region Info on profile implementation
+        public bool IsCLUT(Intent intent, UsedDirection direction)
+        {
+            EnsureNotDisposed();
+
+            return Interop.IsCLUT(_handle, Convert.ToInt32(intent), Convert.ToInt32(direction)) != 0;
+        }
+        #endregion
+
+        #region Properties
         public Context Context { get; private set; }
 
-        public ColorSpaceSignature ColorSpaceSignature => (ColorSpaceSignature)Interop.GetColorSpaceSignature(_handle);
+        public ColorSpaceSignature ColorSpace
+        {
+            get { return (ColorSpaceSignature)Interop.GetColorSpace(_handle); }
+            set { Interop.SetColorSpace(_handle, Convert.ToInt32(value)); }
+        }
 
-        public PixelType ColorSpace => Cms.ToPixelType(ColorSpaceSignature);
+        public ColorSpaceSignature PCS
+        {
+            get { return (ColorSpaceSignature)Interop.GetPCS(_handle); }
+            set { Interop.SetPCS(_handle, Convert.ToInt32(value)); }
+        }
 
-        public ColorSpaceSignature PCSSignature => (ColorSpaceSignature)Interop.GetPCSSignature(_handle);
+        public double TotalAreaCoverage => Interop.DetectTAC(_handle);
 
-        public PixelType PCS => Cms.ToPixelType(PCSSignature);
+        public ProfileClassSignature DeviceClass
+        {
+            get { return (ProfileClassSignature)Interop.GetDeviceClass(_handle); }
+            set { Interop.SetDeviceClass(_handle, (int)value); }
+        }
+
+        public uint HeaderFlags
+        {
+            get { return Interop.GetHeaderFlags(_handle); }
+            set { Interop.SetHeaderFlags(_handle, value); }
+        }
+
+        public uint HeaderManufacturer
+        {
+            get { return Interop.GetHeaderManufacturer(_handle); }
+            set { Interop.SetHeaderManufacturer(_handle, value); }
+        }
+
+        public uint HeaderModel
+        {
+            get { return Interop.GetHeaderModel(_handle); }
+            set { Interop.SetHeaderModel(_handle, value); }
+        }
+
+        public DeviceAttributes HeaderAttributes
+        {
+            get { return (DeviceAttributes)Interop.GetHeaderAttributes(_handle); }
+            set { Interop.SetHeaderAttributes(_handle, (ulong)value); }
+        }
+
+        public double Version
+        {
+            get { return Interop.GetProfileVersion(_handle); }
+            set { Interop.SetProfileVersion(_handle, value); }
+        }
+
+        public uint EncodedICCVersion
+        {
+            get { return Interop.GetEncodedICCVersion(_handle); }
+            set { Interop.SetEncodedICCVersion(_handle, value); }
+        }
+
+        public bool IsMatrixShaper => Interop.IsMatrixShaper(_handle) != 0;
+        #endregion
 
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;

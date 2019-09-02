@@ -40,5 +40,14 @@ namespace lcmsNET
         {
             return ICCColorSpace_Internal(lcmsColorSpaceSignature);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsChannelsOf", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint ChannelsOf_Internal(
+                [MarshalAs(UnmanagedType.U4)] int colorSpace);
+
+        internal static uint ChannelsOf(int colorSpace)
+        {
+            return ChannelsOf_Internal(colorSpace);
+        }
     }
 }

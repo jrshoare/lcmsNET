@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
@@ -86,6 +87,68 @@ namespace lcmsNET
         {
             CIEXYZ xyz = new CIEXYZ { };
             Interop.Lab2XYZ(whitePoint, ref xyz, lab);
+            return xyz;
+        }
+
+        public static CIELCh Lab2LCh(CIELab lab)
+        {
+            CIELCh lch = new CIELCh { };
+            Interop.Lab2LCh(ref lch, lab);
+            return lch;
+        }
+
+        public static CIELab LCh2Lab(CIELCh lch)
+        {
+            CIELab lab = new CIELab { };
+            Interop.LCh2Lab(ref lab, lch);
+            return lab;
+        }
+
+        public static CIELab LabEncoded2Float(ushort[] wLab)
+        {
+            if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
+
+            CIELab lab = new CIELab { };
+            Interop.LabEncoded2Float(ref lab, wLab);
+            return lab;
+        }
+
+        public static ushort[] Float2LabEncoded(CIELab lab)
+        {
+            ushort[] wLab = new ushort[3];
+            Interop.Float2LabEncoded(lab, ref wLab);
+            return wLab;
+        }
+
+        public static CIELab LabEncoded2FloatV2(ushort[] wLab)
+        {
+            if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
+
+            CIELab lab = new CIELab { };
+            Interop.LabEncoded2FloatV2(ref lab, wLab);
+            return lab;
+        }
+
+        public static ushort[] Float2LabEncodedV2(CIELab lab)
+        {
+            ushort[] wLab = new ushort[3];
+            Interop.Float2LabEncodedV2(lab, ref wLab);
+            return wLab;
+        }
+
+        public static CIEXYZ XYZEncoded2Float(ushort[] xyz)
+        {
+            if (xyz?.Length != 3) throw new ArgumentException($"'{nameof(xyz)}' array size must equal 3.");
+
+            CIEXYZ fxyz = new CIEXYZ { };
+            Interop.XYZEncoded2Float(ref fxyz, xyz);
+            return fxyz;
+        }
+
+        public static ushort[] Float2XYZEncoded(CIEXYZ fxyz)
+        {
+            ushort[] xyz = new ushort[3];
+            Interop.Float2XYZEncoded(fxyz, ref xyz);
             return xyz;
         }
 

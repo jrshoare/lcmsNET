@@ -346,13 +346,13 @@ namespace lcmsNET
     /// </summary>
     public enum ProfileClassSignature : int
     {
-        InputClass = 0x73636E72,  // 'scnr'
-        DisplayClass = 0x6D6E7472,  // 'mntr'
-        OutputClass = 0x70727472,  // 'prtr'
-        LinkClass = 0x6C696E6B,  // 'link'
-        AbstractClass = 0x61627374,  // 'abst'
-        ColorSpaceClass = 0x73706163,  // 'spac'
-        NamedColorClass = 0x6e6d636c   // 'nmcl'
+        Input = 0x73636E72,  // 'scnr'
+        Display = 0x6D6E7472,  // 'mntr'
+        Output = 0x70727472,  // 'prtr'
+        Link = 0x6C696E6B,  // 'link'
+        Abstract = 0x61627374,  // 'abst'
+        ColorSpace = 0x73706163,  // 'spac'
+        NamedColor = 0x6e6d636c   // 'nmcl'
     }
 
     /// <summary>
@@ -386,20 +386,6 @@ namespace lcmsNET
         MotionPictureFilmRecorder = 0x6D706672,  // 'mpfr'
         DigitalMotionPictureCamera = 0x646D7063,  // 'dmpc'
         DigitalCinemaProjector = 0x64636A70   // 'dcpj'
-    }
-
-    /// <summary>
-    /// Defines the ICC profile class.
-    /// </summary>
-    public enum ProfileSignature : int
-    {
-        InputClass = 0x73636E72,  // 'scnr'
-        DisplayClass = 0x6D6E7472,  // 'mntr'
-        OutputClass = 0x70727472,  // 'prtr'
-        LinkClass = 0x6C696E6B,  // 'link'
-        AbstractClass = 0x61627374,  // 'abst'
-        ColorSpaceClass = 0x73706163,  // 'spac'
-        NamedColorClass = 0x6e6d636c   // 'nmcl'
     }
 
     /// <summary>
@@ -466,6 +452,28 @@ namespace lcmsNET
         Copyright = 3
     }
 
+    /// <summary>
+    /// Defines the device attributes, correspond to the low 4 bytes of the 8 bytes attribute quantity.
+    /// </summary>
+    [Flags]
+    public enum DeviceAttributes : ulong
+    {
+        Reflective = 0,
+        Transparency = 1,
+        Glossy = 0,
+        Matte = 2
+    }
+
+    /// <summary>
+    /// Defines the directions used for a CLUT in a profile.
+    /// </summary>
+    public enum UsedDirection : int
+    {
+        AsInput = 0,
+        AsOutput = 1,
+        AsProof = 2
+    }
+
     public sealed class Cms
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();
@@ -475,15 +483,12 @@ namespace lcmsNET
             Interop.SetErrorHandler(handler);
         }
 
-        public static ColorSpaceSignature ToColorSpaceSignature(PixelType pixelType)
-        {
-            return (ColorSpaceSignature)Interop.GetICCColorSpace(Convert.ToInt32(pixelType));
-        }
+        public static ColorSpaceSignature ToColorSpaceSignature(PixelType pixelType) =>
+                (ColorSpaceSignature)Interop.GetICCColorSpace(Convert.ToInt32(pixelType));
 
-        public static PixelType ToPixelType(ColorSpaceSignature space)
-        {
-            return (PixelType)Interop.GetLCMSColorSpace(Convert.ToInt32(space));
-        }
+        public static PixelType ToPixelType(ColorSpaceSignature space) => (PixelType)Interop.GetLCMSColorSpace(Convert.ToInt32(space));
+
+        public static uint ChannelsOf(ColorSpaceSignature space) => Interop.ChannelsOf(Convert.ToInt32(space));
 
         #region Representations
         public static readonly int TYPE_GRAY_8

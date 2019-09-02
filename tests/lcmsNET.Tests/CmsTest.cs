@@ -286,5 +286,19 @@ namespace lcmsNET.Tests
             // Assert
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        public void ChannelsOfTest()
+        {
+            // Arrange
+            ColorSpaceSignature space = ColorSpaceSignature._11colorData;
+            uint expected = 11;
+
+            // Act
+            uint actual = Cms.ChannelsOf(space);
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }
