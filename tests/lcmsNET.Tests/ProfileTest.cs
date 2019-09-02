@@ -1253,5 +1253,232 @@ namespace lcmsNET.Tests
                 Assert.IsFalse(isCLUT);
             }
         }
+
+        [TestMethod()]
+        public void TagCountTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            int expected = 0;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                int actual = profile.TagCount;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void GetTagTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    for (int i = 0; i < profile.TagCount; i++)
+                    {
+                        TagSignature tag = profile.GetTag(Convert.ToUInt32(i));
+                        TestContext.WriteLine($"tag: 0x{tag:X}");
+                    }
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void HasTagTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    bool hasTag = profile.HasTag(TagSignature.MediaWhitePoint);
+                    Assert.IsTrue(hasTag);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTagTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr notExpected = IntPtr.Zero;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    IntPtr actual = profile.ReadTag(TagSignature.MediaWhitePoint);
+
+                    // Assert
+                    Assert.AreNotEqual(notExpected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void WriteTagTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr notExpected = IntPtr.Zero;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    IntPtr data = profile.ReadTag(TagSignature.MediaWhitePoint);
+
+                    // Act
+                    bool written = profile.WriteTag(TagSignature.MediaWhitePoint, data);
+
+                    // Assert
+                    Assert.IsTrue(written);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void LinkTagTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
+            {
+                // Act
+                bool linked = profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
+
+                // Assert
+                Assert.IsTrue(linked);
+            }
+        }
+
+        [TestMethod()]
+        public void TagLinkedToTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            TagSignature expected = TagSignature.AToB0;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
+            {
+                TagSignature tag = TagSignature.AToB1;
+                profile.LinkTag(tag, expected);
+
+                // Act
+                TagSignature actual = profile.TagLinkedTo(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderRenderingIntentGetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            Intent expected = Intent.Perceptual;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                Intent actual = profile.HeaderRenderingIntent;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderRenderingIntentSetTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            Intent expected = Intent.AbsoluteColorimetric;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                profile.HeaderRenderingIntent = expected;
+
+                // Assert
+                Intent actual = profile.HeaderRenderingIntent;
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void IsIntentSupportedTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.CreatePlaceholder(context))
+            {
+                // Act
+                bool supported = profile.IsIntentSupported(Intent.Perceptual, UsedDirection.AsInput);
+
+                // Assert
+                Assert.IsFalse(supported);
+            }
+        }
     }
 }

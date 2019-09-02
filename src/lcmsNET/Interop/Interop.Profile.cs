@@ -659,5 +659,106 @@ namespace lcmsNET
         {
             return IsCLUT_Internal(handle, intent, usedDirection);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetTagCount", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetTagCount_Internal(
+                IntPtr profile);
+
+        internal static int GetTagCount(IntPtr handle)
+        {
+            return GetTagCount_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetTagSignature", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetTagSignature_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] uint n);
+
+        internal static int GetTagSignature(IntPtr handle, uint n)
+        {
+            return GetTagSignature_Internal(handle, n);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIsTag", CallingConvention = CallingConvention.StdCall)]
+        private static extern int IsTag_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int n);
+
+        internal static int IsTag(IntPtr handle, int n)
+        {
+            return IsTag_Internal(handle, n);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsReadTag", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr ReadTag_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int tag);
+
+        internal static IntPtr ReadTag(IntPtr handle, int tag)
+        {
+            return ReadTag_Internal(handle, tag);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsWriteTag", CallingConvention = CallingConvention.StdCall)]
+        private static extern int WriteTag_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int tag,
+                IntPtr data);
+
+        internal static int WriteTag(IntPtr handle, int tag, IntPtr data)
+        {
+            return WriteTag_Internal(handle, tag, data);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsLinkTag", CallingConvention = CallingConvention.StdCall)]
+        private static extern int LinkTag_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int tag,
+                [MarshalAs(UnmanagedType.I4)] int dest);
+
+        internal static int LinkTag(IntPtr handle, int tag, int dest)
+        {
+            return LinkTag_Internal(handle, tag, dest);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsTagLinkedTo", CallingConvention = CallingConvention.StdCall)]
+        private static extern int TagLinkedTo_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.I4)] int tag);
+
+        internal static int TagLinkedTo(IntPtr handle, int tag)
+        {
+            return TagLinkedTo_Internal(handle, tag);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderRenderingIntent", CallingConvention = CallingConvention.StdCall)]
+        private static extern int GetHeaderRenderingIntent_Internal(
+                IntPtr profile);
+
+        internal static int GetHeaderRenderingIntent(IntPtr handle)
+        {
+            return GetHeaderRenderingIntent_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderRenderingIntent", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SetHeaderRenderingIntent_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] int intent);
+
+        internal static int SetHeaderRenderingIntent(IntPtr handle, int intent)
+        {
+            return SetHeaderRenderingIntent_Internal(handle, intent);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIsIntentSupported", CallingConvention = CallingConvention.StdCall)]
+        private static extern int IsIntentSupported_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)] int intent,
+                [MarshalAs(UnmanagedType.U4)] int usedDirection);
+
+        internal static int IsIntentSupported(IntPtr handle, int intent, int usedDirection)
+        {
+            return IsIntentSupported_Internal(handle, intent, usedDirection);
+        }
     }
 }

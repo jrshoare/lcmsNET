@@ -219,6 +219,59 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Access tags
+        public TagSignature GetTag(uint n)
+        {
+            EnsureNotDisposed();
+
+            return (TagSignature)Interop.GetTagSignature(_handle, n);
+        }
+
+        public bool HasTag(TagSignature tag)
+        {
+            EnsureNotDisposed();
+
+            return Interop.IsTag(_handle, Convert.ToInt32(tag)) != 0;
+        }
+
+        public IntPtr ReadTag(TagSignature tag)
+        {
+            EnsureNotDisposed();
+
+            return Interop.ReadTag(_handle, Convert.ToInt32(tag));
+        }
+
+        public bool WriteTag(TagSignature tag, IntPtr data)
+        {
+            EnsureNotDisposed();
+
+            return Interop.WriteTag(_handle, Convert.ToInt32(tag), data) != 0;
+        }
+
+        public bool LinkTag(TagSignature tag, TagSignature dest)
+        {
+            EnsureNotDisposed();
+
+            return Interop.LinkTag(_handle, Convert.ToInt32(tag), Convert.ToInt32(dest)) != 0;
+        }
+
+        public TagSignature TagLinkedTo(TagSignature tag)
+        {
+            EnsureNotDisposed();
+
+            return (TagSignature)Interop.TagLinkedTo(_handle, Convert.ToInt32(tag));
+        }
+        #endregion
+
+        #region Intents
+        public bool IsIntentSupported(Intent intent, UsedDirection usedDirection)
+        {
+            EnsureNotDisposed();
+
+            return Interop.IsIntentSupported(_handle, Convert.ToInt32(intent), Convert.ToInt32(usedDirection)) != 0;
+        }
+        #endregion
+
         #region Properties
         public Context Context { get; private set; }
 
@@ -279,6 +332,14 @@ namespace lcmsNET
         }
 
         public bool IsMatrixShaper => Interop.IsMatrixShaper(_handle) != 0;
+
+        public int TagCount => Interop.GetTagCount(_handle);
+
+        public Intent HeaderRenderingIntent
+        {
+            get { return (Intent)Interop.GetHeaderRenderingIntent(_handle); }
+            set { Interop.SetHeaderRenderingIntent(_handle, Convert.ToInt32(value)); }
+        }
         #endregion
 
         #region IDisposable Support
