@@ -332,5 +332,32 @@ namespace lcmsNET.Tests
             double actual = Cms.AdaptationState;
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod()]
+        public void WhitePointFromTempTest()
+        {
+            // Arrange
+            double tempK = 6504;
+
+            // Act
+            bool success = Cms.WhitePointFromTemp(out CIExyY xyY, tempK);
+
+            // Assert
+            Assert.IsTrue(success);
+        }
+
+        [TestMethod()]
+        public void TempFromWhitePointTest()
+        {
+            // Arrange
+            double expected = 6504;
+            Cms.WhitePointFromTemp(out CIExyY xyY, expected);
+
+            // Act
+            bool success = Cms.TempFromWhitePoint(out double actual, xyY);
+
+            // Assert
+            Assert.IsTrue(success);
+        }
     }
 }

@@ -490,6 +490,18 @@ namespace lcmsNET
 
         public static uint ChannelsOf(ColorSpaceSignature space) => Interop.ChannelsOf(Convert.ToUInt32(space));
 
+        public static bool WhitePointFromTemp(out CIExyY xyY, double tempK)
+        {
+            xyY = new CIExyY { };
+            return Interop.WhitePointFromTemp(ref xyY, tempK) != 0;
+        }
+
+        public static bool TempFromWhitePoint(out double tempK, CIExyY xyY)
+        {
+            tempK = 0.0;
+            return Interop.TempFromWhitePoint(ref tempK, xyY) != 0;
+        }
+
         public static ushort[] AlarmCodes
         {
             get
