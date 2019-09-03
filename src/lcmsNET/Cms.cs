@@ -9,7 +9,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the intents.
     /// </summary>
-    public enum Intent : int
+    public enum Intent : uint
     {
         #region ICC intents
         Perceptual = 0,
@@ -36,7 +36,7 @@ namespace lcmsNET
     /// logically ORed with (((n) & 0xFF) &lt;&lt; 16).
     /// </remarks>
     [Flags]
-    public enum CmsFlags : int
+    public enum CmsFlags : uint
     {
         #region General
         /// <summary>
@@ -136,7 +136,7 @@ namespace lcmsNET
     /// Defines the pixel types.
     /// </summary>
     [Flags]
-    public enum PixelType : int
+    public enum PixelType : uint
     {
         Any = 0,    // Don't check colorspace
                     // Enumeration values 1 & 2 are reserved
@@ -173,7 +173,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the base ICC tag definitions.
     /// </summary>
-    public enum TagSignature : int
+    public enum TagSignature : uint
     {
         AToB0 = 0x41324230,  // 'A2B0'
         AToB1 = 0x41324231,  // 'A2B1'
@@ -251,7 +251,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the base ICC type definitions.
     /// </summary>
-    public enum TagTypeSignature : int
+    public enum TagTypeSignature : uint
     {
         Chromaticity = 0x6368726D,  // 'chrm'
         ColorantOrder = 0x636C726F,  // 'clro'
@@ -294,7 +294,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the ICC color spaces.
     /// </summary>
-    public enum ColorSpaceSignature : int
+    public enum ColorSpaceSignature : uint
     {
         XYZData = 0x58595A20,  // 'XYZ '
         LabData = 0x4C616220,  // 'Lab '
@@ -344,7 +344,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the ICC profile class.
     /// </summary>
-    public enum ProfileClassSignature : int
+    public enum ProfileClassSignature : uint
     {
         Input = 0x73636E72,  // 'scnr'
         Display = 0x6D6E7472,  // 'mntr'
@@ -358,7 +358,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the ICC technology tag.
     /// </summary>
-    public enum TechnologySignature : int
+    public enum TechnologySignature : uint
     {
         DigitalCamera = 0x6463616D,  // 'dcam'
         FilmScanner = 0x6673636E,  // 'fscn'
@@ -391,7 +391,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the ICC platforms.
     /// </summary>
-    public enum PlatformSignature : int
+    public enum PlatformSignature : uint
     {
         Macintosh = 0x4150504C,  // 'APPL'
         Microsoft = 0x4D534654,  // 'MSFT'
@@ -404,7 +404,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the multi process element types.
     /// </summary>
-    public enum StageSignature : int
+    public enum StageSignature : uint
     {
         CurveSetElemType = 0x63767374,  //'cvst'
         MatrixElemType = 0x6D617466,  //'matf'
@@ -434,7 +434,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the types of curve elements.
     /// </summary>
-    public enum CurveSegSignature : int
+    public enum CurveSegSignature : uint
     {
         FormulaCurveSeg = 0x70617266, // 'parf'
         SampledCurveSeg = 0x73616D66, // 'samf'
@@ -444,7 +444,7 @@ namespace lcmsNET
     /// <summary>
     /// Localized information.
     /// </summary>
-    public enum InfoType : int
+    public enum InfoType : uint
     {
         Description = 0,
         Manufacturer = 1,
@@ -467,7 +467,7 @@ namespace lcmsNET
     /// <summary>
     /// Defines the directions used for a CLUT in a profile.
     /// </summary>
-    public enum UsedDirection : int
+    public enum UsedDirection : uint
     {
         AsInput = 0,
         AsOutput = 1,
@@ -484,11 +484,11 @@ namespace lcmsNET
         }
 
         public static ColorSpaceSignature ToColorSpaceSignature(PixelType pixelType) =>
-                (ColorSpaceSignature)Interop.GetICCColorSpace(Convert.ToInt32(pixelType));
+                (ColorSpaceSignature)Interop.GetICCColorSpace(Convert.ToUInt32(pixelType));
 
-        public static PixelType ToPixelType(ColorSpaceSignature space) => (PixelType)Interop.GetLCMSColorSpace(Convert.ToInt32(space));
+        public static PixelType ToPixelType(ColorSpaceSignature space) => (PixelType)Interop.GetLCMSColorSpace(Convert.ToUInt32(space));
 
-        public static uint ChannelsOf(ColorSpaceSignature space) => Interop.ChannelsOf(Convert.ToInt32(space));
+        public static uint ChannelsOf(ColorSpaceSignature space) => Interop.ChannelsOf(Convert.ToUInt32(space));
 
         public static ushort[] AlarmCodes
         {
@@ -519,380 +519,380 @@ namespace lcmsNET
         }
 
         #region Representations
-        public static readonly int TYPE_GRAY_8
+        public static readonly uint TYPE_GRAY_8
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(1);
-        public static readonly int TYPE_GRAY_8_REV
+        public static readonly uint TYPE_GRAY_8_REV
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(1)|FLAVOR_SH(1);
-        public static readonly int TYPE_GRAY_16
+        public static readonly uint TYPE_GRAY_16
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(2);
-        public static readonly int TYPE_GRAY_16_REV
+        public static readonly uint TYPE_GRAY_16_REV
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(2)|FLAVOR_SH(1);
-        public static readonly int TYPE_GRAY_16_SE
+        public static readonly uint TYPE_GRAY_16_SE
                 = COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_GRAYA_8
+        public static readonly uint TYPE_GRAYA_8
                 = COLORSPACE_SH(PixelType.Gray)|EXTRA_SH(1)|CHANNELS_SH(1)|BYTES_SH(1);
-        public static readonly int TYPE_GRAYA_16
+        public static readonly uint TYPE_GRAYA_16
                 = COLORSPACE_SH(PixelType.Gray)|EXTRA_SH(1)|CHANNELS_SH(1)|BYTES_SH(2);
-        public static readonly int TYPE_GRAYA_16_SE
+        public static readonly uint TYPE_GRAYA_16_SE
                 = COLORSPACE_SH(PixelType.Gray)|EXTRA_SH(1)|CHANNELS_SH(1)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_GRAYA_8_PLANAR
+        public static readonly uint TYPE_GRAYA_8_PLANAR
                 = COLORSPACE_SH(PixelType.Gray)|EXTRA_SH(1)|CHANNELS_SH(1)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_GRAYA_16_PLANAR
+        public static readonly uint TYPE_GRAYA_16_PLANAR
                 = COLORSPACE_SH(PixelType.Gray)|EXTRA_SH(1)|CHANNELS_SH(1)|BYTES_SH(2)|PLANAR_SH(1);
 
-        public static readonly int TYPE_RGB_8
+        public static readonly uint TYPE_RGB_8
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(1);
-        public static readonly int TYPE_RGB_8_PLANAR
+        public static readonly uint TYPE_RGB_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_BGR_8
+        public static readonly uint TYPE_BGR_8
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_BGR_8_PLANAR
+        public static readonly uint TYPE_BGR_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_RGB_16
+        public static readonly uint TYPE_RGB_16
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_RGB_16_PLANAR
+        public static readonly uint TYPE_RGB_16_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_RGB_16_SE
+        public static readonly uint TYPE_RGB_16_SE
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_BGR_16
+        public static readonly uint TYPE_BGR_16
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_BGR_16_PLANAR
+        public static readonly uint TYPE_BGR_16_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_BGR_16_SE
+        public static readonly uint TYPE_BGR_16_SE
                 = COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_RGBA_8
+        public static readonly uint TYPE_RGBA_8
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1);
-        public static readonly int TYPE_RGBA_8_PLANAR
+        public static readonly uint TYPE_RGBA_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_RGBA_16
+        public static readonly uint TYPE_RGBA_16
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_RGBA_16_PLANAR
+        public static readonly uint TYPE_RGBA_16_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_RGBA_16_SE
+        public static readonly uint TYPE_RGBA_16_SE
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_ARGB_8
+        public static readonly uint TYPE_ARGB_8
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_ARGB_8_PLANAR
+        public static readonly uint TYPE_ARGB_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|SWAPFIRST_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_ARGB_16
+        public static readonly uint TYPE_ARGB_16
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|SWAPFIRST_SH(1);
 
-        public static readonly int TYPE_ABGR_8
+        public static readonly uint TYPE_ABGR_8
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_ABGR_8_PLANAR
+        public static readonly uint TYPE_ABGR_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_ABGR_16
+        public static readonly uint TYPE_ABGR_16
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_ABGR_16_PLANAR
+        public static readonly uint TYPE_ABGR_16_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_ABGR_16_SE
+        public static readonly uint TYPE_ABGR_16_SE
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_BGRA_8
+        public static readonly uint TYPE_BGRA_8
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_BGRA_8_PLANAR
+        public static readonly uint TYPE_BGRA_8_PLANAR
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(1)|DOSWAP_SH(1)|SWAPFIRST_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_BGRA_16
+        public static readonly uint TYPE_BGRA_16
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_BGRA_16_SE
+        public static readonly uint TYPE_BGRA_16_SE
                 = COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|SWAPFIRST_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMY_8
+        public static readonly uint TYPE_CMY_8
                 = COLORSPACE_SH(PixelType.CMY)|CHANNELS_SH(3)|BYTES_SH(1);
-        public static readonly int TYPE_CMY_8_PLANAR
+        public static readonly uint TYPE_CMY_8_PLANAR
                 = COLORSPACE_SH(PixelType.CMY)|CHANNELS_SH(3)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_CMY_16
+        public static readonly uint TYPE_CMY_16
                 = COLORSPACE_SH(PixelType.CMY)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_CMY_16_PLANAR
+        public static readonly uint TYPE_CMY_16_PLANAR
                 = COLORSPACE_SH(PixelType.CMY)|CHANNELS_SH(3)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_CMY_16_SE
+        public static readonly uint TYPE_CMY_16_SE
                 = COLORSPACE_SH(PixelType.CMY)|CHANNELS_SH(3)|BYTES_SH(2)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK_8
+        public static readonly uint TYPE_CMYK_8
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1);
-        public static readonly int TYPE_CMYKA_8
+        public static readonly uint TYPE_CMYKA_8
                 = COLORSPACE_SH(PixelType.CMYK)|EXTRA_SH(1)|CHANNELS_SH(4)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK_8_REV
+        public static readonly uint TYPE_CMYK_8_REV
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1)|FLAVOR_SH(1);
-        public static readonly int TYPE_YUVK_8
+        public static readonly uint TYPE_YUVK_8
                 = TYPE_CMYK_8_REV;
-        public static readonly int TYPE_CMYK_8_PLANAR
+        public static readonly uint TYPE_CMYK_8_PLANAR
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_CMYK_16
+        public static readonly uint TYPE_CMYK_16
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK_16_REV
+        public static readonly uint TYPE_CMYK_16_REV
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|FLAVOR_SH(1);
-        public static readonly int TYPE_YUVK_16
+        public static readonly uint TYPE_YUVK_16
                 = TYPE_CMYK_16_REV;
-        public static readonly int TYPE_CMYK_16_PLANAR
+        public static readonly uint TYPE_CMYK_16_PLANAR
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_CMYK_16_SE
+        public static readonly uint TYPE_CMYK_16_SE
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_KYMC_8
+        public static readonly uint TYPE_KYMC_8
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC_16
+        public static readonly uint TYPE_KYMC_16
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC_16_SE
+        public static readonly uint TYPE_KYMC_16_SE
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_KCMY_8
+        public static readonly uint TYPE_KCMY_8
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_KCMY_8_REV
+        public static readonly uint TYPE_KCMY_8_REV
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(1)|FLAVOR_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_KCMY_16
+        public static readonly uint TYPE_KCMY_16
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_KCMY_16_REV
+        public static readonly uint TYPE_KCMY_16_REV
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|FLAVOR_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_KCMY_16_SE
+        public static readonly uint TYPE_KCMY_16_SE
                 = COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2)|ENDIAN16_SH(1)|SWAPFIRST_SH(1);
 
-        public static readonly int TYPE_CMYK5_8
+        public static readonly uint TYPE_CMYK5_8
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK5_16
+        public static readonly uint TYPE_CMYK5_16
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK5_16_SE
+        public static readonly uint TYPE_CMYK5_16_SE
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC5_8
+        public static readonly uint TYPE_KYMC5_8
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC5_16
+        public static readonly uint TYPE_KYMC5_16
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC5_16_SE
+        public static readonly uint TYPE_KYMC5_16_SE
                 = COLORSPACE_SH(PixelType.MCH5)|CHANNELS_SH(5)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK6_8
+        public static readonly uint TYPE_CMYK6_8
                 = COLORSPACE_SH(PixelType.MCH6)|CHANNELS_SH(6)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK6_8_PLANAR
+        public static readonly uint TYPE_CMYK6_8_PLANAR
                 = COLORSPACE_SH(PixelType.MCH6)|CHANNELS_SH(6)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_CMYK6_16
+        public static readonly uint TYPE_CMYK6_16
                 = COLORSPACE_SH(PixelType.MCH6)|CHANNELS_SH(6)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK6_16_PLANAR
+        public static readonly uint TYPE_CMYK6_16_PLANAR
                 = COLORSPACE_SH(PixelType.MCH6)|CHANNELS_SH(6)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_CMYK6_16_SE
+        public static readonly uint TYPE_CMYK6_16_SE
                 = COLORSPACE_SH(PixelType.MCH6)|CHANNELS_SH(6)|BYTES_SH(2)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK7_8
+        public static readonly uint TYPE_CMYK7_8
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK7_16
+        public static readonly uint TYPE_CMYK7_16
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK7_16_SE
+        public static readonly uint TYPE_CMYK7_16_SE
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC7_8
+        public static readonly uint TYPE_KYMC7_8
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC7_16
+        public static readonly uint TYPE_KYMC7_16
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC7_16_SE
+        public static readonly uint TYPE_KYMC7_16_SE
                 = COLORSPACE_SH(PixelType.MCH7)|CHANNELS_SH(7)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK8_8
+        public static readonly uint TYPE_CMYK8_8
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK8_16
+        public static readonly uint TYPE_CMYK8_16
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK8_16_SE
+        public static readonly uint TYPE_CMYK8_16_SE
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC8_8
+        public static readonly uint TYPE_KYMC8_8
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC8_16
+        public static readonly uint TYPE_KYMC8_16
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC8_16_SE
+        public static readonly uint TYPE_KYMC8_16_SE
                 = COLORSPACE_SH(PixelType.MCH8)|CHANNELS_SH(8)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK9_8
+        public static readonly uint TYPE_CMYK9_8
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK9_16
+        public static readonly uint TYPE_CMYK9_16
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK9_16_SE
+        public static readonly uint TYPE_CMYK9_16_SE
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC9_8
+        public static readonly uint TYPE_KYMC9_8
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC9_16
+        public static readonly uint TYPE_KYMC9_16
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC9_16_SE
+        public static readonly uint TYPE_KYMC9_16_SE
                 = COLORSPACE_SH(PixelType.MCH9)|CHANNELS_SH(9)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK10_8
+        public static readonly uint TYPE_CMYK10_8
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK10_16
+        public static readonly uint TYPE_CMYK10_16
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK10_16_SE
+        public static readonly uint TYPE_CMYK10_16_SE
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC10_8
+        public static readonly uint TYPE_KYMC10_8
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC10_16
+        public static readonly uint TYPE_KYMC10_16
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC10_16_SE
+        public static readonly uint TYPE_KYMC10_16_SE
                 = COLORSPACE_SH(PixelType.MCH10)|CHANNELS_SH(10)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK11_8
+        public static readonly uint TYPE_CMYK11_8
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK11_16
+        public static readonly uint TYPE_CMYK11_16
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK11_16_SE
+        public static readonly uint TYPE_CMYK11_16_SE
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC11_8
+        public static readonly uint TYPE_KYMC11_8
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC11_16
+        public static readonly uint TYPE_KYMC11_16
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC11_16_SE
+        public static readonly uint TYPE_KYMC11_16_SE
                 = COLORSPACE_SH(PixelType.MCH11)|CHANNELS_SH(11)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
-        public static readonly int TYPE_CMYK12_8
+        public static readonly uint TYPE_CMYK12_8
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(1);
-        public static readonly int TYPE_CMYK12_16
+        public static readonly uint TYPE_CMYK12_16
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK12_16_SE
+        public static readonly uint TYPE_CMYK12_16_SE
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(2)|ENDIAN16_SH(1);
-        public static readonly int TYPE_KYMC12_8
+        public static readonly uint TYPE_KYMC12_8
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(1)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC12_16
+        public static readonly uint TYPE_KYMC12_16
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_KYMC12_16_SE
+        public static readonly uint TYPE_KYMC12_16_SE
                 = COLORSPACE_SH(PixelType.MCH12)|CHANNELS_SH(12)|BYTES_SH(2)|DOSWAP_SH(1)|ENDIAN16_SH(1);
 
         // Colorimetric
-        public static readonly int TYPE_XYZ_16
+        public static readonly uint TYPE_XYZ_16
                 = COLORSPACE_SH(PixelType.XYZ)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_Lab_8
+        public static readonly uint TYPE_Lab_8
                 = COLORSPACE_SH(PixelType.Lab)|CHANNELS_SH(3)|BYTES_SH(1);
-        public static readonly int TYPE_LabV2_8
+        public static readonly uint TYPE_LabV2_8
                 = COLORSPACE_SH(PixelType.LabV2)|CHANNELS_SH(3)|BYTES_SH(1);
 
-        public static readonly int TYPE_ALab_8
+        public static readonly uint TYPE_ALab_8
                 = COLORSPACE_SH(PixelType.Lab)|CHANNELS_SH(3)|BYTES_SH(1)|EXTRA_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_ALabV2_8
+        public static readonly uint TYPE_ALabV2_8
                 = COLORSPACE_SH(PixelType.LabV2)|CHANNELS_SH(3)|BYTES_SH(1)|EXTRA_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_Lab_16
+        public static readonly uint TYPE_Lab_16
                 = COLORSPACE_SH(PixelType.Lab)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_LabV2_16
+        public static readonly uint TYPE_LabV2_16
                 = COLORSPACE_SH(PixelType.LabV2)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_Yxy_16
+        public static readonly uint TYPE_Yxy_16
                 = COLORSPACE_SH(PixelType.Yxy)|CHANNELS_SH(3)|BYTES_SH(2);
 
         // YCbCr
-        public static readonly int TYPE_YCbCr_8
+        public static readonly uint TYPE_YCbCr_8
                 = COLORSPACE_SH(PixelType.YCbCr)|CHANNELS_SH(3)|BYTES_SH(1);
-        public static readonly int TYPE_YCbCr_8_PLANAR
+        public static readonly uint TYPE_YCbCr_8_PLANAR
                 = COLORSPACE_SH(PixelType.YCbCr)|CHANNELS_SH(3)|BYTES_SH(1)|PLANAR_SH(1);
-        public static readonly int TYPE_YCbCr_16
+        public static readonly uint TYPE_YCbCr_16
                 = COLORSPACE_SH(PixelType.YCbCr)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_YCbCr_16_PLANAR
+        public static readonly uint TYPE_YCbCr_16_PLANAR
                 = COLORSPACE_SH(PixelType.YCbCr)|CHANNELS_SH(3)|BYTES_SH(2)|PLANAR_SH(1);
-        public static readonly int TYPE_YCbCr_16_SE
+        public static readonly uint TYPE_YCbCr_16_SE
                 = COLORSPACE_SH(PixelType.YCbCr)|CHANNELS_SH(3)|BYTES_SH(2)|ENDIAN16_SH(1);
 
         // YUV
-        public static readonly int TYPE_YUV_8
+        public static readonly uint TYPE_YUV_8
                 = COLORSPACE_SH(PixelType.YUV) | CHANNELS_SH(3) | BYTES_SH(1);
-        public static readonly int TYPE_YUV_8_PLANAR
+        public static readonly uint TYPE_YUV_8_PLANAR
                 = COLORSPACE_SH(PixelType.YUV) | CHANNELS_SH(3) | BYTES_SH(1) | PLANAR_SH(1);
-        public static readonly int TYPE_YUV_16
+        public static readonly uint TYPE_YUV_16
                 = COLORSPACE_SH(PixelType.YUV) | CHANNELS_SH(3) | BYTES_SH(2);
-        public static readonly int TYPE_YUV_16_PLANAR
+        public static readonly uint TYPE_YUV_16_PLANAR
                 = COLORSPACE_SH(PixelType.YUV) | CHANNELS_SH(3) | BYTES_SH(2) | PLANAR_SH(1);
-        public static readonly int TYPE_YUV_16_SE
+        public static readonly uint TYPE_YUV_16_SE
                 = COLORSPACE_SH(PixelType.YUV) | CHANNELS_SH(3) | BYTES_SH(2) | ENDIAN16_SH(1);
 
         // HLS
-        public static readonly int TYPE_HLS_8
+        public static readonly uint TYPE_HLS_8
                 = COLORSPACE_SH(PixelType.HLS) | CHANNELS_SH(3) | BYTES_SH(1);
-        public static readonly int TYPE_HLS_8_PLANAR
+        public static readonly uint TYPE_HLS_8_PLANAR
                 = COLORSPACE_SH(PixelType.HLS) | CHANNELS_SH(3) | BYTES_SH(1) | PLANAR_SH(1);
-        public static readonly int TYPE_HLS_16
+        public static readonly uint TYPE_HLS_16
                 = COLORSPACE_SH(PixelType.HLS) | CHANNELS_SH(3) | BYTES_SH(2);
-        public static readonly int TYPE_HLS_16_PLANAR
+        public static readonly uint TYPE_HLS_16_PLANAR
                 = COLORSPACE_SH(PixelType.HLS) | CHANNELS_SH(3) | BYTES_SH(2) | PLANAR_SH(1);
-        public static readonly int TYPE_HLS_16_SE
+        public static readonly uint TYPE_HLS_16_SE
                 = COLORSPACE_SH(PixelType.HLS) | CHANNELS_SH(3) | BYTES_SH(2) | ENDIAN16_SH(1);
 
         // HSV
-        public static readonly int TYPE_HSV_8
+        public static readonly uint TYPE_HSV_8
                 = COLORSPACE_SH(PixelType.HSV) | CHANNELS_SH(3) | BYTES_SH(1);
-        public static readonly int TYPE_HSV_8_PLANAR
+        public static readonly uint TYPE_HSV_8_PLANAR
                 = COLORSPACE_SH(PixelType.HSV) | CHANNELS_SH(3) | BYTES_SH(1) | PLANAR_SH(1);
-        public static readonly int TYPE_HSV_16
+        public static readonly uint TYPE_HSV_16
                 = COLORSPACE_SH(PixelType.HSV) | CHANNELS_SH(3) | BYTES_SH(2);
-        public static readonly int TYPE_HSV_16_PLANAR
+        public static readonly uint TYPE_HSV_16_PLANAR
                 = COLORSPACE_SH(PixelType.HSV) | CHANNELS_SH(3) | BYTES_SH(2) | PLANAR_SH(1);
-        public static readonly int TYPE_HSV_16_SE
+        public static readonly uint TYPE_HSV_16_SE
                 = COLORSPACE_SH(PixelType.HSV) | CHANNELS_SH(3) | BYTES_SH(2) | ENDIAN16_SH(1);
 
         // Named color index. Only 16 bits allowed (don't check colorspace)
-        public static readonly int TYPE_NAMED_COLOR_INDEX
+        public static readonly uint TYPE_NAMED_COLOR_INDEX
                 = CHANNELS_SH(1)|BYTES_SH(2);
 
         // Floating point formatters
-        public static readonly int TYPE_XYZ_FLT
+        public static readonly uint TYPE_XYZ_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.XYZ)|CHANNELS_SH(3)|BYTES_SH(4);
-        public static readonly int TYPE_Lab_FLT
+        public static readonly uint TYPE_Lab_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Lab)|CHANNELS_SH(3)|BYTES_SH(4);
-        public static readonly int TYPE_LabA_FLT
+        public static readonly uint TYPE_LabA_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Lab)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(4);
-        public static readonly int TYPE_GRAY_FLT
+        public static readonly uint TYPE_GRAY_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(4);
-        public static readonly int TYPE_RGB_FLT
+        public static readonly uint TYPE_RGB_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(4);
 
-        public static readonly int TYPE_RGBA_FLT
+        public static readonly uint TYPE_RGBA_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(4);
-        public static readonly int TYPE_ARGB_FLT
+        public static readonly uint TYPE_ARGB_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(4)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_BGR_FLT
+        public static readonly uint TYPE_BGR_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(4)|DOSWAP_SH(1);
-        public static readonly int TYPE_BGRA_FLT
+        public static readonly uint TYPE_BGRA_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(4)|DOSWAP_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_ABGR_FLT
+        public static readonly uint TYPE_ABGR_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(4)|DOSWAP_SH(1);
 
-        public static readonly int TYPE_CMYK_FLT
+        public static readonly uint TYPE_CMYK_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(4);
 
         // Double precision floating point formatters
         // NOTE: The 'bytes' field is set to zero to avoid overflowing the bitfield
-        public static readonly int TYPE_XYZ_DBL
+        public static readonly uint TYPE_XYZ_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.XYZ)|CHANNELS_SH(3)|BYTES_SH(0);
-        public static readonly int TYPE_Lab_DBL
+        public static readonly uint TYPE_Lab_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Lab)|CHANNELS_SH(3)|BYTES_SH(0);
-        public static readonly int TYPE_GRAY_DBL
+        public static readonly uint TYPE_GRAY_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(0);
-        public static readonly int TYPE_RGB_DBL
+        public static readonly uint TYPE_RGB_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(0);
-        public static readonly int TYPE_BGR_DBL
+        public static readonly uint TYPE_BGR_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(0)|DOSWAP_SH(1);
-        public static readonly int TYPE_CMYK_DBL
+        public static readonly uint TYPE_CMYK_DBL
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(0);
 
         // IEEE 754-2008 "half"
-        public static readonly int TYPE_GRAY_HALF_FLT
+        public static readonly uint TYPE_GRAY_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.Gray)|CHANNELS_SH(1)|BYTES_SH(2);
-        public static readonly int TYPE_RGB_HALF_FLT
+        public static readonly uint TYPE_RGB_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_RGBA_HALF_FLT
+        public static readonly uint TYPE_RGBA_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2);
-        public static readonly int TYPE_CMYK_HALF_FLT
+        public static readonly uint TYPE_CMYK_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.CMYK)|CHANNELS_SH(4)|BYTES_SH(2);
 
-        public static readonly int TYPE_ARGB_HALF_FLT
+        public static readonly uint TYPE_ARGB_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_BGR_HALF_FLT
+        public static readonly uint TYPE_BGR_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
-        public static readonly int TYPE_BGRA_HALF_FLT
+        public static readonly uint TYPE_BGRA_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1)|SWAPFIRST_SH(1);
-        public static readonly int TYPE_ABGR_HALF_FLT
+        public static readonly uint TYPE_ABGR_HALF_FLT
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
         #endregion
 
-        private static int FLOAT_SH(int s) { return s << 22; }
-        private static int OPTIMIZED_SH(int s) { return s << 21; }
-        private static int COLORSPACE_SH(PixelType s) { return Convert.ToInt32(s) << 16; }
-        private static int SWAPFIRST_SH(int s) { return s << 14; }
-        private static int FLAVOR_SH(int s) { return s << 13; }
-        private static int PLANAR_SH(int s) { return s << 12; }
-        private static int ENDIAN16_SH(int s) { return s << 11; }
-        private static int DOSWAP_SH(int s) { return s << 10; }
-        private static int EXTRA_SH(int s) { return s << 7; }
-        private static int CHANNELS_SH(int s) { return s << 3; }
-        private static int BYTES_SH(int s) { return s; }
+        private static uint FLOAT_SH(uint s) { return s << 22; }
+        private static uint OPTIMIZED_SH(uint s) { return s << 21; }
+        private static uint COLORSPACE_SH(PixelType s) { return Convert.ToUInt32(s) << 16; }
+        private static uint SWAPFIRST_SH(uint s) { return s << 14; }
+        private static uint FLAVOR_SH(uint s) { return s << 13; }
+        private static uint PLANAR_SH(uint s) { return s << 12; }
+        private static uint ENDIAN16_SH(uint s) { return s << 11; }
+        private static uint DOSWAP_SH(uint s) { return s << 10; }
+        private static uint EXTRA_SH(uint s) { return s << 7; }
+        private static uint CHANNELS_SH(uint s) { return s << 3; }
+        private static uint BYTES_SH(uint s) { return s; }
     }
 }

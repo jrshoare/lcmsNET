@@ -25,27 +25,27 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "_cmsLCMScolorSpace", CallingConvention = CallingConvention.StdCall)]
         private static extern int LCMSColorSpace_Internal(
-                [MarshalAs(UnmanagedType.U4)] int iccColorSpaceSignature);
+                [MarshalAs(UnmanagedType.U4)] uint iccColorSpaceSignature);
 
-        internal static int GetLCMSColorSpace(int iccColorSpaceSignature)
+        internal static int GetLCMSColorSpace(uint iccColorSpaceSignature)
         {
             return LCMSColorSpace_Internal(iccColorSpaceSignature);
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsICCcolorSpace", CallingConvention = CallingConvention.StdCall)]
         private static extern int ICCColorSpace_Internal(
-                [MarshalAs(UnmanagedType.U4)] int lcmsColorSpaceSignature);
+                [MarshalAs(UnmanagedType.U4)] uint lcmsColorSpaceSignature);
 
-        internal static int GetICCColorSpace(int lcmsColorSpaceSignature)
+        internal static int GetICCColorSpace(uint lcmsColorSpaceSignature)
         {
             return ICCColorSpace_Internal(lcmsColorSpaceSignature);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsChannelsOf", CallingConvention = CallingConvention.StdCall)]
         private static extern uint ChannelsOf_Internal(
-                [MarshalAs(UnmanagedType.U4)] int colorSpace);
+                [MarshalAs(UnmanagedType.U4)] uint colorSpace);
 
-        internal static uint ChannelsOf(int colorSpace)
+        internal static uint ChannelsOf(uint colorSpace)
         {
             return ChannelsOf_Internal(colorSpace);
         }

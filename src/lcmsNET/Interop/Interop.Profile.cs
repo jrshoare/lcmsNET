@@ -85,10 +85,10 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLink", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLinearizationDeviceLink_Internal(
-                [MarshalAs(UnmanagedType.I4)] int space,
+                [MarshalAs(UnmanagedType.U4)] uint space,
                 IntPtr[] transferFunction);
 
-        internal static IntPtr CreateLinearizationDeviceLink(int space, IntPtr[] transferFunction)
+        internal static IntPtr CreateLinearizationDeviceLink(uint space, IntPtr[] transferFunction)
         {
             return CreateLinearizationDeviceLink_Internal(space, transferFunction);
         }
@@ -96,20 +96,20 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLinkTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLinearizationDeviceLinkTHR_Internal(
                 IntPtr contextID,
-                [MarshalAs(UnmanagedType.I4)] int space,
+                [MarshalAs(UnmanagedType.U4)] uint space,
                 IntPtr[] transferFunction);
 
-        internal static IntPtr CreateLinearizationDeviceLink(IntPtr contextID, int space, IntPtr[] transferFunction)
+        internal static IntPtr CreateLinearizationDeviceLink(IntPtr contextID, uint space, IntPtr[] transferFunction)
         {
             return CreateLinearizationDeviceLinkTHR_Internal(contextID, space, transferFunction);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLink", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateInkLimitingDeviceLink_Internal(
-                [MarshalAs(UnmanagedType.I4)] int colorSpaceSignature,
+                [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
                 [MarshalAs(UnmanagedType.R8)] double limit);
 
-        internal static IntPtr CreateInkLimitingDeviceLink(int colorSpaceSignature, double limit)
+        internal static IntPtr CreateInkLimitingDeviceLink(uint colorSpaceSignature, double limit)
         {
             return CreateInkLimitingDeviceLink_Internal(colorSpaceSignature, limit);
         }
@@ -117,10 +117,10 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLinkTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateInkLimitingDeviceLinkTHR_Internal(
                 IntPtr contextID,
-                [MarshalAs(UnmanagedType.I4)] int colorSpaceSignature,
+                [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
                 [MarshalAs(UnmanagedType.R8)] double limit);
 
-        internal static IntPtr CreateInkLimitingDeviceLink(IntPtr contextID, int colorSpaceSignature, double limit)
+        internal static IntPtr CreateInkLimitingDeviceLink(IntPtr contextID, uint colorSpaceSignature, double limit)
         {
             return CreateInkLimitingDeviceLinkTHR_Internal(contextID, colorSpaceSignature, limit);
         }
@@ -129,9 +129,9 @@ namespace lcmsNET
         private static extern IntPtr Transform2DeviceLink_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.R8)] double version,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr Transform2DeviceLink(IntPtr contextID, double version, int flags)
+        internal static IntPtr Transform2DeviceLink(IntPtr contextID, double version, uint flags)
         {
             return Transform2DeviceLink_Internal(contextID, version, flags);
         }
@@ -358,29 +358,29 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetColorSpace", CallingConvention = CallingConvention.StdCall)]
-        private static extern int GetColorSpace_Internal(
+        private static extern uint GetColorSpace_Internal(
                 IntPtr profile);
 
-        internal static int GetColorSpace(IntPtr handle)
+        internal static uint GetColorSpace(IntPtr handle)
         {
             return GetColorSpace_Internal(handle);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsSetColorSpace", CallingConvention = CallingConvention.StdCall)]
-        private static extern int SetColorSpace_Internal(
+        private static extern void SetColorSpace_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int sig);
+                [MarshalAs(UnmanagedType.U4)] uint sig);
 
-        internal static int SetColorSpace(IntPtr handle, int sig)
+        internal static void SetColorSpace(IntPtr handle, uint sig)
         {
-            return SetColorSpace_Internal(handle, sig);
+            SetColorSpace_Internal(handle, sig);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetPCS", CallingConvention = CallingConvention.StdCall)]
-        private static extern int GetPCS_Internal(
+        private static extern uint GetPCS_Internal(
                 IntPtr profile);
 
-        internal static int GetPCS(IntPtr handle)
+        internal static uint GetPCS(IntPtr handle)
         {
             return GetPCS_Internal(handle);
         }
@@ -388,30 +388,30 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsSetPCS", CallingConvention = CallingConvention.StdCall)]
         private static extern void SetPCS_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int pcs);
+                [MarshalAs(UnmanagedType.U4)] uint pcs);
 
-        internal static void SetPCS(IntPtr handle, int pcs)
+        internal static void SetPCS(IntPtr handle, uint pcs)
         {
             SetPCS_Internal(handle, pcs);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetProfileInfo", CallingConvention = CallingConvention.StdCall)]
-        private static extern int GetProfileInfo_Internal(
+        private static extern uint GetProfileInfo_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.I4)] int info,
+                [MarshalAs(UnmanagedType.U4)] uint info,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 IntPtr buffer,
-                [MarshalAs(UnmanagedType.U4)] int bufferSize);
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
 
-        internal static string GetProfileInfo(IntPtr handle, int info, string languageCode, string countryCode)
+        internal static string GetProfileInfo(IntPtr handle, uint info, string languageCode, string countryCode)
         {
             byte[] language = Encoding.ASCII.GetBytes(languageCode);
             byte[] country = Encoding.ASCII.GetBytes(countryCode);
 
             IntPtr buffer = IntPtr.Zero;
-            int bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
-            buffer = Marshal.AllocHGlobal(bytes);
+            uint bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
+            buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
                 GetProfileInfo_Internal(handle, info, language, country, buffer, bytes);
@@ -424,22 +424,22 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetProfileInfoASCII", CallingConvention = CallingConvention.StdCall)]
-        private static extern int GetProfileInfoASCII_Internal(
+        private static extern uint GetProfileInfoASCII_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.I4)] int info,
+                [MarshalAs(UnmanagedType.U4)] uint info,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 IntPtr buffer,
-                [MarshalAs(UnmanagedType.U4)] int bufferSize);
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
 
-        internal static string GetProfileInfoASCII(IntPtr handle, int info, string languageCode, string countryCode)
+        internal static string GetProfileInfoASCII(IntPtr handle, uint info, string languageCode, string countryCode)
         {
             byte[] language = Encoding.ASCII.GetBytes(languageCode);
             byte[] country = Encoding.ASCII.GetBytes(countryCode);
 
             IntPtr buffer = IntPtr.Zero;
-            int bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);
-            buffer = Marshal.AllocHGlobal(bytes);
+            uint bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);
+            buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
                 GetProfileInfoASCII_Internal(handle, info, language, country, buffer, bytes);
@@ -455,10 +455,10 @@ namespace lcmsNET
         private static extern int DetectBlackPoint_Internal(
                 ref CIEXYZ blackPoint,
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static int DetectBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, int intent, int flags)
+        internal static int DetectBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, uint intent, uint flags)
         {
             return DetectBlackPoint_Internal(ref blackPoint, handle, intent, flags);
         }
@@ -467,10 +467,10 @@ namespace lcmsNET
         private static extern int DetectDestinationBlackPoint_Internal(
                 ref CIEXYZ blackPoint,
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static int DetectDestinationBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, int intent, int flags)
+        internal static int DetectDestinationBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, uint intent, uint flags)
         {
             return DetectDestinationBlackPoint_Internal(ref blackPoint, handle, intent, flags);
         }
@@ -496,9 +496,9 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsSetDeviceClass", CallingConvention = CallingConvention.StdCall)]
         private static extern void SetDeviceClass_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int sig);
+                [MarshalAs(UnmanagedType.U4)] uint sig);
 
-        internal static void SetDeviceClass(IntPtr handle, int sig)
+        internal static void SetDeviceClass(IntPtr handle, uint sig)
         {
             SetDeviceClass_Internal(handle, sig);
         }
@@ -652,10 +652,10 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsIsCLUT", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsCLUT_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int usedDirection);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint usedDirection);
 
-        internal static int IsCLUT(IntPtr handle, int intent, int usedDirection)
+        internal static int IsCLUT(IntPtr handle, uint intent, uint usedDirection)
         {
             return IsCLUT_Internal(handle, intent, usedDirection);
         }
@@ -682,19 +682,19 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsIsTag", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsTag_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int n);
+                [MarshalAs(UnmanagedType.U4)] uint tag);
 
-        internal static int IsTag(IntPtr handle, int n)
+        internal static int IsTag(IntPtr handle, uint tag)
         {
-            return IsTag_Internal(handle, n);
+            return IsTag_Internal(handle, tag);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsReadTag", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr ReadTag_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int tag);
+                [MarshalAs(UnmanagedType.U4)] uint tag);
 
-        internal static IntPtr ReadTag(IntPtr handle, int tag)
+        internal static IntPtr ReadTag(IntPtr handle, uint tag)
         {
             return ReadTag_Internal(handle, tag);
         }
@@ -702,10 +702,10 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsWriteTag", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteTag_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int tag,
+                [MarshalAs(UnmanagedType.U4)] uint tag,
                 IntPtr data);
 
-        internal static int WriteTag(IntPtr handle, int tag, IntPtr data)
+        internal static int WriteTag(IntPtr handle, uint tag, IntPtr data)
         {
             return WriteTag_Internal(handle, tag, data);
         }
@@ -713,10 +713,10 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsLinkTag", CallingConvention = CallingConvention.StdCall)]
         private static extern int LinkTag_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int tag,
-                [MarshalAs(UnmanagedType.I4)] int dest);
+                [MarshalAs(UnmanagedType.U4)] uint tag,
+                [MarshalAs(UnmanagedType.U4)] uint dest);
 
-        internal static int LinkTag(IntPtr handle, int tag, int dest)
+        internal static int LinkTag(IntPtr handle, uint tag, uint dest)
         {
             return LinkTag_Internal(handle, tag, dest);
         }
@@ -724,9 +724,9 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsTagLinkedTo", CallingConvention = CallingConvention.StdCall)]
         private static extern int TagLinkedTo_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.I4)] int tag);
+                [MarshalAs(UnmanagedType.U4)] uint tag);
 
-        internal static int TagLinkedTo(IntPtr handle, int tag)
+        internal static int TagLinkedTo(IntPtr handle, uint tag)
         {
             return TagLinkedTo_Internal(handle, tag);
         }
@@ -743,9 +743,9 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsSetHeaderRenderingIntent", CallingConvention = CallingConvention.StdCall)]
         private static extern int SetHeaderRenderingIntent_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.U4)] int intent);
+                [MarshalAs(UnmanagedType.U4)] uint intent);
 
-        internal static int SetHeaderRenderingIntent(IntPtr handle, int intent)
+        internal static int SetHeaderRenderingIntent(IntPtr handle, uint intent)
         {
             return SetHeaderRenderingIntent_Internal(handle, intent);
         }
@@ -753,10 +753,10 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsIsIntentSupported", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsIntentSupported_Internal(
                 IntPtr profile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int usedDirection);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint usedDirection);
 
-        internal static int IsIntentSupported(IntPtr handle, int intent, int usedDirection)
+        internal static int IsIntentSupported(IntPtr handle, uint intent, uint usedDirection)
         {
             return IsIntentSupported_Internal(handle, intent, usedDirection);
         }

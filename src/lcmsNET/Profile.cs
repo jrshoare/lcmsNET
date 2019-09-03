@@ -50,28 +50,28 @@ namespace lcmsNET
 
         public static Profile CreateLinearizationDeviceLink(ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
-            return new Profile(Interop.CreateLinearizationDeviceLink(Convert.ToInt32(space), transferFunction.Select(_ => _.Handle).ToArray()));
+            return new Profile(Interop.CreateLinearizationDeviceLink(Convert.ToUInt32(space), transferFunction.Select(_ => _.Handle).ToArray()));
         }
 
         public static Profile CreateLinearizationDeviceLink(Context context, ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
-            return new Profile(Interop.CreateLinearizationDeviceLink(context.Handle, Convert.ToInt32(space),
+            return new Profile(Interop.CreateLinearizationDeviceLink(context.Handle, Convert.ToUInt32(space),
                     transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
         public static Profile CreateInkLimitingDeviceLink(ColorSpaceSignature space, double limit)
         {
-            return new Profile(Interop.CreateInkLimitingDeviceLink(Convert.ToInt32(space), limit));
+            return new Profile(Interop.CreateInkLimitingDeviceLink(Convert.ToUInt32(space), limit));
         }
 
         public static Profile CreateInkLimitingDeviceLink(Context context, ColorSpaceSignature space, double limit)
         {
-            return new Profile(Interop.CreateInkLimitingDeviceLink(context.Handle, Convert.ToInt32(space), limit));
+            return new Profile(Interop.CreateInkLimitingDeviceLink(context.Handle, Convert.ToUInt32(space), limit));
         }
 
         public static Profile CreateDeviceLink(Transform transform, double version, CmsFlags flags)
         {
-            return new Profile(Interop.Transform2DeviceLink(transform.Handle, version, Convert.ToInt32(flags)));
+            return new Profile(Interop.Transform2DeviceLink(transform.Handle, version, Convert.ToUInt32(flags)));
         }
 
         public static Profile CreateLab2(CIExyY whitePoint)
@@ -178,26 +178,26 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetProfileInfo(_handle, Convert.ToInt32(info), languageCode, countryCode);
+            return Interop.GetProfileInfo(_handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
 
         public string GetProfileInfoASCII(InfoType info, string languageCode, string countryCode)
         {
             EnsureNotDisposed();
 
-            return Interop.GetProfileInfoASCII(_handle, Convert.ToInt32(info), languageCode, countryCode);
+            return Interop.GetProfileInfoASCII(_handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
         #endregion
 
         #region Feature detection
         public bool DetectBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            return Interop.DetectBlackPoint(_handle, ref blackPoint, Convert.ToInt32(intent), Convert.ToInt32(flags)) != 0;
+            return Interop.DetectBlackPoint(_handle, ref blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
 
         public bool DetectDestinationBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            return Interop.DetectDestinationBlackPoint(_handle, ref blackPoint, Convert.ToInt32(intent), Convert.ToInt32(flags)) != 0;
+            return Interop.DetectDestinationBlackPoint(_handle, ref blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
         #endregion
 
@@ -215,7 +215,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsCLUT(_handle, Convert.ToInt32(intent), Convert.ToInt32(direction)) != 0;
+            return Interop.IsCLUT(_handle, Convert.ToUInt32(intent), Convert.ToUInt32(direction)) != 0;
         }
         #endregion
 
@@ -231,35 +231,35 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsTag(_handle, Convert.ToInt32(tag)) != 0;
+            return Interop.IsTag(_handle, Convert.ToUInt32(tag)) != 0;
         }
 
         public IntPtr ReadTag(TagSignature tag)
         {
             EnsureNotDisposed();
 
-            return Interop.ReadTag(_handle, Convert.ToInt32(tag));
+            return Interop.ReadTag(_handle, Convert.ToUInt32(tag));
         }
 
         public bool WriteTag(TagSignature tag, IntPtr data)
         {
             EnsureNotDisposed();
 
-            return Interop.WriteTag(_handle, Convert.ToInt32(tag), data) != 0;
+            return Interop.WriteTag(_handle, Convert.ToUInt32(tag), data) != 0;
         }
 
         public bool LinkTag(TagSignature tag, TagSignature dest)
         {
             EnsureNotDisposed();
 
-            return Interop.LinkTag(_handle, Convert.ToInt32(tag), Convert.ToInt32(dest)) != 0;
+            return Interop.LinkTag(_handle, Convert.ToUInt32(tag), Convert.ToUInt32(dest)) != 0;
         }
 
         public TagSignature TagLinkedTo(TagSignature tag)
         {
             EnsureNotDisposed();
 
-            return (TagSignature)Interop.TagLinkedTo(_handle, Convert.ToInt32(tag));
+            return (TagSignature)Interop.TagLinkedTo(_handle, Convert.ToUInt32(tag));
         }
         #endregion
 
@@ -268,7 +268,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsIntentSupported(_handle, Convert.ToInt32(intent), Convert.ToInt32(usedDirection)) != 0;
+            return Interop.IsIntentSupported(_handle, Convert.ToUInt32(intent), Convert.ToUInt32(usedDirection)) != 0;
         }
         #endregion
 
@@ -278,13 +278,13 @@ namespace lcmsNET
         public ColorSpaceSignature ColorSpace
         {
             get { return (ColorSpaceSignature)Interop.GetColorSpace(_handle); }
-            set { Interop.SetColorSpace(_handle, Convert.ToInt32(value)); }
+            set { Interop.SetColorSpace(_handle, Convert.ToUInt32(value)); }
         }
 
         public ColorSpaceSignature PCS
         {
             get { return (ColorSpaceSignature)Interop.GetPCS(_handle); }
-            set { Interop.SetPCS(_handle, Convert.ToInt32(value)); }
+            set { Interop.SetPCS(_handle, Convert.ToUInt32(value)); }
         }
 
         public double TotalAreaCoverage => Interop.DetectTAC(_handle);
@@ -292,7 +292,7 @@ namespace lcmsNET
         public ProfileClassSignature DeviceClass
         {
             get { return (ProfileClassSignature)Interop.GetDeviceClass(_handle); }
-            set { Interop.SetDeviceClass(_handle, (int)value); }
+            set { Interop.SetDeviceClass(_handle, Convert.ToUInt32(value)); }
         }
 
         public uint HeaderFlags
@@ -338,7 +338,7 @@ namespace lcmsNET
         public Intent HeaderRenderingIntent
         {
             get { return (Intent)Interop.GetHeaderRenderingIntent(_handle); }
-            set { Interop.SetHeaderRenderingIntent(_handle, Convert.ToInt32(value)); }
+            set { Interop.SetHeaderRenderingIntent(_handle, Convert.ToUInt32(value)); }
         }
         #endregion
 

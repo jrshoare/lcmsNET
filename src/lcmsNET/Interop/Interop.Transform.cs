@@ -8,14 +8,14 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsCreateTransform", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateTransform_Internal(
                 IntPtr inputProfile,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
                 IntPtr outputProfile,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateTransform(IntPtr inputProfile, int inputFormat,
-                IntPtr outputProfile, int outputFormat, int intent, int flags)
+        internal static IntPtr CreateTransform(IntPtr inputProfile, uint inputFormat,
+                IntPtr outputProfile, uint outputFormat, uint intent, uint flags)
         {
             return CreateTransform_Internal(inputProfile, inputFormat, outputProfile, outputFormat, intent, flags);
         }
@@ -24,14 +24,14 @@ namespace lcmsNET
         private static extern IntPtr CreateTransformTHR_Internal(
                 IntPtr contextID,
                 IntPtr inputProfile,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
                 IntPtr outputProfile,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateTransform(IntPtr contextID, IntPtr inputProfile, int inputFormat,
-                IntPtr outputProfile, int outputFormat, int intent, int flags)
+        internal static IntPtr CreateTransform(IntPtr contextID, IntPtr inputProfile, uint inputFormat,
+                IntPtr outputProfile, uint outputFormat, uint intent, uint flags)
         {
             return CreateTransformTHR_Internal(contextID, inputProfile, inputFormat, outputProfile, outputFormat, intent, flags);
         }
@@ -39,16 +39,16 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsCreateProofingTransform", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateProofingTransform_Internal(
                 IntPtr inputProfile,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
                 IntPtr outputProfile,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
                 IntPtr proofingProfile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int proofingIntent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint proofingIntent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateTransform(IntPtr inputProfile, int inputFormat,
-                IntPtr outputProfile, int outputFormat, IntPtr proofingProfile, int intent, int proofingIntent, int flags)
+        internal static IntPtr CreateTransform(IntPtr inputProfile, uint inputFormat,
+                IntPtr outputProfile, uint outputFormat, IntPtr proofingProfile, uint intent, uint proofingIntent, uint flags)
         {
             return CreateProofingTransform_Internal(inputProfile, inputFormat, outputProfile, outputFormat,
                     proofingProfile, intent, proofingIntent, flags);
@@ -58,16 +58,16 @@ namespace lcmsNET
         private static extern IntPtr CreateProofingTransformTHR_Internal(
                 IntPtr contextID,
                 IntPtr inputProfile,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
                 IntPtr outputProfile,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
                 IntPtr proofingProfile,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int proofingIntent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint proofingIntent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateTransform(IntPtr contextID, IntPtr inputProfile, int inputFormat,
-                IntPtr outputProfile, int outputFormat, IntPtr proofingProfile, int intent, int proofingIntent, int flags)
+        internal static IntPtr CreateTransform(IntPtr contextID, IntPtr inputProfile, uint inputFormat,
+                IntPtr outputProfile, uint outputFormat, IntPtr proofingProfile, uint intent, uint proofingIntent, uint flags)
         {
             return CreateProofingTransformTHR_Internal(contextID, inputProfile, inputFormat, outputProfile, outputFormat,
                     proofingProfile, intent, proofingIntent, flags);
@@ -77,13 +77,13 @@ namespace lcmsNET
         private static extern IntPtr CreateMultiprofileTransform_Internal(
                 IntPtr[] profiles,
                 [MarshalAs(UnmanagedType.U4)] int nProfiles,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateMultiprofileTransform(IntPtr[] profiles, int inputFormat,
-                int outputFormat, int intent, int flags)
+        internal static IntPtr CreateMultiprofileTransform(IntPtr[] profiles, uint inputFormat,
+                uint outputFormat, uint intent, uint flags)
         {
             return CreateMultiprofileTransform_Internal(profiles, profiles.Length, inputFormat, outputFormat, intent, flags);
         }
@@ -93,13 +93,13 @@ namespace lcmsNET
                 IntPtr contextID,
                 IntPtr[] profiles,
                 [MarshalAs(UnmanagedType.U4)] int nProfiles,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
-                [MarshalAs(UnmanagedType.U4)] int intent,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint intent,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateMultiprofileTransform(IntPtr contextID, IntPtr[] profiles, int inputFormat,
-                int outputFormat, int intent, int flags)
+        internal static IntPtr CreateMultiprofileTransform(IntPtr contextID, IntPtr[] profiles, uint inputFormat,
+                uint outputFormat, uint intent, uint flags)
         {
             return CreateMultiprofileTransformTHR_Internal(contextID, profiles, profiles.Length, inputFormat, outputFormat, intent, flags);
         }
@@ -110,16 +110,16 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.U4)] int nProfiles,
                 IntPtr[] profiles,
                 int[] BPC,
-                int[] intents,
+                uint[] intents,
                 double[] adaptationStates,
                 IntPtr gamutProfile,
                 [MarshalAs(UnmanagedType.U4)] int gamutPcsPosition,
-                [MarshalAs(UnmanagedType.U4)] int inputFormat,
-                [MarshalAs(UnmanagedType.U4)] int outputFormat,
-                [MarshalAs(UnmanagedType.U4)] int flags);
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static IntPtr CreateExtendedTransform(IntPtr contextID, IntPtr[] profiles, int[] bpc, int[] intents,
-                double[] adaptationStates, IntPtr gamutProfile, int gamutPcsPosition, int inputFormat, int outputFormat, int flags)
+        internal static IntPtr CreateExtendedTransform(IntPtr contextID, IntPtr[] profiles, int[] bpc, uint[] intents,
+                double[] adaptationStates, IntPtr gamutProfile, int gamutPcsPosition, uint inputFormat, uint outputFormat, uint flags)
         {
             return CreateExtendedTransform_Internal(contextID, profiles.Length, profiles, bpc, intents, adaptationStates,
                     gamutProfile, gamutPcsPosition, inputFormat, outputFormat, flags);
@@ -168,6 +168,24 @@ namespace lcmsNET
                 DoTransformLineStride_Internal(transform, pInBuffer, pOutBuffer, pixelsPerLine, lineCount,
                         bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
             }
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetTransformInputFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern uint GetTransformInputFormat_Internal(
+                IntPtr transform);
+
+        internal unsafe static uint GetTransformInputFormat(IntPtr transform)
+        {
+            return GetTransformInputFormat_Internal(transform);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetTransformOutputFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern uint GetTransformOutputFormat_Internal(
+                IntPtr transform);
+
+        internal unsafe static uint GetTransformOutputFormat(IntPtr transform)
+        {
+            return GetTransformOutputFormat_Internal(transform);
         }
     }
 }

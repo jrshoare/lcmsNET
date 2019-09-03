@@ -286,8 +286,8 @@ namespace lcmsNET.Tests
                 double[] adaptationStates = new double[] { 1.0 };
                 Profile gamut = null;
                 int gamutPCSPosition = 0;
-                int inputFormat = Cms.TYPE_RGB_8;
-                int outputFormat = Cms.TYPE_XYZ_16;
+                uint inputFormat = Cms.TYPE_RGB_8;
+                uint outputFormat = Cms.TYPE_XYZ_16;
                 CmsFlags flags = CmsFlags.None;
                 using (var context = Context.Create(plugin, userData))
                 using (profiles[0] = Profile.Open(srgbpath, "r"))
@@ -541,6 +541,72 @@ namespace lcmsNET.Tests
 
                     // Assert
                     Assert.AreSame(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void InputFormatTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            uint expected = Cms.TYPE_RGB_8;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+                var labpath = Path.Combine(tempPath, "lab.icc");
+                Save(".Resources.Lab.icc", labpath);
+
+                using (var srgb = Profile.Open(srgbpath, "r"))
+                using (var lab = Profile.Open(labpath, "r"))
+                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    // Act
+                    uint actual = transform.InputFormat;
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void OutputFormatTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            uint expected = Cms.TYPE_Lab_8;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+                var labpath = Path.Combine(tempPath, "lab.icc");
+                Save(".Resources.Lab.icc", labpath);
+
+                using (var srgb = Profile.Open(srgbpath, "r"))
+                using (var lab = Profile.Open(labpath, "r"))
+                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    // Act
+                    uint actual = transform.OutputFormat;
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
                 }
             }
             finally
