@@ -34,7 +34,7 @@ namespace lcmsNET
 
         public static CAM02 Create(Context context, ViewingConditions conditions)
         {
-            return new CAM02(Interop.CIECAM02Init(context.Handle, conditions));
+            return new CAM02(Interop.CIECAM02Init(context.Handle, conditions), context);
         }
 
         public void Forward(CIEXYZ xyz, out JCh jch)
@@ -59,7 +59,7 @@ namespace lcmsNET
         {
             if (_handle == IntPtr.Zero)
             {
-                throw new ObjectDisposedException(nameof(Profile));
+                throw new ObjectDisposedException(nameof(CAM02));
             }
         }
 
