@@ -196,5 +196,19 @@ namespace lcmsNET.Tests
             Assert.AreEqual(0.3585, d50.y, 0.0001);
             Assert.AreEqual(1.0, d50.Y, double.Epsilon);
         }
+
+        [TestMethod()]
+        public void DesaturateTest()
+        {
+            // Arrange
+            CIELab lab = new CIELab { L = 97.4, a = 62.3, b = 81.2 };
+            double aMax = 55, aMin = -55, bMax = 75, bMin = -75;
+
+            // Act
+            bool desaturated = Colorimetric.Desaturate(ref lab, aMax, aMin, bMax, bMin);
+
+            // Assert
+            Assert.IsTrue(desaturated);
+        }
     }
 }

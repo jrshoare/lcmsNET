@@ -152,6 +152,11 @@ namespace lcmsNET
             return xyz;
         }
 
+        public static bool Desaturate(ref CIELab lab, double aMax, double aMin, double bMax, double bMin)
+        {
+            return Interop.DesaturateLab(ref lab, aMax, aMin, bMax, bMin) != 0;
+        }
+
         public static CIEXYZ D50_XYZ => Interop.GetD50_XYZ();
 
         public static CIExyY D50_xyY => Interop.GetD50_xyY();

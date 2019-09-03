@@ -97,6 +97,19 @@ namespace lcmsNET
             Float2XYZEncoded_Internal(xyz, ref fxyz);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsDesaturateLab", CallingConvention = CallingConvention.StdCall)]
+        private static extern int DesaturateLab_Internal(
+                ref CIELab lab,
+                [MarshalAs(UnmanagedType.R8)] double aMax,
+                [MarshalAs(UnmanagedType.R8)] double aMin,
+                [MarshalAs(UnmanagedType.R8)] double bMax,
+                [MarshalAs(UnmanagedType.R8)] double bMin);
+
+        internal static int DesaturateLab(ref CIELab lab, double aMax, double aMin, double bMax, double bMin)
+        {
+            return DesaturateLab_Internal(ref lab, aMax, aMin, bMax, bMin);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsD50_XYZ", CallingConvention = CallingConvention.StdCall)]
         private static extern ref CIEXYZ D50_XYZ_Internal();
 
