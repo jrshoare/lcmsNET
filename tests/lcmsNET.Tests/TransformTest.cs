@@ -614,5 +614,22 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void ChangeBuffersFormatTest()
+        {
+            // Arrange
+            using (var profile = Profile.Create_sRGB())
+            using (var transform = Transform.Create(profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None))
+            {
+                profile.Dispose();
+
+                // Act
+                var changed = transform.ChangeBuffersFormat(Cms.TYPE_BGR_16, Cms.TYPE_RGB_16);
+
+                // Assert
+                Assert.IsTrue(changed);
+            }
+        }
     }
 }

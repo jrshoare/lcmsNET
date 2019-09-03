@@ -171,21 +171,32 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetTransformInputFormat", CallingConvention = CallingConvention.StdCall)]
-        private unsafe static extern uint GetTransformInputFormat_Internal(
+        private static extern uint GetTransformInputFormat_Internal(
                 IntPtr transform);
 
-        internal unsafe static uint GetTransformInputFormat(IntPtr transform)
+        internal static uint GetTransformInputFormat(IntPtr transform)
         {
             return GetTransformInputFormat_Internal(transform);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetTransformOutputFormat", CallingConvention = CallingConvention.StdCall)]
-        private unsafe static extern uint GetTransformOutputFormat_Internal(
+        private static extern uint GetTransformOutputFormat_Internal(
                 IntPtr transform);
 
-        internal unsafe static uint GetTransformOutputFormat(IntPtr transform)
+        internal static uint GetTransformOutputFormat(IntPtr transform)
         {
             return GetTransformOutputFormat_Internal(transform);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsChangeBuffersFormat", CallingConvention = CallingConvention.StdCall)]
+        private static extern int ChangeBuffersFormat_Internal(
+                IntPtr transform,
+                [MarshalAs(UnmanagedType.U4)] uint inputFormat,
+                [MarshalAs(UnmanagedType.U4)] uint outputFormat);
+
+        internal static int ChangeBuffersFormat(IntPtr transform, uint inputFormat, uint outputFormat)
+        {
+            return ChangeBuffersFormat_Internal(transform, inputFormat, outputFormat);
         }
     }
 }

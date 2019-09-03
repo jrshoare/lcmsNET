@@ -89,6 +89,13 @@ namespace lcmsNET
                     bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
         }
 
+        public bool ChangeBuffersFormat(uint inputFormat, uint outputFormat)
+        {
+            EnsureNotDisposed();
+
+            return Interop.ChangeBuffersFormat(_handle, inputFormat, outputFormat) != 0;
+        }
+
         public Context Context { get; private set; }
 
         public uint InputFormat => Interop.GetTransformInputFormat(_handle);
