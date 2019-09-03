@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -1346,6 +1347,37 @@ namespace lcmsNET.Tests
 
                     // Assert
                     Assert.AreNotEqual(notExpected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTag_MarshalToStructTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            double notExpected = 0.0;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    IntPtr actual = profile.ReadTag(TagSignature.BlueColorant);
+                    CIEXYZ bXYZ = Marshal.PtrToStructure<CIEXYZ>(actual);
+
+                    // Assert
+                    Assert.AreNotEqual(notExpected, bXYZ.X);
+                    Assert.AreNotEqual(notExpected, bXYZ.Y);
+                    Assert.AreNotEqual(notExpected, bXYZ.Z);
                 }
             }
             finally
