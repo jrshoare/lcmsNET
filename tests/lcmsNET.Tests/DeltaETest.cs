@@ -54,6 +54,34 @@ namespace lcmsNET.Tests
         #endregion
 
         [TestMethod()]
+        public void DE76Test()
+        {
+            // Arrange
+            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+
+            // Act
+            var actual = DeltaE.DE76(lab1, lab2);
+
+            // Assert
+        }
+
+        [TestMethod()]
+        public void CMCTest()
+        {
+            // Arrange
+            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            double l = 2.0;
+            double c = 1.0;
+
+            // Act
+            var actual = DeltaE.CMC(lab1, lab2, l, c);
+
+            // Assert
+        }
+
+        [TestMethod()]
         public void CIEDE2000Test()
         {
             // Arrange
@@ -62,6 +90,32 @@ namespace lcmsNET.Tests
 
             // Act
             var actual = DeltaE.CIEDE2000(lab1, lab2);
+
+            // Assert
+        }
+
+        [TestMethod()]
+        public void BFDTest()
+        {
+            // Arrange
+            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+
+            // Act
+            var actual = DeltaE.BFD(lab1, lab2);
+
+            // Assert
+        }
+
+        [TestMethod()]
+        public void CIE94Test()
+        {
+            // Arrange
+            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+
+            // Act
+            var actual = DeltaE.CIE94(lab1, lab2);
 
             // Assert
         }
