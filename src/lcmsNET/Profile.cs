@@ -272,6 +272,15 @@ namespace lcmsNET
         }
         #endregion
 
+        #region MD5 message digest
+        public bool ComputeMD5()
+        {
+            EnsureNotDisposed();
+
+            return Interop.MD5ComputeID(_handle) != 0;
+        }
+        #endregion
+
         #region Properties
         public Context Context { get; private set; }
 
@@ -339,6 +348,21 @@ namespace lcmsNET
         {
             get { return (Intent)Interop.GetHeaderRenderingIntent(_handle); }
             set { Interop.SetHeaderRenderingIntent(_handle, Convert.ToUInt32(value)); }
+        }
+
+        public byte[] HeaderProfileID
+        {
+            get
+            {
+                byte[] profileID = new byte[16];
+                Interop.GetHeaderProfileID(_handle, profileID);
+                return profileID;
+            }
+            set
+            {
+                if (value?.Length != 16) throw new ArgumentException($"'{nameof(value)}' array size must equal 16.");
+                Interop.SetHeaderProfileID(_handle, value);
+            }
         }
         #endregion
 

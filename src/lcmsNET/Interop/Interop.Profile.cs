@@ -760,5 +760,34 @@ namespace lcmsNET
         {
             return IsIntentSupported_Internal(handle, intent, usedDirection);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsMD5computeID", CallingConvention = CallingConvention.StdCall)]
+        private static extern int MD5computeID_Internal(
+                IntPtr profile);
+
+        internal static int MD5ComputeID(IntPtr handle)
+        {
+            return MD5computeID_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetHeaderProfileID", CallingConvention = CallingConvention.StdCall)]
+        private static extern void GetHeaderProfileID_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] byte[] profileID);
+
+        internal static void GetHeaderProfileID(IntPtr handle, byte[] profileID)
+        {
+            GetHeaderProfileID_Internal(handle, profileID);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSetHeaderProfileID", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetHeaderProfileID_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] byte[] profileID);
+
+        internal static void SetHeaderProfileID(IntPtr handle, byte[] profileID)
+        {
+            SetHeaderProfileID_Internal(handle, profileID);
+        }
     }
 }

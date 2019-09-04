@@ -1512,5 +1512,89 @@ namespace lcmsNET.Tests
                 Assert.IsFalse(supported);
             }
         }
+
+        [TestMethod()]
+        public void ComputeMD5Test()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    bool computed = profile.ComputeMD5();
+
+                    // Assert
+                    Assert.IsTrue(computed);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderProfileIDGetTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    profile.ComputeMD5();
+
+                    // Act
+                    byte[] profileID = profile.HeaderProfileID;
+
+                    // Assert
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void HeaderProfileIDSetTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    profile.ComputeMD5();
+                    byte[] profileID = profile.HeaderProfileID;
+
+                    // Act
+                    profile.HeaderProfileID = profileID;
+
+                    // Assert
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
     }
 }
