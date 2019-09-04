@@ -21,7 +21,7 @@ namespace lcmsNET
         #region Predefined virtual profiles
         public static Profile CreatePlaceholder(Context context)
         {
-            return new Profile(Interop.CreatePlaceholder(context.Handle));
+            return new Profile(Interop.CreatePlaceholder(context.Handle), context);
         }
 
         public static Profile CreateRGB(CIExyY whitePoint, CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
@@ -66,7 +66,7 @@ namespace lcmsNET
 
         public static Profile CreateInkLimitingDeviceLink(Context context, ColorSpaceSignature space, double limit)
         {
-            return new Profile(Interop.CreateInkLimitingDeviceLink(context.Handle, Convert.ToUInt32(space), limit));
+            return new Profile(Interop.CreateInkLimitingDeviceLink(context.Handle, Convert.ToUInt32(space), limit), context);
         }
 
         public static Profile CreateDeviceLink(Transform transform, double version, CmsFlags flags)
@@ -81,7 +81,7 @@ namespace lcmsNET
 
         public static Profile CreateLab2(Context context, CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab2(context.Handle, whitePoint));
+            return new Profile(Interop.CreateLab2(context.Handle, whitePoint), context);
         }
 
         public static Profile CreateLab4(CIExyY whitePoint)
@@ -91,7 +91,7 @@ namespace lcmsNET
 
         public static Profile CreateLab4(Context context, CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab4(context.Handle, whitePoint));
+            return new Profile(Interop.CreateLab4(context.Handle, whitePoint), context);
         }
 
         public static Profile CreateXYZ()
@@ -101,7 +101,7 @@ namespace lcmsNET
 
         public static Profile CreateXYZ(Context context)
         {
-            return new Profile(Interop.CreateXYZ(context.Handle));
+            return new Profile(Interop.CreateXYZ(context.Handle), context);
         }
 
         public static Profile Create_sRGB()
@@ -111,7 +111,7 @@ namespace lcmsNET
 
         public static Profile Create_sRGB(Context context)
         {
-            return new Profile(Interop.Create_sRGB(context.Handle));
+            return new Profile(Interop.Create_sRGB(context.Handle), context);
         }
 
         public static Profile CreateNull()
@@ -121,7 +121,7 @@ namespace lcmsNET
 
         public static Profile CreateNull(Context context)
         {
-            return new Profile(Interop.CreateNull(context.Handle));
+            return new Profile(Interop.CreateNull(context.Handle), context);
         }
 
         public static Profile CreateBCHSWabstract(int nLutPoints, double bright, double contrast,
@@ -133,7 +133,7 @@ namespace lcmsNET
         public static Profile CreateBCHSWabstract(Context context, int nLutPoints, double bright, double contrast,
                 double hue, double saturation, int tempSrc, int tempDest)
         {
-            return new Profile(Interop.CreateBCHSWabstract(context.Handle, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest));
+            return new Profile(Interop.CreateBCHSWabstract(context.Handle, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
         }
         #endregion
 
