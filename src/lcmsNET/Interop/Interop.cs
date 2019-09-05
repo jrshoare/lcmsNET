@@ -79,22 +79,22 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsWhitePointFromTemp", CallingConvention = CallingConvention.StdCall)]
         private static extern double WhitePointFromTemp_Internal(
-                ref CIExyY xyY,
+                out CIExyY xyY,
                 [MarshalAs(UnmanagedType.R8)] double tempK);
 
-        internal static double WhitePointFromTemp(ref CIExyY xyY, double tempK)
+        internal static double WhitePointFromTemp(out CIExyY xyY, double tempK)
         {
-            return WhitePointFromTemp_Internal(ref xyY, tempK);
+            return WhitePointFromTemp_Internal(out xyY, tempK);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsTempFromWhitePoint", CallingConvention = CallingConvention.StdCall)]
         private static extern double TempFromWhitePoint_Internal(
-                [MarshalAs(UnmanagedType.R8)] ref double tempK,
-                CIExyY xyY);
+                [MarshalAs(UnmanagedType.R8)] out double tempK,
+                in CIExyY xyY);
 
-        internal static double TempFromWhitePoint(ref double tempK, CIExyY xyY)
+        internal static double TempFromWhitePoint(out double tempK, in CIExyY xyY)
         {
-            return TempFromWhitePoint_Internal(ref tempK, xyY);
+            return TempFromWhitePoint_Internal(out tempK, xyY);
         }
     }
 }

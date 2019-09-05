@@ -492,14 +492,12 @@ namespace lcmsNET
 
         public static bool WhitePointFromTemp(out CIExyY xyY, double tempK)
         {
-            xyY = new CIExyY { };
-            return Interop.WhitePointFromTemp(ref xyY, tempK) != 0;
+            return Interop.WhitePointFromTemp(out xyY, tempK) != 0;
         }
 
-        public static bool TempFromWhitePoint(out double tempK, CIExyY xyY)
+        public static bool TempFromWhitePoint(out double tempK, in CIExyY xyY)
         {
-            tempK = 0.0;
-            return Interop.TempFromWhitePoint(ref tempK, xyY) != 0;
+            return Interop.TempFromWhitePoint(out tempK, xyY) != 0;
         }
 
         public static ushort[] AlarmCodes
