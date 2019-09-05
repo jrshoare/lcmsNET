@@ -32,21 +32,19 @@ namespace lcmsNET
             Context = context;
         }
 
-        public static CAM02 Create(Context context, ViewingConditions conditions)
+        public static CAM02 Create(Context context, in ViewingConditions conditions)
         {
             return new CAM02(Interop.CIECAM02Init(context.Handle, conditions), context);
         }
 
-        public void Forward(CIEXYZ xyz, out JCh jch)
+        public void Forward(in CIEXYZ xyz, out JCh jch)
         {
-            jch = new JCh { };
-            Interop.CIECAM02Forward(_handle, xyz, ref jch);
+            Interop.CIECAM02Forward(_handle, xyz, out jch);
         }
 
-        public void Reverse(JCh jch, out CIEXYZ xyz)
+        public void Reverse(in JCh jch, out CIEXYZ xyz)
         {
-            xyz = new CIEXYZ { };
-            Interop.CIECAM02Reverse(_handle, jch, ref xyz);
+            Interop.CIECAM02Reverse(_handle, jch, out xyz);
         }
 
         public Context Context { get; private set; }
