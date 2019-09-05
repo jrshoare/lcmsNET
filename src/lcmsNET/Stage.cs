@@ -10,12 +10,24 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal Stage(IntPtr handle, Context context = null)
+        internal Stage(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<Stage>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
+        }
+
+        internal static Stage Copy(IntPtr handle, Context context = null)
+        {
+            return new Stage(handle, context, isOwner: false);
+        }
+
+        internal void Release()
+        {
+            Interlocked.Exchange(ref _handle, IntPtr.Zero);
+            Context = null;
         }
 
         public static Stage Create(Context context, uint nChannels)
@@ -89,11 +101,14 @@ namespace lcmsNET
 
         private void Dispose(bool disposing)
         {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner)    // only dispose objects that we own
             {
-                Interop.StageFree(handle);
-                Context = null;
+                var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
+                if (handle != IntPtr.Zero)
+                {
+                    Interop.StageFree(handle);
+                    Context = null;
+                }
             }
         }
 
@@ -110,5 +125,7 @@ namespace lcmsNET
         #endregion
 
         internal IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

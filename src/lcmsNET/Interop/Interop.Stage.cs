@@ -132,5 +132,13 @@ namespace lcmsNET
         {
             return StageType_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsStageNext", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr StageNext_Internal(IntPtr handle);
+
+        internal static IntPtr StageNext(IntPtr handle)
+        {
+            return StageNext_Internal(handle);
+        }
     }
 }
