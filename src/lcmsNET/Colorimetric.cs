@@ -76,31 +76,27 @@ namespace lcmsNET
 
     public sealed class Colorimetric
     {
-        public static CIELab XYZ2Lab(CIEXYZ whitePoint, CIEXYZ xyz)
+        public static CIELab XYZ2Lab(in CIEXYZ whitePoint, in CIEXYZ xyz)
         {
-            CIELab lab = new CIELab { };
-            Interop.XYZ2Lab(whitePoint, ref lab, xyz);
+            Interop.XYZ2Lab(whitePoint, out CIELab lab, xyz);
             return lab;
         }
 
-        public static CIEXYZ Lab2XYZ(CIEXYZ whitePoint, CIELab lab)
+        public static CIEXYZ Lab2XYZ(in CIEXYZ whitePoint, in CIELab lab)
         {
-            CIEXYZ xyz = new CIEXYZ { };
-            Interop.Lab2XYZ(whitePoint, ref xyz, lab);
+            Interop.Lab2XYZ(whitePoint, out CIEXYZ xyz, lab);
             return xyz;
         }
 
-        public static CIELCh Lab2LCh(CIELab lab)
+        public static CIELCh Lab2LCh(in CIELab lab)
         {
-            CIELCh lch = new CIELCh { };
-            Interop.Lab2LCh(ref lch, lab);
+            Interop.Lab2LCh(out CIELCh lch, lab);
             return lch;
         }
 
-        public static CIELab LCh2Lab(CIELCh lch)
+        public static CIELab LCh2Lab(in CIELCh lch)
         {
-            CIELab lab = new CIELab { };
-            Interop.LCh2Lab(ref lab, lch);
+            Interop.LCh2Lab(out CIELab lab, lch);
             return lab;
         }
 
@@ -108,15 +104,14 @@ namespace lcmsNET
         {
             if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
 
-            CIELab lab = new CIELab { };
-            Interop.LabEncoded2Float(ref lab, wLab);
+            Interop.LabEncoded2Float(out CIELab lab, wLab);
             return lab;
         }
 
-        public static ushort[] Float2LabEncoded(CIELab lab)
+        public static ushort[] Float2LabEncoded(in CIELab lab)
         {
             ushort[] wLab = new ushort[3];
-            Interop.Float2LabEncoded(lab, ref wLab);
+            Interop.Float2LabEncoded(lab, wLab);
             return wLab;
         }
 
@@ -124,15 +119,14 @@ namespace lcmsNET
         {
             if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
 
-            CIELab lab = new CIELab { };
-            Interop.LabEncoded2FloatV2(ref lab, wLab);
+            Interop.LabEncoded2FloatV2(out CIELab lab, wLab);
             return lab;
         }
 
-        public static ushort[] Float2LabEncodedV2(CIELab lab)
+        public static ushort[] Float2LabEncodedV2(in CIELab lab)
         {
             ushort[] wLab = new ushort[3];
-            Interop.Float2LabEncodedV2(lab, ref wLab);
+            Interop.Float2LabEncodedV2(lab, wLab);
             return wLab;
         }
 
@@ -140,15 +134,14 @@ namespace lcmsNET
         {
             if (xyz?.Length != 3) throw new ArgumentException($"'{nameof(xyz)}' array size must equal 3.");
 
-            CIEXYZ fxyz = new CIEXYZ { };
-            Interop.XYZEncoded2Float(ref fxyz, xyz);
+            Interop.XYZEncoded2Float(out CIEXYZ fxyz, xyz);
             return fxyz;
         }
 
-        public static ushort[] Float2XYZEncoded(CIEXYZ fxyz)
+        public static ushort[] Float2XYZEncoded(in CIEXYZ fxyz)
         {
             ushort[] xyz = new ushort[3];
-            Interop.Float2XYZEncoded(fxyz, ref xyz);
+            Interop.Float2XYZEncoded(fxyz, xyz);
             return xyz;
         }
 

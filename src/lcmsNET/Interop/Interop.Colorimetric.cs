@@ -6,95 +6,95 @@ namespace lcmsNET
     internal static partial class Interop
     {
         [DllImport(Liblcms, EntryPoint = "cmsXYZ2Lab", CallingConvention = CallingConvention.StdCall)]
-        private static extern void XYZ2Lab_Internal(ref CIEXYZ whitePoint, ref CIELab lab, ref CIEXYZ xyz);
+        private static extern void XYZ2Lab_Internal(in CIEXYZ whitePoint, out CIELab lab, in CIEXYZ xyz);
 
-        internal static void XYZ2Lab(CIEXYZ whitePoint, ref CIELab lab, CIEXYZ xyz)
+        internal static void XYZ2Lab(in CIEXYZ whitePoint, out CIELab lab, in CIEXYZ xyz)
         {
-            XYZ2Lab_Internal(ref whitePoint, ref lab, ref xyz);
+            XYZ2Lab_Internal(whitePoint, out lab, xyz);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLab2XYZ", CallingConvention = CallingConvention.StdCall)]
-        private static extern void Lab2XYZ_Internal(ref CIEXYZ whitePoint, ref CIEXYZ xyz, ref CIELab lab);
+        private static extern void Lab2XYZ_Internal(in CIEXYZ whitePoint, out CIEXYZ xyz, in CIELab lab);
 
-        internal static void Lab2XYZ(CIEXYZ whitePoint, ref CIEXYZ xyz, CIELab lab)
+        internal static void Lab2XYZ(in CIEXYZ whitePoint, out CIEXYZ xyz, in CIELab lab)
         {
-            Lab2XYZ_Internal(ref whitePoint, ref xyz, ref lab);
+            Lab2XYZ_Internal(whitePoint, out xyz, lab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLab2LCh", CallingConvention = CallingConvention.StdCall)]
-        private static extern void Lab2LCh_Internal(ref CIELCh lch, ref CIELab lab);
+        private static extern void Lab2LCh_Internal(out CIELCh lch, in CIELab lab);
 
-        internal static void Lab2LCh(ref CIELCh lch, CIELab lab)
+        internal static void Lab2LCh(out CIELCh lch, in CIELab lab)
         {
-            Lab2LCh_Internal(ref lch, ref lab);
+            Lab2LCh_Internal(out lch, lab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLCh2Lab", CallingConvention = CallingConvention.StdCall)]
-        private static extern void LCh2Lab_Internal(ref CIELab lab, ref CIELCh lch);
+        private static extern void LCh2Lab_Internal(out CIELab lab, in CIELCh lch);
 
-        internal static void LCh2Lab(ref CIELab lab, CIELCh lch)
+        internal static void LCh2Lab(out CIELab lab, in CIELCh lch)
         {
-            LCh2Lab_Internal(ref lab, ref lch);
+            LCh2Lab_Internal(out lab, lch);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLabEncoded2Float", CallingConvention = CallingConvention.StdCall)]
         private static extern void LabEncoded2Float_Internal(
-                ref CIELab lab,
+                out CIELab lab,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab);
 
-        internal static void LabEncoded2Float(ref CIELab lab, ushort[] wLab)
+        internal static void LabEncoded2Float(out CIELab lab, ushort[] wLab)
         {
-            LabEncoded2Float_Internal(ref lab, wLab);
+            LabEncoded2Float_Internal(out lab, wLab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2LabEncoded", CallingConvention = CallingConvention.StdCall)]
         private static extern void Float2LabEncoded_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab,
-                ref CIELab lab);
+                in CIELab lab);
 
-        internal static void Float2LabEncoded(CIELab lab, ref ushort[] wLab)
+        internal static void Float2LabEncoded(in CIELab lab, ushort[] wLab)
         {
-            Float2LabEncoded_Internal(wLab, ref lab);
+            Float2LabEncoded_Internal(wLab, lab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLabEncoded2FloatV2", CallingConvention = CallingConvention.StdCall)]
         private static extern void LabEncoded2FloatV2_Internal(
-                ref CIELab lab,
+                out CIELab lab,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab);
 
-        internal static void LabEncoded2FloatV2(ref CIELab lab, ushort[] wLab)
+        internal static void LabEncoded2FloatV2(out CIELab lab, ushort[] wLab)
         {
-            LabEncoded2FloatV2_Internal(ref lab, wLab);
+            LabEncoded2FloatV2_Internal(out lab, wLab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2LabEncodedV2", CallingConvention = CallingConvention.StdCall)]
         private static extern void Float2LabEncodedV2_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab,
-                ref CIELab lab);
+                in CIELab lab);
 
-        internal static void Float2LabEncodedV2(CIELab lab, ref ushort[] wLab)
+        internal static void Float2LabEncodedV2(in CIELab lab, ushort[] wLab)
         {
-            Float2LabEncodedV2_Internal(wLab, ref lab);
+            Float2LabEncodedV2_Internal(wLab, lab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsXYZEncoded2Float", CallingConvention = CallingConvention.StdCall)]
         private static extern void XYZEncoded2Float_Internal(
-                ref CIEXYZ fxyz,
+                out CIEXYZ fxyz,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] xyz);
 
-        internal static void XYZEncoded2Float(ref CIEXYZ fxyz, ushort[] xyz)
+        internal static void XYZEncoded2Float(out CIEXYZ fxyz, ushort[] xyz)
         {
-            XYZEncoded2Float_Internal(ref fxyz, xyz);
+            XYZEncoded2Float_Internal(out fxyz, xyz);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2XYZEncoded", CallingConvention = CallingConvention.StdCall)]
         private static extern void Float2XYZEncoded_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] xyz,
-                ref CIEXYZ fxyz);
+                in CIEXYZ fxyz);
 
-        internal static void Float2XYZEncoded(CIEXYZ fxyz, ref ushort[] xyz)
+        internal static void Float2XYZEncoded(in CIEXYZ fxyz, ushort[] xyz)
         {
-            Float2XYZEncoded_Internal(xyz, ref fxyz);
+            Float2XYZEncoded_Internal(xyz, fxyz);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsDesaturateLab", CallingConvention = CallingConvention.StdCall)]
