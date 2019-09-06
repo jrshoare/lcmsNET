@@ -22,7 +22,7 @@ namespace lcmsNET
             return new GamutBoundaryDescriptor(Interop.GBDAlloc(context.Handle), context);
         }
 
-        public bool AddPoint(CIELab lab)
+        public bool AddPoint(in CIELab lab)
         {
             EnsureNotDisposed();
 
@@ -36,7 +36,7 @@ namespace lcmsNET
             return Interop.GBDCompute(_handle, flags) != 0;
         }
 
-        public bool CheckPoint(CIELab lab)
+        public bool CheckPoint(in CIELab lab)
         {
             EnsureNotDisposed();
 

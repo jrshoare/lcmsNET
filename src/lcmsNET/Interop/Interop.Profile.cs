@@ -41,46 +41,46 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateRGBProfile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateRGBProfile_Internal(
-                ref CIExyY whitePoint,
-                ref CIExyYTRIPLE primaries,
+                in CIExyY whitePoint,
+                in CIExyYTRIPLE primaries,
                 IntPtr[] transferFunction);
 
-        internal static IntPtr CreateRGB(CIExyY whitePoint, CIExyYTRIPLE primaries, IntPtr[] transferFunction)
+        internal static IntPtr CreateRGB(in CIExyY whitePoint, in CIExyYTRIPLE primaries, IntPtr[] transferFunction)
         {
-            return CreateRGBProfile_Internal(ref whitePoint, ref primaries, transferFunction);
+            return CreateRGBProfile_Internal(whitePoint, primaries, transferFunction);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateRGBProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateRGBProfileTHR_Internal(
                 IntPtr contextID,
-                ref CIExyY whitePoint,
-                ref CIExyYTRIPLE primaries,
+                in CIExyY whitePoint,
+                in CIExyYTRIPLE primaries,
                 IntPtr[] transferFunction);
 
-        internal static IntPtr CreateRGB(IntPtr contextID, CIExyY whitePoint, CIExyYTRIPLE primaries, IntPtr[] transferFunction)
+        internal static IntPtr CreateRGB(IntPtr contextID, in CIExyY whitePoint, in CIExyYTRIPLE primaries, IntPtr[] transferFunction)
         {
-            return CreateRGBProfileTHR_Internal(contextID, ref whitePoint, ref primaries, transferFunction);
+            return CreateRGBProfileTHR_Internal(contextID, whitePoint, primaries, transferFunction);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateGrayProfile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateGrayProfile_Internal(
-                ref CIExyY whitePoint,
+                in CIExyY whitePoint,
                 IntPtr transferFunction);
 
-        internal static IntPtr CreateGray(CIExyY whitePoint, IntPtr transferFunction)
+        internal static IntPtr CreateGray(in CIExyY whitePoint, IntPtr transferFunction)
         {
-            return CreateGrayProfile_Internal(ref whitePoint, transferFunction);
+            return CreateGrayProfile_Internal(whitePoint, transferFunction);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateGrayProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateGrayProfileTHR_Internal(
                 IntPtr contextID,
-                ref CIExyY whitePoint,
+                in CIExyY whitePoint,
                 IntPtr transferFunction);
 
-        internal static IntPtr CreateGray(IntPtr contextID, CIExyY whitePoint, IntPtr transferFunction)
+        internal static IntPtr CreateGray(IntPtr contextID, in CIExyY whitePoint, IntPtr transferFunction)
         {
-            return CreateGrayProfileTHR_Internal(contextID, ref whitePoint, transferFunction);
+            return CreateGrayProfileTHR_Internal(contextID, whitePoint, transferFunction);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLink", CallingConvention = CallingConvention.StdCall)]
@@ -138,40 +138,40 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLab2Profile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLab2Profile_Internal(
-                ref CIExyY whitePoint);
+                in CIExyY whitePoint);
 
-        internal static IntPtr CreateLab2(CIExyY whitePoint)
+        internal static IntPtr CreateLab2(in CIExyY whitePoint)
         {
-            return CreateLab2Profile_Internal(ref whitePoint);
+            return CreateLab2Profile_Internal(whitePoint);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLab2ProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLab2ProfileTHR_Internal(
                 IntPtr contextID,
-                ref CIExyY whitePoint);
+                in CIExyY whitePoint);
 
-        internal static IntPtr CreateLab2(IntPtr contextID, CIExyY whitePoint)
+        internal static IntPtr CreateLab2(IntPtr contextID, in CIExyY whitePoint)
         {
-            return CreateLab2ProfileTHR_Internal(contextID, ref whitePoint);
+            return CreateLab2ProfileTHR_Internal(contextID, whitePoint);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLab4Profile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLab4Profile_Internal(
-                ref CIExyY whitePoint);
+                in CIExyY whitePoint);
 
-        internal static IntPtr CreateLab4(CIExyY whitePoint)
+        internal static IntPtr CreateLab4(in CIExyY whitePoint)
         {
-            return CreateLab4Profile_Internal(ref whitePoint);
+            return CreateLab4Profile_Internal(whitePoint);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateLab4ProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLab4ProfileTHR_Internal(
                 IntPtr contextID,
-                ref CIExyY whitePoint);
+                in CIExyY whitePoint);
 
-        internal static IntPtr CreateLab4(IntPtr contextID, CIExyY whitePoint)
+        internal static IntPtr CreateLab4(IntPtr contextID, in CIExyY whitePoint)
         {
-            return CreateLab4ProfileTHR_Internal(contextID, ref whitePoint);
+            return CreateLab4ProfileTHR_Internal(contextID, whitePoint);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsCreateXYZProfile", CallingConvention = CallingConvention.StdCall)]
@@ -453,26 +453,26 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsDetectBlackPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int DetectBlackPoint_Internal(
-                ref CIEXYZ blackPoint,
+                out CIEXYZ blackPoint,
                 IntPtr profile,
                 [MarshalAs(UnmanagedType.U4)] uint intent,
                 [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static int DetectBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, uint intent, uint flags)
+        internal static int DetectBlackPoint(IntPtr handle, out CIEXYZ blackPoint, uint intent, uint flags)
         {
-            return DetectBlackPoint_Internal(ref blackPoint, handle, intent, flags);
+            return DetectBlackPoint_Internal(out blackPoint, handle, intent, flags);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsDetectDestinationBlackPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int DetectDestinationBlackPoint_Internal(
-                ref CIEXYZ blackPoint,
+                out CIEXYZ blackPoint,
                 IntPtr profile,
                 [MarshalAs(UnmanagedType.U4)] uint intent,
                 [MarshalAs(UnmanagedType.U4)] uint flags);
 
-        internal static int DetectDestinationBlackPoint(IntPtr handle, ref CIEXYZ blackPoint, uint intent, uint flags)
+        internal static int DetectDestinationBlackPoint(IntPtr handle, out CIEXYZ blackPoint, uint intent, uint flags)
         {
-            return DetectDestinationBlackPoint_Internal(ref blackPoint, handle, intent, flags);
+            return DetectDestinationBlackPoint_Internal(out blackPoint, handle, intent, flags);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsDetectTAC", CallingConvention = CallingConvention.StdCall)]
@@ -506,12 +506,11 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsGetHeaderCreationDateTime", CallingConvention = CallingConvention.StdCall)]
         private static extern int GetHeaderCreationDateTime_Internal(
                 IntPtr profile,
-                ref Tm tm);
+                out Tm tm);
 
         internal static int GetHeaderCreationDateTime(IntPtr handle, out DateTime dest)
         {
-            Tm tm = new Tm();
-            int result = GetHeaderCreationDateTime_Internal(handle, ref tm);
+            int result = GetHeaderCreationDateTime_Internal(handle, out Tm tm);
             if (result != 0)
             {
                 dest = new DateTime(tm.year + 1900, tm.mon + 1, tm.mday, tm.hour, tm.min, tm.sec);
@@ -583,12 +582,11 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsGetHeaderAttributes", CallingConvention = CallingConvention.StdCall)]
         private static extern void GetHeaderAttributes_Internal(
                 IntPtr profile,
-                ref ulong flags);
+                out ulong flags);
 
         internal static ulong GetHeaderAttributes(IntPtr handle)
         {
-            ulong flags = 0;
-            GetHeaderAttributes_Internal(handle, ref flags);
+            GetHeaderAttributes_Internal(handle, out ulong flags);
             return flags;
         }
 

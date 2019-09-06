@@ -50,7 +50,7 @@ namespace lcmsNET
         private static extern IntPtr BuildSegmentedToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nSegments,
-                [In] CurveSegment[] segments);
+                in CurveSegment[] segments);
 
         internal static IntPtr BuildSegmentedToneCurve(IntPtr contextID, CurveSegment[] segments)
         {

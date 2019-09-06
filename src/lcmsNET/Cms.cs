@@ -505,7 +505,7 @@ namespace lcmsNET
             get
             {
                 ushort[] alarmCodes = new ushort[16];
-                Interop.GetAlarmCodes(ref alarmCodes);
+                Interop.GetAlarmCodes(alarmCodes);
                 return alarmCodes;
             }
             set

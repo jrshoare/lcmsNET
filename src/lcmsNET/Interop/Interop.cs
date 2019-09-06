@@ -54,7 +54,7 @@ namespace lcmsNET
         private static extern void GetAlarmCodes_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
 
-        internal static void GetAlarmCodes(ref ushort[] alarmCodes)
+        internal static void GetAlarmCodes(ushort[] alarmCodes)
         {
             GetAlarmCodes_Internal(alarmCodes);
         }

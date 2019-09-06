@@ -24,26 +24,26 @@ namespace lcmsNET
             return new Profile(Interop.CreatePlaceholder(context.Handle), context);
         }
 
-        public static Profile CreateRGB(CIExyY whitePoint, CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
+        public static Profile CreateRGB(in CIExyY whitePoint, in CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
             return new Profile(Interop.CreateRGB(whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()));
         }
 
-        public static Profile CreateRGB(Context context, CIExyY whitePoint, CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
+        public static Profile CreateRGB(Context context, in CIExyY whitePoint, in CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
             return new Profile(Interop.CreateRGB(context.Handle, whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
-        public static Profile CreateGray(CIExyY whitePoint, ToneCurve transferFunction)
+        public static Profile CreateGray(in CIExyY whitePoint, ToneCurve transferFunction)
         {
             return new Profile(Interop.CreateGray(whitePoint, transferFunction.Handle));
         }
 
-        public static Profile CreateGray(Context context, CIExyY whitePoint, ToneCurve transferFunction)
+        public static Profile CreateGray(Context context, in CIExyY whitePoint, ToneCurve transferFunction)
         {
             return new Profile(Interop.CreateGray(context.Handle, whitePoint, transferFunction.Handle), context);
         }
@@ -74,22 +74,22 @@ namespace lcmsNET
             return new Profile(Interop.Transform2DeviceLink(transform.Handle, version, Convert.ToUInt32(flags)));
         }
 
-        public static Profile CreateLab2(CIExyY whitePoint)
+        public static Profile CreateLab2(in CIExyY whitePoint)
         {
             return new Profile(Interop.CreateLab2(whitePoint));
         }
 
-        public static Profile CreateLab2(Context context, CIExyY whitePoint)
+        public static Profile CreateLab2(Context context, in CIExyY whitePoint)
         {
             return new Profile(Interop.CreateLab2(context.Handle, whitePoint), context);
         }
 
-        public static Profile CreateLab4(CIExyY whitePoint)
+        public static Profile CreateLab4(in CIExyY whitePoint)
         {
             return new Profile(Interop.CreateLab4(whitePoint));
         }
 
-        public static Profile CreateLab4(Context context, CIExyY whitePoint)
+        public static Profile CreateLab4(Context context, in CIExyY whitePoint)
         {
             return new Profile(Interop.CreateLab4(context.Handle, whitePoint), context);
         }
@@ -190,14 +190,14 @@ namespace lcmsNET
         #endregion
 
         #region Feature detection
-        public bool DetectBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
+        public bool DetectBlackPoint(out CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            return Interop.DetectBlackPoint(_handle, ref blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
+            return Interop.DetectBlackPoint(_handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
 
-        public bool DetectDestinationBlackPoint(ref CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
+        public bool DetectDestinationBlackPoint(out CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            return Interop.DetectDestinationBlackPoint(_handle, ref blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
+            return Interop.DetectDestinationBlackPoint(_handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
         #endregion
 

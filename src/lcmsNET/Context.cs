@@ -56,7 +56,7 @@ namespace lcmsNET
                 EnsureNotDisposed();
 
                 ushort[] alarmCodes = new ushort[16];
-                Interop.GetAlarmCodesTHR(_handle, ref alarmCodes);
+                Interop.GetAlarmCodesTHR(_handle, alarmCodes);
                 return alarmCodes;
             }
             set

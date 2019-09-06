@@ -2,22 +2,22 @@
 {
     public sealed class DeltaE
     {
-        public static double DE76(CIELab lab1, CIELab lab2)
+        public static double DE76(in CIELab lab1, in CIELab lab2)
         {
             return Interop.DeltaE(lab1, lab2);
         }
 
-        public static double CMC(CIELab lab1, CIELab lab2, double l, double c)
+        public static double CMC(in CIELab lab1, in CIELab lab2, double l, double c)
         {
             return Interop.CMCDeltaE(lab1, lab2, l, c);
         }
 
-        public static double BFD(CIELab lab1, CIELab lab2)
+        public static double BFD(in CIELab lab1, in CIELab lab2)
         {
             return Interop.BFDDeltaE(lab1, lab2);
         }
 
-        public static double CIE94(CIELab lab1, CIELab lab2)
+        public static double CIE94(in CIELab lab1, in CIELab lab2)
         {
             return Interop.CIE94DeltaE(lab1, lab2);
         }

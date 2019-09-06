@@ -26,11 +26,11 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsGDBAddPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int GDBAddPoint_Internal(
             IntPtr handle,
-            ref CIELab lab);
+            in CIELab lab);
 
-        internal static int GBDAddPoint(IntPtr handle, CIELab lab)
+        internal static int GBDAddPoint(IntPtr handle, in CIELab lab)
         {
-            return GDBAddPoint_Internal(handle, ref lab);
+            return GDBAddPoint_Internal(handle, lab);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGDBCompute", CallingConvention = CallingConvention.StdCall)]
@@ -46,11 +46,11 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsGDBCheckPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int GDBCheckPoint_Internal(
             IntPtr handle,
-            ref CIELab lab);
+            in CIELab lab);
 
-        internal static int GBDCheckPoint(IntPtr handle, CIELab lab)
+        internal static int GBDCheckPoint(IntPtr handle, in CIELab lab)
         {
-            return GDBCheckPoint_Internal(handle, ref lab);
+            return GDBCheckPoint_Internal(handle, lab);
         }
     }
 }

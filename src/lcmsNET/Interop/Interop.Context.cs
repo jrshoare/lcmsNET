@@ -77,7 +77,7 @@ namespace lcmsNET
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
 
-        internal static void GetAlarmCodesTHR(IntPtr handle, ref ushort[] alarmCodes)
+        internal static void GetAlarmCodesTHR(IntPtr handle, ushort[] alarmCodes)
         {
             GetAlarmCodesTHR_Internal(handle, alarmCodes);
         }

@@ -837,7 +837,6 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            CIEXYZ blackPoint = new CIEXYZ { X = 0.0, Y = 0.0, Z = 0.0 };
             Intent intent = Intent.RelativeColorimetric;
 
             try
@@ -848,7 +847,7 @@ namespace lcmsNET.Tests
                 using (var profile = Profile.Open(srgbpath, "r"))
                 {
                     // Act
-                    bool detected = profile.DetectBlackPoint(ref blackPoint, intent);
+                    bool detected = profile.DetectBlackPoint(out CIEXYZ blackPoint, intent);
 
                     // Assert
                     Assert.IsTrue(detected);
@@ -866,7 +865,6 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            CIEXYZ blackPoint = new CIEXYZ { X = 0.0, Y = 0.0, Z = 0.0 };
             Intent intent = Intent.RelativeColorimetric;
 
             try
@@ -877,7 +875,7 @@ namespace lcmsNET.Tests
                 using (var profile = Profile.Open(srgbpath, "r"))
                 {
                     // Act
-                    bool detected = profile.DetectDestinationBlackPoint(ref blackPoint, intent);
+                    bool detected = profile.DetectDestinationBlackPoint(out CIEXYZ blackPoint, intent);
 
                     // Assert
                     Assert.IsTrue(detected);
