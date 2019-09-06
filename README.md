@@ -79,6 +79,7 @@ using (var transform = Transform.Create(input, Cms.TYPE_RGB_8, output, Cms.TYPE_
 See the unit tests for examples of how to invoke each supported method and property.
 
 # Future work
+* Publish as NuGet package
 * Plug ins
 * IO handlers
 * PostScript generation
