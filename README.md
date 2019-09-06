@@ -1,4 +1,5 @@
-# lcmsNET
+# lcmsNET [![GitHub license](https://img.shields.io/static/v1?label=license&message=MIT&color=green)](https://github.com/jrshoare/lcmsNET/blob/master/LICENSE)
+
 .NET bindings for Little CMS (http://www.littlecms.com/)
 
 # Requirements
