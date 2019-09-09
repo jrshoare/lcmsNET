@@ -1,3 +1,7 @@
 language: csharp
 solution: lcmsNET.sln
-dotnet: 2.1.508
+
+mono: none
+dotnet: 2.2.108
+script:
+  - dotnet restore
