@@ -406,8 +406,10 @@ namespace lcmsNET
 
         internal static string GetProfileInfo(IntPtr handle, uint info, string languageCode, string countryCode)
         {
-            byte[] language = Encoding.ASCII.GetBytes(languageCode);
-            byte[] country = Encoding.ASCII.GetBytes(countryCode);
+            byte[] language = new byte[3] { 0, 0, 0 };
+            Encoding.ASCII.GetBytes(languageCode, 0, languageCode.Length, language, 0);
+            byte[] country = new byte[3] { 0, 0, 0 };
+            Encoding.ASCII.GetBytes(countryCode, 0, countryCode.Length, country, 0);
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
@@ -415,7 +417,7 @@ namespace lcmsNET
             try
             {
                 GetProfileInfo_Internal(handle, info, language, country, buffer, bytes);
-                return Marshal.PtrToStringAuto(buffer);
+                return Marshal.PtrToStringUni(buffer);
             }
             finally
             {
@@ -434,8 +436,10 @@ namespace lcmsNET
 
         internal static string GetProfileInfoASCII(IntPtr handle, uint info, string languageCode, string countryCode)
         {
-            byte[] language = Encoding.ASCII.GetBytes(languageCode);
-            byte[] country = Encoding.ASCII.GetBytes(countryCode);
+            byte[] language = new byte[3] { 0, 0, 0 };
+            Encoding.ASCII.GetBytes(languageCode, 0, languageCode.Length, language, 0);
+            byte[] country = new byte[3] { 0, 0, 0 };
+            Encoding.ASCII.GetBytes(countryCode, 0, countryCode.Length, country, 0);
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);
@@ -506,20 +510,31 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "cmsGetHeaderCreationDateTime", CallingConvention = CallingConvention.StdCall)]
         private static extern int GetHeaderCreationDateTime_Internal(
                 IntPtr profile,
-                out Tm tm);
+                IntPtr tm);
 
         internal static int GetHeaderCreationDateTime(IntPtr handle, out DateTime dest)
         {
-            int result = GetHeaderCreationDateTime_Internal(handle, out Tm tm);
-            if (result != 0)
+            int size = Marshal.SizeOf(typeof(Tm));
+            IntPtr ptr = Marshal.AllocHGlobal(size + 16);   // workaround for memory corruption on Ubuntu systems
+
+            try
             {
-                dest = new DateTime(tm.year + 1900, tm.mon + 1, tm.mday, tm.hour, tm.min, tm.sec);
+                int result = GetHeaderCreationDateTime_Internal(handle, ptr);
+                if (result != 0)
+                {
+                    Tm tm = Marshal.PtrToStructure<Tm>(ptr);
+                    dest = new DateTime(tm.year + 1900, tm.mon + 1, tm.mday, tm.hour, tm.min, tm.sec);
+                }
+                else
+                {
+                    dest = DateTime.MinValue;
+                }
+                return result;
             }
-            else
+            finally
             {
-                dest = DateTime.MinValue;
+                Marshal.FreeHGlobal(ptr);
             }
-            return result;
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetHeaderFlags", CallingConvention = CallingConvention.StdCall)]

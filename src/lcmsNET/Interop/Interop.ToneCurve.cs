@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -50,11 +51,34 @@ namespace lcmsNET
         private static extern IntPtr BuildSegmentedToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nSegments,
-                in CurveSegment[] segments);
+                IntPtr segments);
 
         internal static IntPtr BuildSegmentedToneCurve(IntPtr contextID, CurveSegment[] segments)
         {
-            return BuildSegmentedToneCurve_Internal(contextID, segments.Length, segments);
+            var totalSize = segments.Select(_ => Marshal.SizeOf(_)).Sum();
+            IntPtr ptr = Marshal.AllocHGlobal(totalSize);
+            try
+            {
+                byte[] temp = new byte[totalSize];
+                int start = 0;
+                foreach (var segment in segments)
+                {
+                    int segmentLength = Marshal.SizeOf(segment);
+                    IntPtr segmentPtr = Marshal.AllocHGlobal(segmentLength);
+                    Marshal.StructureToPtr(segment, segmentPtr, false);
+                    Marshal.Copy(segmentPtr, temp, start, segmentLength);
+                    start += segmentLength;
+                    Marshal.DestroyStructure(segmentPtr, typeof(CurveSegment));
+                    Marshal.FreeHGlobal(segmentPtr);
+                }
+                Marshal.Copy(temp, 0, ptr, totalSize);
+
+                return BuildSegmentedToneCurve_Internal(contextID, segments.Length, ptr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurve16", CallingConvention = CallingConvention.StdCall)]

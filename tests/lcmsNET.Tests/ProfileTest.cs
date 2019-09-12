@@ -956,6 +956,7 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
             var notExpected = DateTime.MinValue;
+            DateTime now = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
             using (var context = Context.Create(plugin, userData))
             using (var profile = Profile.CreatePlaceholder(context))
@@ -966,6 +967,7 @@ namespace lcmsNET.Tests
                 // Assert
                 Assert.IsTrue(obtained);
                 Assert.AreNotEqual(notExpected, actual);
+                Assert.IsTrue(actual >= now);
             }
         }
 
