@@ -16,6 +16,8 @@ To use on Windows, make sure that `lcms2.dll` is in the [DLL search path](https:
 
 To use on Linux see the [API Reference](http://www.littlecms.com/LittleCMS2.9%20API.pdf) documentation on the Little CMS web site for installation instructions.
 
+This library is available as a [NuGet package](https://www.nuget.org/packages/lcmsNET/) too.
+
 # How to build
 
 To build this library you need to install the [.NET Core SDK](https://dotnet.microsoft.com/download/visual-studio-sdks).
@@ -82,7 +84,6 @@ using (var transform = Transform.Create(input, Cms.TYPE_RGB_8, output, Cms.TYPE_
 See the unit tests for examples of how to invoke each supported method and property.
 
 # Future work
-* Publish as NuGet package
 * Plug ins
 * IO handlers
 * PostScript generation

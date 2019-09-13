@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,7 +10,11 @@
     <Authors>jrshoare</Authors>
     <Company />
     <Description>Little CMS wrapper for .NET.</Description>
-    <PackageTags>Little CMS Wrapper lcms</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>little-cms wrapper lcms2 color colour</PackageTags>
+    <PackageProjectUrl>https://github.com/jrshoare/lcmsNET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jrshoare/lcmsNET</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
