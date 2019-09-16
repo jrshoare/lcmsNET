@@ -1,4 +1,5 @@
-﻿using System;
+﻿using lcmsNET.Impl;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -406,10 +407,8 @@ namespace lcmsNET
 
         internal static string GetProfileInfo(IntPtr handle, uint info, string languageCode, string countryCode)
         {
-            byte[] language = new byte[3] { 0, 0, 0 };
-            Encoding.ASCII.GetBytes(languageCode, 0, languageCode.Length, language, 0);
-            byte[] country = new byte[3] { 0, 0, 0 };
-            Encoding.ASCII.GetBytes(countryCode, 0, countryCode.Length, country, 0);
+            byte[] language = Helper.ToASCIIBytes(languageCode);
+            byte[] country = Helper.ToASCIIBytes(countryCode);
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
@@ -436,10 +435,8 @@ namespace lcmsNET
 
         internal static string GetProfileInfoASCII(IntPtr handle, uint info, string languageCode, string countryCode)
         {
-            byte[] language = new byte[3] { 0, 0, 0 };
-            Encoding.ASCII.GetBytes(languageCode, 0, languageCode.Length, language, 0);
-            byte[] country = new byte[3] { 0, 0, 0 };
-            Encoding.ASCII.GetBytes(countryCode, 0, countryCode.Length, country, 0);
+            byte[] language = Helper.ToASCIIBytes(languageCode);
+            byte[] country = Helper.ToASCIIBytes(countryCode);
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);

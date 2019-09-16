@@ -90,7 +90,6 @@ See the unit tests for examples of how to invoke each supported method and prope
 * CGATS.17-200x handling
 * Named color lists
 * Profile sequences
-* Multilocalized Unicode management
 * Dictionaries
 * Conversion of return from `Profile.ReadTag(TagSignature)` to class instance  
 (Note that conversion to `struct` is already supported via `Marshal.PtrToStructure<T>(IntPtr)`)
