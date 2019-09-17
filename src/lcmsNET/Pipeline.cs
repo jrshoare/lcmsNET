@@ -27,7 +27,7 @@ namespace lcmsNET
 
         public static Pipeline Create(Context context, uint inputChannels, uint outputChannels)
         {
-            return new Pipeline(Interop.PipelineAlloc(context.Handle, inputChannels, outputChannels), context);
+            return new Pipeline(Interop.PipelineAlloc(context?.Handle ?? IntPtr.Zero, inputChannels, outputChannels), context);
         }
 
         public Pipeline Duplicate()

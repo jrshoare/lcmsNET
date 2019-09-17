@@ -32,12 +32,12 @@ namespace lcmsNET
 
         public static Stage Create(Context context, uint nChannels)
         {
-            return new Stage(Interop.StageAllocIdentity(context.Handle, nChannels), context);
+            return new Stage(Interop.StageAllocIdentity(context?.Handle ?? IntPtr.Zero, nChannels), context);
         }
 
         public static Stage Create(Context context, uint nChannels, ToneCurve[] curves)
         {
-            return new Stage(Interop.StageAllocToneCurves(context.Handle, nChannels, curves.Select(_ => _.Handle).ToArray()), context);
+            return new Stage(Interop.StageAllocToneCurves(context?.Handle ?? IntPtr.Zero, nChannels, curves.Select(_ => _.Handle).ToArray()), context);
         }
 
         public static Stage Create(Context context, double[,] matrix, double[] offset)
@@ -47,31 +47,31 @@ namespace lcmsNET
                 throw new ArgumentException($"'{nameof(offset)}' array size must equal size of '{nameof(matrix)}' second dimension.");
             }
 
-            return new Stage(Interop.StageAllocMatrix(context.Handle, matrix, offset), context);
+            return new Stage(Interop.StageAllocMatrix(context?.Handle ?? IntPtr.Zero, matrix, offset), context);
         }
 
         public static Stage Create(Context context, uint nGridPoints, uint inputChannels, uint outputChannels, ushort[] table)
         {
-            return new Stage(Interop.StageAllocCLut16bit(context.Handle, nGridPoints, inputChannels, outputChannels, table), context);
+            return new Stage(Interop.StageAllocCLut16bit(context?.Handle ?? IntPtr.Zero, nGridPoints, inputChannels, outputChannels, table), context);
         }
 
         public static Stage Create(Context context, uint nGridPoints, uint inputChannels, uint outputChannels, float[] table)
         {
-            return new Stage(Interop.StageAllocCLutFloat(context.Handle, nGridPoints, inputChannels, outputChannels, table), context);
+            return new Stage(Interop.StageAllocCLutFloat(context?.Handle ?? IntPtr.Zero, nGridPoints, inputChannels, outputChannels, table), context);
         }
 
         public static Stage Create(Context context, uint[] clutPoints, uint outputChannels, ushort[] table)
         {
             if (!(clutPoints?.Length > 0)) throw new ArgumentException($"'{nameof(clutPoints)}' array size must be greater than 0.");
 
-            return new Stage(Interop.StageAllocCLut16bitGranular(context.Handle, clutPoints, outputChannels, table), context);
+            return new Stage(Interop.StageAllocCLut16bitGranular(context?.Handle ?? IntPtr.Zero, clutPoints, outputChannels, table), context);
         }
 
         public static Stage Create(Context context, uint[] clutPoints, uint outputChannels, float[] table)
         {
             if (!(clutPoints?.Length > 0)) throw new ArgumentException($"'{nameof(clutPoints)}' array size must be greater than 0.");
 
-            return new Stage(Interop.StageAllocCLutFloatGranular(context.Handle, clutPoints, outputChannels, table), context);
+            return new Stage(Interop.StageAllocCLutFloatGranular(context?.Handle ?? IntPtr.Zero, clutPoints, outputChannels, table), context);
         }
 
         public Stage Duplicate()

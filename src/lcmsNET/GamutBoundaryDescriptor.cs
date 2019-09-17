@@ -19,7 +19,7 @@ namespace lcmsNET
 
         public static GamutBoundaryDescriptor Create(Context context)
         {
-            return new GamutBoundaryDescriptor(Interop.GBDAlloc(context.Handle), context);
+            return new GamutBoundaryDescriptor(Interop.GBDAlloc(context?.Handle ?? IntPtr.Zero), context);
         }
 
         public bool AddPoint(in CIELab lab)

@@ -40,31 +40,31 @@ namespace lcmsNET
         {
             if (parameters?.Length > 10) throw new ArgumentException($"'{nameof(parameters)}' array size must not exceed 10.");
 
-            return new ToneCurve(Interop.BuildParametricToneCurve(context.Handle, type, parameters), context);
+            return new ToneCurve(Interop.BuildParametricToneCurve(context?.Handle ?? IntPtr.Zero, type, parameters), context);
         }
 
         public static ToneCurve BuildGamma(Context context, double gamma)
         {
-            return new ToneCurve(Interop.BuildGammaToneCurve(context.Handle, gamma), context);
+            return new ToneCurve(Interop.BuildGammaToneCurve(context?.Handle ?? IntPtr.Zero, gamma), context);
         }
         #endregion
 
         #region Segmented curves
         public static ToneCurve BuildSegmented(Context context, CurveSegment[] segments)
         {
-            return new ToneCurve(Interop.BuildSegmentedToneCurve(context.Handle, segments), context);
+            return new ToneCurve(Interop.BuildSegmentedToneCurve(context?.Handle ?? IntPtr.Zero, segments), context);
         }
         #endregion
 
         #region Tabulated curves
         public static ToneCurve BuildTabulated(Context context, ushort[] values)
         {
-            return new ToneCurve(Interop.BuildTabulatedToneCurve(context.Handle, values), context);
+            return new ToneCurve(Interop.BuildTabulatedToneCurve(context?.Handle ?? IntPtr.Zero, values), context);
         }
 
         public static ToneCurve BuildTabulated(Context context, float[] values)
         {
-            return new ToneCurve(Interop.BuildTabulatedToneCurve(context.Handle, values), context);
+            return new ToneCurve(Interop.BuildTabulatedToneCurve(context?.Handle ?? IntPtr.Zero, values), context);
         }
         #endregion
 
@@ -85,7 +85,7 @@ namespace lcmsNET
 
         public ToneCurve Join(Context context, ToneCurve other, int nPoints)
         {
-            return new ToneCurve(Interop.JoinToneCurve(context.Handle, _handle, other.Handle, nPoints));
+            return new ToneCurve(Interop.JoinToneCurve(context?.Handle ?? IntPtr.Zero, _handle, other.Handle, nPoints));
         }
 
         public bool Smooth(double lambda)

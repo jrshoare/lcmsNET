@@ -28,7 +28,7 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(context.Handle, input.Handle, inputFormat,
+            return new Transform(Interop.CreateTransform(context?.Handle ?? IntPtr.Zero, input.Handle, inputFormat,
                     output.Handle, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
@@ -43,7 +43,7 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Profile proofing, Intent intent, Intent proofingIntent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(context.Handle, input.Handle, inputFormat,
+            return new Transform(Interop.CreateTransform(context?.Handle ?? IntPtr.Zero, input.Handle, inputFormat,
                     output.Handle, outputFormat, proofing.Handle, Convert.ToUInt32(intent),
                     Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)), context);
         }
@@ -58,7 +58,7 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile[] profiles, uint inputFormat, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateMultiprofileTransform(context.Handle,
+            return new Transform(Interop.CreateMultiprofileTransform(context?.Handle ?? IntPtr.Zero,
                     profiles.Select(_ => _.Handle).ToArray(),
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
@@ -66,7 +66,7 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile[] profiles, bool[] bpc, Intent[] intents,
                 double[] adaptationStates, Profile gamut, int gamutPCSPosition, uint inputFormat, uint outputFormat, CmsFlags flags)
         {
-            return new Transform(Interop.CreateExtendedTransform(context.Handle,
+            return new Transform(Interop.CreateExtendedTransform(context?.Handle ?? IntPtr.Zero,
                     profiles.Select(_ => _.Handle).ToArray(),
                     bpc.Select(_ => _ ? 1 : 0).ToArray(),
                     intents.Select(_ => Convert.ToUInt32(_)).ToArray(), adaptationStates, gamut?.Handle ?? IntPtr.Zero,

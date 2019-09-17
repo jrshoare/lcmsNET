@@ -163,12 +163,15 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
+            IntPtr notExpected = IntPtr.Zero;
 
             // Act
             using (var context = Context.Create(plugin, userData))
             {
+                IntPtr actual = context.ID;
+
                 // Assert
-                Assert.AreNotEqual(0, context.ID);
+                Assert.AreNotEqual(notExpected, actual);
             }
         }
 

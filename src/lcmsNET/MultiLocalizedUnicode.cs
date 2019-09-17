@@ -22,7 +22,7 @@ namespace lcmsNET
 
         public static MultiLocalizedUnicode Create(Context context, uint nItems)
         {
-            return new MultiLocalizedUnicode(Interop.MLUAlloc(context.Handle, nItems), context);
+            return new MultiLocalizedUnicode(Interop.MLUAlloc(context?.Handle ?? IntPtr.Zero, nItems), context);
         }
 
         public MultiLocalizedUnicode Duplicate()

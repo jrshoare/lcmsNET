@@ -21,7 +21,7 @@ namespace lcmsNET
         #region Predefined virtual profiles
         public static Profile CreatePlaceholder(Context context)
         {
-            return new Profile(Interop.CreatePlaceholder(context.Handle), context);
+            return new Profile(Interop.CreatePlaceholder(context?.Handle ?? IntPtr.Zero), context);
         }
 
         public static Profile CreateRGB(in CIExyY whitePoint, in CIExyYTRIPLE primaries, ToneCurve[] transferFunction)
@@ -35,7 +35,7 @@ namespace lcmsNET
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
-            return new Profile(Interop.CreateRGB(context.Handle, whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
+            return new Profile(Interop.CreateRGB(context?.Handle ?? IntPtr.Zero, whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
         public static Profile CreateGray(in CIExyY whitePoint, ToneCurve transferFunction)
@@ -45,7 +45,7 @@ namespace lcmsNET
 
         public static Profile CreateGray(Context context, in CIExyY whitePoint, ToneCurve transferFunction)
         {
-            return new Profile(Interop.CreateGray(context.Handle, whitePoint, transferFunction.Handle), context);
+            return new Profile(Interop.CreateGray(context?.Handle ?? IntPtr.Zero, whitePoint, transferFunction.Handle), context);
         }
 
         public static Profile CreateLinearizationDeviceLink(ColorSpaceSignature space, ToneCurve[] transferFunction)
@@ -55,7 +55,7 @@ namespace lcmsNET
 
         public static Profile CreateLinearizationDeviceLink(Context context, ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
-            return new Profile(Interop.CreateLinearizationDeviceLink(context.Handle, Convert.ToUInt32(space),
+            return new Profile(Interop.CreateLinearizationDeviceLink(context?.Handle ?? IntPtr.Zero, Convert.ToUInt32(space),
                     transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
@@ -66,7 +66,7 @@ namespace lcmsNET
 
         public static Profile CreateInkLimitingDeviceLink(Context context, ColorSpaceSignature space, double limit)
         {
-            return new Profile(Interop.CreateInkLimitingDeviceLink(context.Handle, Convert.ToUInt32(space), limit), context);
+            return new Profile(Interop.CreateInkLimitingDeviceLink(context?.Handle ?? IntPtr.Zero, Convert.ToUInt32(space), limit), context);
         }
 
         public static Profile CreateDeviceLink(Transform transform, double version, CmsFlags flags)
@@ -81,7 +81,7 @@ namespace lcmsNET
 
         public static Profile CreateLab2(Context context, in CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab2(context.Handle, whitePoint), context);
+            return new Profile(Interop.CreateLab2(context?.Handle ?? IntPtr.Zero, whitePoint), context);
         }
 
         public static Profile CreateLab4(in CIExyY whitePoint)
@@ -91,7 +91,7 @@ namespace lcmsNET
 
         public static Profile CreateLab4(Context context, in CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab4(context.Handle, whitePoint), context);
+            return new Profile(Interop.CreateLab4(context?.Handle ?? IntPtr.Zero, whitePoint), context);
         }
 
         public static Profile CreateXYZ()
@@ -101,7 +101,7 @@ namespace lcmsNET
 
         public static Profile CreateXYZ(Context context)
         {
-            return new Profile(Interop.CreateXYZ(context.Handle), context);
+            return new Profile(Interop.CreateXYZ(context?.Handle ?? IntPtr.Zero), context);
         }
 
         public static Profile Create_sRGB()
@@ -111,7 +111,7 @@ namespace lcmsNET
 
         public static Profile Create_sRGB(Context context)
         {
-            return new Profile(Interop.Create_sRGB(context.Handle), context);
+            return new Profile(Interop.Create_sRGB(context?.Handle ?? IntPtr.Zero), context);
         }
 
         public static Profile CreateNull()
@@ -121,7 +121,7 @@ namespace lcmsNET
 
         public static Profile CreateNull(Context context)
         {
-            return new Profile(Interop.CreateNull(context.Handle), context);
+            return new Profile(Interop.CreateNull(context?.Handle ?? IntPtr.Zero), context);
         }
 
         public static Profile CreateBCHSWabstract(int nLutPoints, double bright, double contrast,
@@ -133,7 +133,7 @@ namespace lcmsNET
         public static Profile CreateBCHSWabstract(Context context, int nLutPoints, double bright, double contrast,
                 double hue, double saturation, int tempSrc, int tempDest)
         {
-            return new Profile(Interop.CreateBCHSWabstract(context.Handle, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
+            return new Profile(Interop.CreateBCHSWabstract(context?.Handle ?? IntPtr.Zero, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
         }
         #endregion
 
@@ -145,7 +145,7 @@ namespace lcmsNET
 
         public static Profile Open(Context context, string filepath, string access)
         {
-            return new Profile(Interop.OpenProfile(context.Handle, filepath, access), context);
+            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, filepath, access), context);
         }
 
         public static Profile Open(byte[] memory)
@@ -155,7 +155,7 @@ namespace lcmsNET
 
         public static Profile Open(Context context, byte[] memory)
         {
-            return new Profile(Interop.OpenProfile(context.Handle, memory));
+            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, memory));
         }
 
         public bool Save(string filepath)

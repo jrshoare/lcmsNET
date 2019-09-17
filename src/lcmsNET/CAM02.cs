@@ -34,7 +34,7 @@ namespace lcmsNET
 
         public static CAM02 Create(Context context, in ViewingConditions conditions)
         {
-            return new CAM02(Interop.CIECAM02Init(context.Handle, conditions), context);
+            return new CAM02(Interop.CIECAM02Init(context?.Handle ?? IntPtr.Zero, conditions), context);
         }
 
         public void Forward(in CIEXYZ xyz, out JCh jch)
