@@ -163,7 +163,7 @@ namespace lcmsNET
         {
             if (_handle == IntPtr.Zero)
             {
-                throw new ObjectDisposedException(nameof(Pipeline));
+                throw new ObjectDisposedException(nameof(Dict));
             }
         }
 

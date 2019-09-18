@@ -26,6 +26,12 @@ namespace lcmsNET
             return new MultiLocalizedUnicode(handle, context, isOwner: false);
         }
 
+        internal void Release()
+        {
+            Interlocked.Exchange(ref _handle, IntPtr.Zero);
+            Context = null;
+        }
+
         public static MultiLocalizedUnicode Create(Context context, uint nItems)
         {
             return new MultiLocalizedUnicode(Interop.MLUAlloc(context?.Handle ?? IntPtr.Zero, nItems), context);
@@ -92,7 +98,7 @@ namespace lcmsNET
         {
             if (_handle == IntPtr.Zero)
             {
-                throw new ObjectDisposedException(nameof(Pipeline));
+                throw new ObjectDisposedException(nameof(MultiLocalizedUnicode));
             }
         }
 
