@@ -19,7 +19,7 @@ namespace lcmsNET
             IsOwner = isOwner;
         }
 
-        internal static Stage Copy(IntPtr handle, Context context = null)
+        internal static Stage CopyRef(IntPtr handle, Context context = null)
         {
             return new Stage(handle, context, isOwner: false);
         }

@@ -166,7 +166,7 @@ namespace lcmsNET
                     }
                     else
                     {
-                        _current = Stage.Copy(First);
+                        _current = Stage.CopyRef(First);
                         Location = Position.During;
                     }
                 }
@@ -179,7 +179,7 @@ namespace lcmsNET
                     }
                     else
                     {
-                        _current = Stage.Copy(Interop.StageNext(_current.Handle));
+                        _current = Stage.CopyRef(Interop.StageNext(_current.Handle));
                     }
                 }
                 return Location == Position.During;

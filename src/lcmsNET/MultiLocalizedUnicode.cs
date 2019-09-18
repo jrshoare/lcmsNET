@@ -12,12 +12,18 @@ namespace lcmsNET
 
         private IntPtr _handle;
 
-        internal MultiLocalizedUnicode(IntPtr handle, Context context = null)
+        internal MultiLocalizedUnicode(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<MultiLocalizedUnicode>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
+        }
+
+        internal static MultiLocalizedUnicode CopyRef(IntPtr handle, Context context = null)
+        {
+            return new MultiLocalizedUnicode(handle, context, isOwner: false);
         }
 
         public static MultiLocalizedUnicode Create(Context context, uint nItems)
@@ -92,11 +98,14 @@ namespace lcmsNET
 
         private void Dispose(bool disposing)
         {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner)    // only dispose objects that we own
             {
-                Interop.MLUFree(handle);
-                Context = null;
+                var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
+                if (handle != IntPtr.Zero)
+                {
+                    Interop.MLUFree(handle);
+                    Context = null;
+                }
             }
         }
 
@@ -113,5 +122,7 @@ namespace lcmsNET
         #endregion
 
         internal IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }
