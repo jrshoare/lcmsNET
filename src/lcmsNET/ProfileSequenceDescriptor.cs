@@ -12,7 +12,7 @@ namespace lcmsNET
 
         internal ProfileSequenceDescriptor(IntPtr handle, Context context = null)
         {
-            Helper.CheckCreated<Profile>(handle);
+            Helper.CheckCreated<ProfileSequenceDescriptor>(handle);
 
             _handle = handle;
             Context = context;

@@ -19,7 +19,7 @@ namespace lcmsNET
 
         internal Pipeline(IntPtr handle, Context context = null)
         {
-            Helper.CheckCreated<Profile>(handle);
+            Helper.CheckCreated<Pipeline>(handle);
 
             _handle = handle;
             Context = context;

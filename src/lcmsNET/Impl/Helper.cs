@@ -9,7 +9,7 @@ namespace lcmsNET.Impl
         {
             if (handle == IntPtr.Zero)
             {
-                throw new LcmsNETException($"Failed to create {typeof(T)}.");
+                throw new LcmsNETException($"Failed to create instance of type '{typeof(T)}'.");
             }
         }
 
