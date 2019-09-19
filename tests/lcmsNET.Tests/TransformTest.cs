@@ -631,5 +631,13 @@ namespace lcmsNET.Tests
                 Assert.IsTrue(changed);
             }
         }
+
+        [TestMethod()]
+        public void NamedColorListTest()
+        {
+            // TODO:
+            // Need to understand how to create a transform where the cmsStage type
+            // is cmsSigNamedColorElemType. See 'cmsGetNamedColorList' in cmsnamed.c.
+        }
     }
 }

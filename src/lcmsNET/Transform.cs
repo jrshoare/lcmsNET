@@ -102,6 +102,8 @@ namespace lcmsNET
 
         public uint OutputFormat => Interop.GetTransformOutputFormat(_handle);
 
+        public NamedColorList NamedColorList => NamedColorList.CopyRef(Interop.GetNamedColorList(_handle));
+
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
 
