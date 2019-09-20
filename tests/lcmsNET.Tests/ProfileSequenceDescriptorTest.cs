@@ -53,6 +53,14 @@ namespace lcmsNET.Tests
         //
         #endregion
 
+        MultiLocalizedUnicode Create(string enUS, string esES)
+        {
+            var mlu = MultiLocalizedUnicode.Create(null, 0);
+            mlu.SetWide("en", "US", enUS);
+            mlu.SetWide("es", "ES", esES);
+            return mlu;
+        }
+
         [TestMethod()]
         public void CreateTest()
         {
@@ -144,14 +152,33 @@ namespace lcmsNET.Tests
                 // Assert
                 Assert.IsTrue(written);
             }
+        }
 
-            // local function to populate and return a multi-localized unicode instance
-            MultiLocalizedUnicode Create(string enUS, string esES)
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            uint expected = 1;
+
+            using (var profile = Profile.CreatePlaceholder(null))
             {
-                var mlu = MultiLocalizedUnicode.Create(null, 0);
-                mlu.SetWide("en", "US", enUS);
-                mlu.SetWide("es", "ES", esES);
-                return mlu;
+                using (var psd = ProfileSequenceDescriptor.Create(null, expected))
+                {
+                    var item = psd[0];
+                    item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
+                    item.Manufacturer = Create("Hello 0", "Hola 0");
+                    item.Model = Create("Hello 0", "Hola 0");
+
+                    profile.WriteTag(TagSignature.ProfileSequenceDesc, psd.Handle);
+                }
+
+                // Act
+                using (var roPsd = ProfileSequenceDescriptor.FromHandle(profile.ReadTag(TagSignature.ProfileSequenceDesc)))
+                {
+                    // Assert
+                    uint actual = roPsd.Length;
+                    Assert.AreEqual(expected, actual);
+                }
             }
         }
     }

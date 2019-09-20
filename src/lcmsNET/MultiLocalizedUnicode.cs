@@ -21,6 +21,20 @@ namespace lcmsNET
             IsOwner = isOwner;
         }
 
+        /// <summary>
+        /// Creates a multi-localized unicode from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing multi-localized unicode.</param>
+        /// <returns>A new <see cref="MultiLocalizedUnicode"/> instance referencing an existing multi-localized unicode.</returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static MultiLocalizedUnicode FromHandle(IntPtr handle)
+        {
+            return new MultiLocalizedUnicode(handle, context: null, isOwner: false);
+        }
+
         internal static MultiLocalizedUnicode CopyRef(IntPtr handle, Context context = null)
         {
             return new MultiLocalizedUnicode(handle, context, isOwner: false);
@@ -104,14 +118,11 @@ namespace lcmsNET
 
         private void Dispose(bool disposing)
         {
-            if (IsOwner)    // only dispose objects that we own
+            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
-                var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-                if (handle != IntPtr.Zero)
-                {
-                    Interop.MLUFree(handle);
-                    Context = null;
-                }
+                Interop.MLUFree(handle);
+                Context = null;
             }
         }
 
@@ -127,7 +138,7 @@ namespace lcmsNET
         }
         #endregion
 
-        internal IntPtr Handle => _handle;
+        public IntPtr Handle => _handle;
 
         private bool IsOwner { get; set; }
     }

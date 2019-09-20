@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace lcmsNET.Tests
 {
@@ -53,6 +55,18 @@ namespace lcmsNET.Tests
         //}
         //
         #endregion
+
+        private MemoryStream Save(string resourceName)
+        {
+            MemoryStream ms = new MemoryStream();
+            var thisExe = Assembly.GetExecutingAssembly();
+            var assemblyName = new AssemblyName(thisExe.FullName);
+            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
+            {
+                s.CopyTo(ms);
+            }
+            return ms;
+        }
 
         [TestMethod()]
         public void CreateTest()
@@ -249,6 +263,26 @@ namespace lcmsNET.Tests
                 // Assert
                 Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
                 Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            string expected = "sRGB IEC61966-2.1";
+
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                using (var profile = Profile.Open(ms.GetBuffer()))
+                using (var mlu = MultiLocalizedUnicode.FromHandle(profile.ReadTag(TagSignature.ProfileDescription)))
+                {
+                    // Act
+                    string actual = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
             }
         }
     }

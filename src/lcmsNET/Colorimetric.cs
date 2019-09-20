@@ -74,7 +74,7 @@ namespace lcmsNET
         public CIExyY Blue;
     }
 
-    public sealed class Colorimetric
+    public static class Colorimetric
     {
         public static CIELab XYZ2Lab(in CIEXYZ whitePoint, in CIEXYZ xyz)
         {

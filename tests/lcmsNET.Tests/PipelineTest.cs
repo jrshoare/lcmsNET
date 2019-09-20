@@ -490,5 +490,22 @@ namespace lcmsNET.Tests
                 Assert.IsFalse(previous);
             }
         }
+
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            using (var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0))
+            {
+                profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
+
+                // Act
+                using (var roPipeline = Pipeline.FromHandle(profile.ReadTag(TagSignature.AToB1)))
+                {
+                    // Assert
+                    Assert.IsNotNull(roPipeline);
+                }
+            }
+        }
     }
 }

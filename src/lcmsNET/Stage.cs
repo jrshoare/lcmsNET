@@ -101,14 +101,11 @@ namespace lcmsNET
 
         private void Dispose(bool disposing)
         {
-            if (IsOwner)    // only dispose objects that we own
+            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
-                var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-                if (handle != IntPtr.Zero)
-                {
-                    Interop.StageFree(handle);
-                    Context = null;
-                }
+                Interop.StageFree(handle);
+                Context = null;
             }
         }
 

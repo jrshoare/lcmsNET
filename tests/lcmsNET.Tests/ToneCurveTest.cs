@@ -458,5 +458,29 @@ namespace lcmsNET.Tests
                 Assert.AreNotEqual(notExpected, actual);
             }
         }
+
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            double expected = 2.2;
+            double precision = 0.01;
+
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                using (var toneCurve = ToneCurve.BuildGamma(null, expected))
+                {
+                    profile.WriteTag(TagSignature.RedTRC, toneCurve.Handle);
+                }
+
+                // Act
+                using (var roToneCurve = ToneCurve.FromHandle(profile.ReadTag(TagSignature.RedTRC)))
+                {
+                    // Assert
+                    var actual = roToneCurve.EstimateGamma(precision);
+                    Assert.AreEqual(expected, actual, precision);
+                }
+            }
+        }
     }
 }

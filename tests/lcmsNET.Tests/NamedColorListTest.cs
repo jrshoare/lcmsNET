@@ -112,7 +112,6 @@ namespace lcmsNET.Tests
                     ushort[] colorant = new ushort[16];
                     colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                    // Act
                     bool added = ncl.Add($"#{i}", pcs, colorant);
                 }
 
@@ -138,7 +137,6 @@ namespace lcmsNET.Tests
                     ushort[] colorant = new ushort[16];
                     colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                    // Act
                     bool added = ncl.Add($"#{i}", pcs, colorant);
                 }
 
@@ -183,6 +181,38 @@ namespace lcmsNET.Tests
                 {
                     Assert.AreEqual(expectedNColor, actualPcs[i]);
                     Assert.AreEqual(expectedNColor, actualColorant[i]);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            int expected = 23;
+
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
+                {
+                    for (uint i = 0; i < 256; i++)
+                    {
+                        ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
+                        ushort[] colorant = new ushort[16];
+                        colorant[0] = colorant[1] = colorant[2] = (ushort)i;
+
+                        bool added = ncl.Add($"#{i}", pcs, colorant);
+                    }
+
+                    profile.WriteTag(TagSignature.NamedColor2, ncl.Handle);
+                }
+
+                // Act
+                using (var roNcl = NamedColorList.FromHandle(profile.ReadTag(TagSignature.NamedColor2)))
+                {
+                    // Assert
+                    int actual = roNcl[$"#{expected}"];
+                    Assert.AreEqual(expected, actual);
                 }
             }
         }
