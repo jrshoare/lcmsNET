@@ -27,12 +27,27 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal ToneCurve(IntPtr handle, Context context = null)
+        internal ToneCurve(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<ToneCurve>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
+        }
+
+        /// <summary>
+        /// Creates a tone curve from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing tone curve.</param>
+        /// <returns>A new <see cref="ToneCurve"/> instance referencing an existing tone curve.</returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static ToneCurve FromHandle(IntPtr handle)
+        {
+            return new ToneCurve(handle, context: null, isOwner: false);
         }
 
         #region Parametric curves
@@ -143,7 +158,7 @@ namespace lcmsNET
         private void Dispose(bool disposing)
         {
             var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
                 Interop.FreeToneCurve(handle);
                 Context = null;
@@ -162,6 +177,8 @@ namespace lcmsNET
         }
         #endregion
 
-        internal IntPtr Handle => _handle;
+        public IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

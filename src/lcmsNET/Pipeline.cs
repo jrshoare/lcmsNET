@@ -17,17 +17,32 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal Pipeline(IntPtr handle, Context context = null)
+        internal Pipeline(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<Pipeline>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
         }
 
         public static Pipeline Create(Context context, uint inputChannels, uint outputChannels)
         {
             return new Pipeline(Interop.PipelineAlloc(context?.Handle ?? IntPtr.Zero, inputChannels, outputChannels), context);
+        }
+
+        /// <summary>
+        /// Creates a pipeline from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing pipeline.</param>
+        /// <returns>A new <see cref="Pipeline"/> instance referencing an existing pipeline.</returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static Pipeline FromHandle(IntPtr handle)
+        {
+            return new Pipeline(handle, context: null, isOwner: false);
         }
 
         public Pipeline Duplicate()
@@ -239,7 +254,7 @@ namespace lcmsNET
         private void Dispose(bool disposing)
         {
             var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
                 Interop.PipelineFree(handle);
                 Context = null;
@@ -258,6 +273,8 @@ namespace lcmsNET
         }
         #endregion
 
-        internal IntPtr Handle => _handle;
+        public IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

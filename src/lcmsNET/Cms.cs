@@ -474,6 +474,29 @@ namespace lcmsNET
         AsProof = 2
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ICCMeasurementConditions
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Observer;       // 0 = unknown, 1=CIE 1931, 2=CIE 1964
+        public CIEXYZ Backing;      // Value of backing
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Geometry;       // 0=unknown, 1=45/0, 0/45 2=0d, d/0
+        [MarshalAs(UnmanagedType.R4)]
+        public float Flare;         // 0..1.0
+        [MarshalAs(UnmanagedType.U4)]
+        public uint IlluminantType;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ICCViewingConditions
+    {
+        public CIEXYZ IlluminantXYZ;
+        public CIEXYZ SurroundXYZ;
+        [MarshalAs(UnmanagedType.U4)]
+        public uint IlluminantType;
+    }
+
     public sealed class Cms
     {
         public static int EncodedCMMVersion => Interop.GetEncodedCMMVersion();

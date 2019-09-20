@@ -10,14 +10,32 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal ProfileSequenceDescriptor(IntPtr handle, Context context = null)
+        internal ProfileSequenceDescriptor(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<ProfileSequenceDescriptor>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
 
             CreateItems();
+        }
+
+        /// <summary>
+        /// Creates a profile sequence descriptor from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing profile sequence descriptor.</param>
+        /// <returns>
+        /// A new <see cref="ProfileSequenceDescriptor"/> instance referencing an
+        /// existing profile sequence descriptor.
+        /// </returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
+        {
+            return new ProfileSequenceDescriptor(handle, context: null, isOwner: false);
         }
 
         public static ProfileSequenceDescriptor Create(Context context, uint nItems)
@@ -85,7 +103,7 @@ namespace lcmsNET
         private void Dispose(bool disposing)
         {
             var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
                 Interop.FreeProfileSequenceDescription(handle);
                 Context = null;
@@ -115,5 +133,7 @@ namespace lcmsNET
         #endregion
 
         public IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

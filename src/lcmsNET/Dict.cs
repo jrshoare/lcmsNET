@@ -24,12 +24,29 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal Dict(IntPtr handle, Context context = null)
+        internal Dict(IntPtr handle, Context context = null, bool isOwner = true)
         {
             Helper.CheckCreated<Dict>(handle);
 
             _handle = handle;
             Context = context;
+            IsOwner = isOwner;
+        }
+
+        /// <summary>
+        /// Creates a dictionary from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing dictionary.</param>
+        /// <returns>
+        /// A new <see cref="Dict"/> instance referencing an existing dictionary.
+        /// </returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static Dict FromHandle(IntPtr handle)
+        {
+            return new Dict(handle, context: null, isOwner: false);
         }
 
         public static Dict Create(Context context)
@@ -170,7 +187,7 @@ namespace lcmsNET
         private void Dispose(bool disposing)
         {
             var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
                 Interop.DictFree(handle);
                 Context = null;
@@ -189,6 +206,8 @@ namespace lcmsNET
         }
         #endregion
 
-        internal IntPtr Handle => _handle;
+        public IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

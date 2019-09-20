@@ -88,5 +88,3 @@ See the unit tests for examples of how to invoke each supported method and prope
 * IO handlers
 * PostScript generation
 * CGATS.17-200x handling
-* Conversion of return from `Profile.ReadTag(TagSignature)` to class instance  
-(Note that conversion to `struct` is already supported via `Marshal.PtrToStructure<T>(IntPtr)`)

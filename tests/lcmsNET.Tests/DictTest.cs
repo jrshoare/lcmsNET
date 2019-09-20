@@ -124,5 +124,35 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod()]
+        public void FromHandleTest()
+        {
+            // Arrange
+            int expected = 3;
+
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                using (var dict = Dict.Create(null))
+                using (var mlu = MultiLocalizedUnicode.Create(null, 0))
+                {
+                    mlu.SetASCII("en", "GB", "Hello");
+
+                    dict.Add("first", null, null, null);
+                    dict.Add("second", "second-value", null, null);
+                    dict.Add("third", "third-value", mlu, null);
+
+                    profile.WriteTag(TagSignature.Meta, dict.Handle);
+                }
+
+                // Act
+                using (var roDict = Dict.FromHandle(profile.ReadTag(TagSignature.Meta)))
+                {
+                    // Assert
+                    int actual = roDict.Count();
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+        }
     }
 }

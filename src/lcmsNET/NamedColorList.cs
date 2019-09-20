@@ -18,6 +18,20 @@ namespace lcmsNET
             IsOwner = isOwner;
         }
 
+        /// <summary>
+        /// Creates a named color list from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing named color list.</param>
+        /// <returns>A new <see cref="NamedColorList"/> instance referencing an existing named color list.</returns>
+        /// <remarks>
+        /// The instance created should be considered read-only for <paramref name="handle"/>
+        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
+        /// </remarks>
+        public static NamedColorList FromHandle(IntPtr handle)
+        {
+            return new NamedColorList(handle, context: null, isOwner: false);
+        }
+
         internal static NamedColorList CopyRef(IntPtr handle, Context context = null)
         {
             return new NamedColorList(handle, context, isOwner: false);
@@ -76,14 +90,11 @@ namespace lcmsNET
 
         private void Dispose(bool disposing)
         {
-            if (IsOwner)    // only dispose objects that we own
+            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
-                var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-                if (handle != IntPtr.Zero)
-                {
-                    Interop.FreeNamedColorList(handle);
-                    Context = null;
-                }
+                Interop.FreeNamedColorList(handle);
+                Context = null;
             }
         }
 
@@ -99,7 +110,7 @@ namespace lcmsNET
         }
         #endregion
 
-        internal IntPtr Handle => _handle;
+        public IntPtr Handle => _handle;
 
         private bool IsOwner { get; set; }
     }
