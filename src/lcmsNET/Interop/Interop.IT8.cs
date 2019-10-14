@@ -21,5 +21,23 @@ namespace lcmsNET
         {
             IT8Free_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8TableCount", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint IT8TableCount_Internal(IntPtr handle);
+
+        internal static uint IT8TableCount(IntPtr handle)
+        {
+            return IT8TableCount_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetTable", CallingConvention = CallingConvention.StdCall)]
+        private static extern int IT8SetTable_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint nTable);
+
+        internal static int IT8SetTable(IntPtr handle, uint nTable)
+        {
+            return IT8SetTable_Internal(handle, nTable);
+        }
     }
 }

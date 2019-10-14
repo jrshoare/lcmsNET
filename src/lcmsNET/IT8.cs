@@ -26,6 +26,18 @@ namespace lcmsNET
         public Context Context { get; private set; }
         #endregion
 
+        #region Tables
+
+        public uint TableCount => Interop.IT8TableCount(_handle);
+
+        public int SetTable(uint nTable)
+        {
+            EnsureNotDisposed();
+
+            return Interop.IT8SetTable(_handle, nTable);
+        }
+        #endregion
+
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
 

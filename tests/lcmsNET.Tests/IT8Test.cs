@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace lcmsNET.Tests
 {
@@ -63,6 +64,58 @@ namespace lcmsNET.Tests
             {
                 // Assert
                 Assert.IsNotNull(it8);
+            }
+        }
+
+        [TestMethod()]
+        public void TableCountTest()
+        {
+            // Arrange
+            uint expected = 1; // empty CGATS.17 object has a single table
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                uint actual = it8.TableCount;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void SetTableTest()
+        {
+            // Arrange
+            uint expectedCount = 2; // empty CGATS.17 object has a single table and we add 1
+            uint nTable = 1;
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                int currentTable = it8.SetTable(nTable);
+
+                // Assert
+                Assert.AreEqual(nTable, Convert.ToUInt32(currentTable));
+                uint actualCount = it8.TableCount;
+                Assert.AreEqual(expectedCount, actualCount);
+            }
+        }
+
+        [TestMethod()]
+        public void SetTableOutOfRangeTest()
+        {
+            // Arrange
+            uint nTable = 2; // empty CGATS.17 object has a single table so index two greater (zero-based)
+            int expected = -1; // error returns -1
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                int actual = it8.SetTable(nTable);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
     }
