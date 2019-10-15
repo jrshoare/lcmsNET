@@ -155,7 +155,7 @@ namespace lcmsNET
 
         public static Profile Open(Context context, byte[] memory)
         {
-            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, memory));
+            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, memory), context);
         }
 
         public bool Save(string filepath)
