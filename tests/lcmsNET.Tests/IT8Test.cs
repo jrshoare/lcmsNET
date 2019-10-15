@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace lcmsNET.Tests
 {
@@ -53,6 +55,36 @@ namespace lcmsNET.Tests
         //}
         //
         #endregion
+
+        /// <summary>
+        /// Extracts the named resource and saves to the specified file path.
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="path"></param>
+        private void Save(string resourceName, string path)
+        {
+            var thisExe = Assembly.GetExecutingAssembly();
+            var assemblyName = new AssemblyName(thisExe.FullName);
+            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
+            {
+                using (var fs = File.Create(path))
+                {
+                    s.CopyTo(fs);
+                }
+            }
+        }
+
+        private MemoryStream Save(string resourceName)
+        {
+            MemoryStream ms = new MemoryStream();
+            var thisExe = Assembly.GetExecutingAssembly();
+            var assemblyName = new AssemblyName(thisExe.FullName);
+            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
+            {
+                s.CopyTo(ms);
+            }
+            return ms;
+        }
 
         [TestMethod()]
         public void CreateTest()
@@ -116,6 +148,151 @@ namespace lcmsNET.Tests
 
                 // Assert
                 Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void OpenTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                // Act
+                using (var context = Context.Create(plugin, userData))
+                using (var it8 = IT8.Open(context, it8path))
+                {
+                    // Assert
+                    Assert.IsNotNull(it8);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void OpenTest2()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.IT8.txt"))
+            {
+                // Act
+                using (var it8 = IT8.Open(null, ms.GetBuffer()))
+                {
+                    // Assert
+                    Assert.IsNotNull(it8);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                // Act
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    var savepath = Path.Combine(tempPath, "saved.txt");
+                    bool saved = it8.Save(savepath);
+
+                    // Assert
+                    Assert.IsTrue(saved);
+                    Assert.IsTrue(File.Exists(savepath));
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest2()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.IT8.txt"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var it8 = IT8.Open(null, memory))
+                {
+                    it8.Save(null, out int expected);
+                    byte[] mem = new byte[expected];
+
+                    // Act
+                    var result = it8.Save(mem, out int actual);
+
+                    // Assert
+                    Assert.IsTrue(result);
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest3()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.IT8.txt"))
+            {
+                byte[] memory = ms.GetBuffer();
+                using (var it8 = IT8.Open(null, memory))
+                {
+                    int notExpected = 0;
+
+                    // Act
+                    var result = it8.Save(null, out int actual);
+
+                    // Assert
+                    Assert.IsTrue(result);
+                    Assert.AreNotEqual(notExpected, actual);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void ContextTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                // Act
+                using (var expected = Context.Create(plugin, userData))
+                using (var it8 = IT8.Open(expected, it8path))
+                {
+                    var actual = it8.Context;
+
+                    // Assert
+                    Assert.AreSame(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
             }
         }
     }

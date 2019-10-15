@@ -27,7 +27,6 @@ namespace lcmsNET
         #endregion
 
         #region Tables
-
         public uint TableCount => Interop.IT8TableCount(_handle);
 
         public int SetTable(uint nTable)
@@ -35,6 +34,32 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             return Interop.IT8SetTable(_handle, nTable);
+        }
+        #endregion
+
+        #region Persistence
+        public static IT8 Open(Context context, string filepath)
+        {
+            return new IT8(Interop.IT8LoadFromFile(context?.Handle ?? IntPtr.Zero, filepath), context);
+        }
+
+        public static IT8 Open(Context context, byte[] memory)
+        {
+            return new IT8(Interop.IT8LoadFromMem(context?.Handle ?? IntPtr.Zero, memory), context);
+        }
+
+        public bool Save(string filepath)
+        {
+            EnsureNotDisposed();
+
+            return 0 != Interop.IT8SaveToFile(_handle, filepath);
+        }
+
+        public bool Save(byte[] it8, out int bytesNeeded)
+        {
+            EnsureNotDisposed();
+
+            return 0 != Interop.IT8SaveToMem(_handle, it8, out bytesNeeded);
         }
         #endregion
 
