@@ -295,5 +295,68 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void SheetTypeGetTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            string expected = "ISO28178";
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                // Act
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    var actual = it8.SheetType;
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void SheetTypeSetTest()
+        {
+            // Arrange
+            var expected = "SHEET_TYPE";
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                it8.SheetType = expected;
+                string actual = it8.SheetType;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void AddCommentTest()
+        {
+            // Arrange
+            var comment = "Comment";
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool added = it8.AddComment(comment);
+
+                // Assert
+                Assert.IsTrue(added);
+            }
+        }
     }
 }

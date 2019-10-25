@@ -63,6 +63,27 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Type and Comments
+        public string SheetType
+        {
+            get { return Interop.IT8GetSheetType(_handle); }
+            set
+            {
+                EnsureNotDisposed();
+                if (0 == Interop.IT8SetSheetType(_handle, value))
+                {
+                    throw new LcmsNETException($"Failed to set sheet type: '{value}'.");
+                }
+            }
+        }
+
+        public bool AddComment(string comment)
+        {
+            EnsureNotDisposed();
+            return Interop.IT8SetComment(_handle, comment) != 0;
+        }
+        #endregion
+
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
 

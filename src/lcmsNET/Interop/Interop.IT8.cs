@@ -103,5 +103,35 @@ namespace lcmsNET
             bytesNeeded = n;
             return result;
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetSheetType", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern IntPtr IT8GetSheetType_Internal(
+                IntPtr handle);
+
+        internal static string IT8GetSheetType(IntPtr handle)
+        {
+            IntPtr ptr = IT8GetSheetType_Internal(handle);
+            return Marshal.PtrToStringAnsi(ptr);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetSheetType", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetSheetType_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string sheetType);
+
+        internal static int IT8SetSheetType(IntPtr handle, string sheetType)
+        {
+            return IT8SetSheetType_Internal(handle, sheetType);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetComment", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetComment_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string comment);
+
+        internal static int IT8SetComment(IntPtr handle, string comment)
+        {
+            return IT8SetComment_Internal(handle, comment);
+        }
     }
 }
