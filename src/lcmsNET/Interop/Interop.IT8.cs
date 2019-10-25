@@ -133,5 +133,82 @@ namespace lcmsNET
         {
             return IT8SetComment_Internal(handle, comment);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetProperty", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern IntPtr IT8GetProperty_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string propertyName);
+
+        internal static string IT8GetProperty(IntPtr handle, string propertyName)
+        {
+            IntPtr ptr = IT8GetProperty_Internal(handle, propertyName);
+            return Marshal.PtrToStringAnsi(ptr);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetPropertyStr", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetPropertyStr_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name,
+                [MarshalAs(UnmanagedType.LPStr)] string value);
+
+        internal static int IT8SetProperty(IntPtr handle, string name, string value)
+        {
+            return IT8SetPropertyStr_Internal(handle, name, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetPropertyDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern double IT8GetPropertyDbl_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string propertyName);
+
+        internal static double IT8GetPropertyDouble(IntPtr handle, string propertyName)
+        {
+            return IT8GetPropertyDbl_Internal(handle, propertyName);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetPropertyDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetPropertyDbl_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name,
+                [MarshalAs(UnmanagedType.R8)] double value);
+
+        internal static int IT8SetPropertyDouble(IntPtr handle, string name, double value)
+        {
+            return IT8SetPropertyDbl_Internal(handle, name, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetPropertyHex", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetPropertyHex_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name,
+                [MarshalAs(UnmanagedType.U4)] uint value);
+
+        internal static int IT8SetPropertyHex(IntPtr handle, string name, uint value)
+        {
+            return IT8SetPropertyHex_Internal(handle, name, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetPropertyUncooked", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetPropertyUncooked_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name,
+                [MarshalAs(UnmanagedType.LPStr)] string value);
+
+        internal static int IT8SetPropertyUncooked(IntPtr handle, string name, string value)
+        {
+            return IT8SetPropertyUncooked_Internal(handle, name, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetPropertyMulti", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetPropertyMulti_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string key,
+                [MarshalAs(UnmanagedType.LPStr)] string subkey,
+                [MarshalAs(UnmanagedType.LPStr)] string value);
+
+        internal static int IT8SetProperty(IntPtr handle, string key, string subkey, string value)
+        {
+            return IT8SetPropertyMulti_Internal(handle, key, subkey, value);
+        }
     }
 }

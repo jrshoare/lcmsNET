@@ -358,5 +358,129 @@ namespace lcmsNET.Tests
                 Assert.IsTrue(added);
             }
         }
+
+        [TestMethod()]
+        public void SetPropertyTest()
+        {
+            // Arrange
+            string name = "Name";
+            string value = "Value";
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool isSet = it8.SetProperty(name, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SetPropertyDoubleTest()
+        {
+            // Arrange
+            string name = "Name";
+            double value = 12.345;
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool isSet = it8.SetProperty(name, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SetPropertyHexTest()
+        {
+            // Arrange
+            string name = "Name";
+            uint value = 0x12345;
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool isSet = it8.SetProperty(name, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SetUncookedPropertyTest()
+        {
+            // Arrange
+            string name = "Name";
+            string value = "Uncooked";
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool isSet = it8.SetUncookedProperty(name, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SetMultiPropertyTest()
+        {
+            // Arrange
+            string key = "Key";
+            string subkey = "Subkey";
+            string value = "Value";
+
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                bool isSet = it8.SetProperty(key, subkey, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void GetPropertyTest()
+        {
+            // Arrange
+            string name = "Name";
+            string expected = "Value";
+
+            using (var it8 = IT8.Create(null))
+            {
+                bool isSet = it8.SetProperty(name, expected);
+
+                // Act
+                string actual = it8.GetProperty(name);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void GetPropertyDoubleTest()
+        {
+            // Arrange
+            string name = "Name";
+            double expected = 12.345;
+
+            using (var it8 = IT8.Create(null))
+            {
+                bool isSet = it8.SetProperty(name, expected);
+
+                // Act
+                double actual = it8.GetDoubleProperty(name);
+
+                // Assert
+                Assert.AreEqual(expected, actual, double.Epsilon);
+            }
+        }
     }
 }

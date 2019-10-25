@@ -84,6 +84,43 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Properties
+        public string GetProperty(string name)
+        {
+            return Interop.IT8GetProperty(_handle, name);
+        }
+
+        public double GetDoubleProperty(string name)
+        {
+            return Interop.IT8GetPropertyDouble(_handle, name);
+        }
+
+        public bool SetProperty(string name, string value)
+        {
+            return Interop.IT8SetProperty(_handle, name, value) != 0;
+        }
+
+        public bool SetProperty(string name, double value)
+        {
+            return Interop.IT8SetPropertyDouble(_handle, name, value) != 0;
+        }
+
+        public bool SetProperty(string name, uint hex)
+        {
+            return Interop.IT8SetPropertyHex(_handle, name, hex) != 0;
+        }
+
+        public bool SetUncookedProperty(string name, string value)
+        {
+            return Interop.IT8SetPropertyUncooked(_handle, name, value) != 0;
+        }
+
+        public bool SetProperty(string key, string subkey, string value)
+        {
+            return Interop.IT8SetProperty(_handle, key, subkey, value) != 0;
+        }
+        #endregion
+
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
 
