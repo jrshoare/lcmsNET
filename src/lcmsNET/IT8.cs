@@ -1,5 +1,6 @@
 ﻿using lcmsNET.Impl;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -119,6 +120,8 @@ namespace lcmsNET
         {
             return Interop.IT8SetProperty(_handle, key, subkey, value) != 0;
         }
+
+        public IEnumerable<string> Properties => Interop.IT8EnumProperties(_handle);
         #endregion
 
         #region IDisposable Support

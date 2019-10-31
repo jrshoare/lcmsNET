@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace lcmsNET.Tests
@@ -480,6 +481,34 @@ namespace lcmsNET.Tests
 
                 // Assert
                 Assert.AreEqual(expected, actual, double.Epsilon);
+            }
+        }
+
+        [TestMethod()]
+        public void PropertiesTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    // Act
+                    var actual = it8.Properties;
+
+                    // Assert
+                    Assert.IsNotNull(actual);
+                    Assert.AreNotEqual(0, actual.Count());
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
             }
         }
     }
