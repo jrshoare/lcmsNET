@@ -122,6 +122,13 @@ namespace lcmsNET
         }
 
         public IEnumerable<string> Properties => Interop.IT8EnumProperties(_handle);
+
+        public IEnumerable<string> GetProperties(string name)
+        {
+            EnsureNotDisposed();
+
+            return Interop.IT8EnumPropertyMulti(_handle, name);
+        }
         #endregion
 
         #region IDisposable Support

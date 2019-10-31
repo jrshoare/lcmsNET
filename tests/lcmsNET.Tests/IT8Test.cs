@@ -511,5 +511,26 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void GetPropertiesTest()
+        {
+            // Arrange
+            string key = "Key";
+            string subkey = "Subkey";
+            string value = "Value";
+
+            using (var it8 = IT8.Create(null))
+            {
+                bool isSet = it8.SetProperty(key, subkey, value);
+
+                // Act
+                var actual = it8.GetProperties(key);
+
+                // Assert
+                Assert.IsNotNull(actual);
+                Assert.AreEqual(subkey, actual.First());
+            }
+        }
     }
 }

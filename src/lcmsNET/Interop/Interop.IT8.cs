@@ -229,5 +229,25 @@ namespace lcmsNET
 
             return properties;
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8EnumPropertyMulti", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern uint IT8EnumPropertyMulti_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string key,
+                out IntPtr subPropertyNames);
+
+        internal unsafe static string[] IT8EnumPropertyMulti(IntPtr handle, string key)
+        {
+            uint count = IT8EnumPropertyMulti_Internal(handle, key, out IntPtr subPropertyNames);
+            string[] properties = new string[count];
+            char** names = (char**)subPropertyNames.ToPointer();
+            for (uint i = 0; i < count; i++)
+            {
+                char* name = names[i];
+                properties[i] = Marshal.PtrToStringAnsi(new IntPtr(name));
+            }
+
+            return properties;
+        }
     }
 }
