@@ -40,7 +40,7 @@ using lcmsNET;
 
 ## Print Little CMS library version
 ```csharp
-Console.WriteLine(Cms.EncodedCMMVersionTest);
+Console.WriteLine(Cms.EncodedCMMVersion);
 ```
 
 ## Set error handler
