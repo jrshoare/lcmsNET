@@ -249,5 +249,28 @@ namespace lcmsNET
 
             return properties;
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetDataRowCol", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern IntPtr IT8GetDataRowCol_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int row,
+                [MarshalAs(UnmanagedType.I4)] int col);
+
+        internal static string IT8GetDataRowCol(IntPtr handle, int row, int column)
+        {
+            IntPtr ptr = IT8GetDataRowCol_Internal(handle, row, column);
+            return Marshal.PtrToStringAnsi(ptr);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetDataRowColDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern double IT8GetDataRowColDbl_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int row,
+                [MarshalAs(UnmanagedType.I4)] int col);
+
+        internal static double IT8GetDataRowColDouble(IntPtr handle, int row, int column)
+        {
+            return IT8GetDataRowColDbl_Internal(handle, row, column);
+        }
     }
 }

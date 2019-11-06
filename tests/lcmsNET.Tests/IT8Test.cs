@@ -532,5 +532,65 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(subkey, actual.First());
             }
         }
+
+        [TestMethod()]
+        public void GetDataTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    int row = 10, column = 1;
+                    string expected = "PicricAcid_5L";
+
+                    // Act
+                    string actual = it8.GetData(row, column);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void GetDoubleDataTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    int row = 16, column = 2;
+                    double expected = 15.2;
+
+                    // Act
+                    double actual = it8.GetDoubleData(row, column);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual, double.Epsilon);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
     }
 }

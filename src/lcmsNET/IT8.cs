@@ -131,6 +131,18 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Datasets
+        public string GetData(int row, int column)
+        {
+            return Interop.IT8GetDataRowCol(_handle, row, column);
+        }
+
+        public double GetDoubleData(int row, int column)
+        {
+            return Interop.IT8GetDataRowColDouble(_handle, row, column);
+        }
+        #endregion
+
         #region IDisposable Support
         public bool IsDisposed => _handle == IntPtr.Zero;
 
