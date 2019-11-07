@@ -137,9 +137,29 @@ namespace lcmsNET
             return Interop.IT8GetDataRowCol(_handle, row, column);
         }
 
+        public string GetData(string patch, string sample)
+        {
+            return Interop.IT8GetData(_handle, patch, sample);
+        }
+
         public double GetDoubleData(int row, int column)
         {
             return Interop.IT8GetDataRowColDouble(_handle, row, column);
+        }
+
+        public double GetDoubleData(string patch, string sample)
+        {
+            return Interop.IT8GetDataDbl(_handle, patch, sample);
+        }
+
+        public bool SetData(int row, int column, string value)
+        {
+            return Interop.IT8SetDataRowCol(_handle, row, column, value) != 0;
+        }
+
+        public bool SetData(int row, int column, double value)
+        {
+            return Interop.IT8SetDataRowColDbl(_handle, row, column, value) != 0;
         }
         #endregion
 

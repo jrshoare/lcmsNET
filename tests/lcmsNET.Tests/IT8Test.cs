@@ -87,6 +87,9 @@ namespace lcmsNET.Tests
             return ms;
         }
 
+        const string NUMBER_OF_FIELDS = "NUMBER_OF_FIELDS";
+        const string NUMBER_OF_SETS = "NUMBER_OF_SETS";
+
         [TestMethod()]
         public void CreateTest()
         {
@@ -534,7 +537,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetDataTest()
+        public void GetDataRowColTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -564,7 +567,37 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetDoubleDataTest()
+        public void GetDataTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    string patch = "A17", sample = "PatchName";
+                    string expected = "NeutralRed_M";
+
+                    // Act
+                    string actual = it8.GetData(patch, sample);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void GetDoubleDataRowColTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -590,6 +623,77 @@ namespace lcmsNET.Tests
             finally
             {
                 Directory.Delete(tempPath, true);
+            }
+        }
+
+
+        [TestMethod()]
+        public void GetDataDoubleTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    string patch = "A17", sample = "PatchX";
+                    double expected = 15.2;
+
+                    // Act
+                    double actual = it8.GetDoubleData(patch, sample);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual, double.Epsilon);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void SetDataTest()
+        {
+            // Arrange
+            int row = 3, column = 2;
+            string value = "Value";
+
+            using (var it8 = IT8.Create(null))
+            {
+                it8.SetProperty(NUMBER_OF_FIELDS, 3);
+                it8.SetProperty(NUMBER_OF_SETS, 4);
+
+                // Act
+                bool isSet = it8.SetData(row, column, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SetDataDoubleTest()
+        {
+            // Arrange
+            int row = 0, column = 1;
+            double value = 17.43;
+
+            using (var it8 = IT8.Create(null))
+            {
+                it8.SetProperty(NUMBER_OF_FIELDS, 3);
+                it8.SetProperty(NUMBER_OF_SETS, 4);
+
+                // Act
+                bool isSet = it8.SetData(row, column, value);
+
+                // Assert
+                Assert.IsTrue(isSet);
             }
         }
     }

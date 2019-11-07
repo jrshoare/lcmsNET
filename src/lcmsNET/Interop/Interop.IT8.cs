@@ -262,6 +262,18 @@ namespace lcmsNET
             return Marshal.PtrToStringAnsi(ptr);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetData", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern IntPtr IT8GetData_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string patch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample);
+
+        internal static string IT8GetData(IntPtr handle, string patch, string sample)
+        {
+            IntPtr ptr = IT8GetData_Internal(handle, patch, sample);
+            return Marshal.PtrToStringAnsi(ptr);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsIT8GetDataRowColDbl", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern double IT8GetDataRowColDbl_Internal(
                 IntPtr handle,
@@ -271,6 +283,41 @@ namespace lcmsNET
         internal static double IT8GetDataRowColDouble(IntPtr handle, int row, int column)
         {
             return IT8GetDataRowColDbl_Internal(handle, row, column);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetDataDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern double IT8GetDataDbl_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string patch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample);
+
+        internal static double IT8GetDataDbl(IntPtr handle, string patch, string sample)
+        {
+            return IT8GetDataDbl_Internal(handle, patch, sample);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataRowCol", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetDataRowCol_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.I4)] int row,
+            [MarshalAs(UnmanagedType.I4)] int col,
+            [MarshalAs(UnmanagedType.LPStr)] string value);
+
+        internal static int IT8SetDataRowCol(IntPtr handle, int row, int column, string value)
+        {
+            return IT8SetDataRowCol_Internal(handle, row, column, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataRowColDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetDataRowColDbl_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.I4)] int row,
+            [MarshalAs(UnmanagedType.I4)] int col,
+            [MarshalAs(UnmanagedType.R8)] double value);
+
+        internal static int IT8SetDataRowColDbl(IntPtr handle, int row, int column, double value)
+        {
+            return IT8SetDataRowColDbl_Internal(handle, row, column, value);
         }
     }
 }
