@@ -772,5 +772,48 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void GetPatchNameTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    int nPatch = 10;
+                    string expected = "A11";
+
+                    // Act
+                    string actual = it8.GetPatchName(nPatch);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod]
+        public void DoubleFormatTest()
+        {
+            // Arrange
+            using (var it8 = IT8.Create(null))
+            {
+                // Act
+                it8.DoubleFormat = "%.8g";
+
+                // Assert
+            }
+        }
     }
 }

@@ -173,6 +173,16 @@ namespace lcmsNET
         }
 
         public IEnumerable<string> SampleNames => Interop.IT8EnumDataFormat(_handle);
+
+        public string GetPatchName(int nPatch)
+        {
+            return Interop.IT8GetPatchName(_handle, nPatch);
+        }
+
+        public string DoubleFormat
+        {
+            set => Interop.IT8DefineDblFormat(_handle, value);
+        }
         #endregion
 
         #region IDisposable Support

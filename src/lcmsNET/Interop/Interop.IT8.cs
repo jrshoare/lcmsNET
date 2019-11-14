@@ -359,5 +359,27 @@ namespace lcmsNET
 
             return samples;
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8GetPatchName", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern IntPtr IT8GetPatchName_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int nPatch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample);
+
+        internal static string IT8GetPatchName(IntPtr handle, int nPatch)
+        {
+            IntPtr ptr = IT8GetPatchName_Internal(handle, nPatch, null);
+            return Marshal.PtrToStringAnsi(ptr);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8DefineDblFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern void IT8DefineDblFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.LPStr)] string format);
+
+        internal static void IT8DefineDblFormat(IntPtr handle, string format)
+        {
+            IT8DefineDblFormat_Internal(handle, format);
+        }
     }
 }
