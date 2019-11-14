@@ -319,5 +319,45 @@ namespace lcmsNET
         {
             return IT8SetDataRowColDbl_Internal(handle, row, column, value);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8FindDataFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8FindDataFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.LPStr)] string sample);
+
+        internal static int IT8FindDataFormat(IntPtr handle, string sample)
+        {
+            return IT8FindDataFormat_Internal(handle, sample);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetDataFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.I4)] int n,
+            [MarshalAs(UnmanagedType.LPStr)] string sample);
+
+        internal static int IT8SetDataFormat(IntPtr handle, int column, string sample)
+        {
+            return IT8SetDataFormat_Internal(handle, column, sample);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8EnumDataFormat", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8EnumDataFormat_Internal(
+                IntPtr handle,
+                out IntPtr sampleNames);
+
+        internal unsafe static string[] IT8EnumDataFormat(IntPtr handle)
+        {
+            int count = IT8EnumDataFormat_Internal(handle, out IntPtr sampleNames);
+            string[] samples = new string[count];
+            char** names = (char**)sampleNames.ToPointer();
+            for (uint i = 0; i < count; i++)
+            {
+                char* name = names[i];
+                samples[i] = Marshal.PtrToStringAnsi(new IntPtr(name));
+            }
+
+            return samples;
+        }
     }
 }

@@ -626,7 +626,6 @@ namespace lcmsNET.Tests
             }
         }
 
-
         [TestMethod()]
         public void GetDataDoubleTest()
         {
@@ -694,6 +693,83 @@ namespace lcmsNET.Tests
 
                 // Assert
                 Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void FindDataFormatTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    string sample = "SPECTRAL_400";
+                    int expected = 8;
+
+                    // Act
+                    int actual = it8.FindDataFormat(sample);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void SetDataFormatTest()
+        {
+            // Arrange
+            int column = 6;
+            string sample = "COLUMN_6";
+
+            using (var it8 = IT8.Create(null))
+            {
+                it8.SetProperty(NUMBER_OF_FIELDS, 12);
+
+                // Act
+                bool isSet = it8.SetDataFormat(column, sample);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
+        public void SampleNamesTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var it8path = Path.Combine(tempPath, "it8.txt");
+                Save(".Resources.IT8.txt", it8path);
+
+                using (var it8 = IT8.Open(null, it8path))
+                {
+                    // Act
+                    var actual = it8.SampleNames;
+
+                    // Assert
+                    Assert.IsNotNull(actual);
+                    Assert.AreNotEqual(0, actual.Count());
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
             }
         }
     }

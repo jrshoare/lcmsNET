@@ -161,6 +161,18 @@ namespace lcmsNET
         {
             return Interop.IT8SetDataRowColDbl(_handle, row, column, value) != 0;
         }
+
+        public int FindDataFormat(string sample)
+        {
+            return Interop.IT8FindDataFormat(_handle, sample);
+        }
+
+        public bool SetDataFormat(int column, string sample)
+        {
+            return Interop.IT8SetDataFormat(_handle, column, sample) != 0;
+        }
+
+        public IEnumerable<string> SampleNames => Interop.IT8EnumDataFormat(_handle);
         #endregion
 
         #region IDisposable Support
