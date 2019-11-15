@@ -87,4 +87,4 @@ See the unit tests for examples of how to invoke each supported method and prope
 * Plug ins
 * IO handlers
 * PostScript generation
-* CGATS.17-200x handling
+* Improved documentation
