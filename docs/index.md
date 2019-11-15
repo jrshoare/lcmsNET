@@ -1,6 +1,6 @@
 ---
 layout: default
-title: API
+title: lcmsNET API
 ---
 ## API
 
