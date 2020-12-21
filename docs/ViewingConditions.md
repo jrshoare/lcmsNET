@@ -1,0 +1,1 @@
+# ViewingConditions Struct
