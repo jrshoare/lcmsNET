@@ -13,7 +13,7 @@ Inheritance Object → CAM02
 
 Implements IDisposable
 
-## Examples
+## **Examples**
 
 The following code example demonstrates how to construct a new CAM02 and evaluate the model in forward and reverse directions.
 
@@ -41,7 +41,9 @@ using (var cam02 = CAM02.Create(context, conditions))
 }
 ```
 
-## Properties
+## **Properties**
+---
+## Context Property
 
 ```csharp
 public Context Context { get; }
@@ -52,7 +54,9 @@ public Context Context { get; }
 `Context`  
 The `Context` supplied to create this instance.
 
-## Methods
+## **Methods**
+---
+## Create(Context, ViewingConditions) Method
 
 ```csharp
 public static CAM02 Create(Context context, in ViewingConditions conditions)
@@ -73,6 +77,9 @@ Viewing conditions.
 `CAM02`  
 The new `CAM02` that this method creates.
 
+---
+## Forward(CIEXYZ, out JCh) Method
+
 ```csharp
 public void Forward(in CIEXYZ xyz, out JCh jch)
 ```
@@ -87,6 +94,9 @@ The input XYZ value.
 `jch` [JCh](./JCh)
 The output JCh value.
 
+---
+## Reverse(JCh, out CIEXYZ) Method
+
 ```csharp
 public void Reverse(in JCh jch, out CIEXYZ xyz)
 ```
@@ -99,4 +109,4 @@ Evaluates the model in the reverse direction JCh → XYZ.
 The input JCh value.
 
 `xyz` [CIEXYZ](./CIEXYZ)  
-The output XYZ value.
+The output XYZ value.  
