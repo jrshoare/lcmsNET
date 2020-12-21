@@ -62,10 +62,10 @@ Creates an instance of the CAM02 class.
 
 ### Parameters
 
-`context` [Context](/docs/Context)  
+`context` [Context](./Context)  
 User defined context.
 
-`conditions` [ViewingConditions](/docs/ViewingConditions)  
+`conditions` [ViewingConditions](./ViewingConditions)  
 Viewing conditions.
 
 ### Returns
@@ -81,10 +81,10 @@ Evaluates the model in the forward direction XYZ → JCh.
 
 ### Parameters
 
-`xyz` [CIEXYZ](/docs/CIEXYZ)  
+`xyz` [CIEXYZ](./CIEXYZ)  
 The input XYZ value.
 
-`jch` [JCh](/docs/JCh)
+`jch` [JCh](./JCh)
 The output JCh value.
 
 ```csharp
@@ -95,8 +95,8 @@ Evaluates the model in the reverse direction JCh → XYZ.
 
 ### Parameters
 
-`jch` [JCh](/docs/JCh)
+`jch` [JCh](./JCh)
 The input JCh value.
 
-`xyz` [CIEXYZ](/docs/CIEXYZ)  
+`xyz` [CIEXYZ](./CIEXYZ)  
 The output XYZ value.
