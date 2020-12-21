@@ -13,7 +13,7 @@ Inheritance Object → CAM02
 
 Implements IDisposable
 
-## **Examples**
+## Examples
 
 The following code example demonstrates how to construct a new CAM02 and evaluate the model in forward and reverse directions.
 
@@ -41,8 +41,7 @@ using (var cam02 = CAM02.Create(context, conditions))
 }
 ```
 
-## **Properties**
----
+## Properties
 ## Context Property
 
 ```csharp
@@ -54,8 +53,7 @@ public Context Context { get; }
 `Context`  
 The `Context` supplied to create this instance.
 
-## **Methods**
----
+## Methods
 ## Create(Context, ViewingConditions) Method
 
 ```csharp
