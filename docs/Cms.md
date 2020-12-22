@@ -9,7 +9,7 @@ Provides static methods for global use with this library. This class cannot be i
 public sealed class Cms
 ```
 
-Inheritance Object → CAM02
+Inheritance Object → Cms
 
 ## Examples
 
