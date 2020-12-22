@@ -1,5 +1,3 @@
-# lcmsNET API
-
 [Cms](./Cms)  
 [CmsFlags](./CmsFlags)  
 [CAM02](./CAM02)  
