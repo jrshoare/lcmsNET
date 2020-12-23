@@ -12,6 +12,8 @@ namespace lcmsNET
         public double Y;
         [MarshalAs(UnmanagedType.R8)]
         public double Z;
+
+        public static CIEXYZ D50 => Interop.GetD50_XYZ();
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -23,6 +25,8 @@ namespace lcmsNET
         public double y;
         [MarshalAs(UnmanagedType.R8)]
         public double Y;
+
+        public static CIExyY D50 => Interop.GetD50_xyY();
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -150,8 +154,8 @@ namespace lcmsNET
             return Interop.DesaturateLab(ref lab, aMax, aMin, bMax, bMin) != 0;
         }
 
-        public static CIEXYZ D50_XYZ => Interop.GetD50_XYZ();
+        public static CIEXYZ D50_XYZ => CIEXYZ.D50;
 
-        public static CIExyY D50_xyY => Interop.GetD50_xyY();
+        public static CIExyY D50_xyY => CIExyY.D50;
     }
 }

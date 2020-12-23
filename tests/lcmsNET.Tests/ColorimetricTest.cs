@@ -210,5 +210,33 @@ namespace lcmsNET.Tests
             // Assert
             Assert.IsTrue(desaturated);
         }
+
+        [TestMethod()]
+        public void CIEXYZ_D50Test()
+        {
+            // Arrange
+
+            // Act
+            var d50 = CIEXYZ.D50;
+
+            // Assert
+            Assert.AreEqual(0.9642, d50.X, double.Epsilon);
+            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+            Assert.AreEqual(0.8249, d50.Z, double.Epsilon);
+        }
+
+        [TestMethod()]
+        public void CIExyY_D50Test()
+        {
+            // Arrange
+
+            // Act
+            var d50 = CIExyY.D50;
+
+            // Assert
+            Assert.AreEqual(0.3457, d50.x, 0.0001);
+            Assert.AreEqual(0.3585, d50.y, 0.0001);
+            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+        }
     }
 }
