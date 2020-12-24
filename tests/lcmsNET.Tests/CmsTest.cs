@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Linq;
 
 namespace lcmsNET.Tests
 {
@@ -58,13 +57,20 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void EncodedCMMVersionTest()
         {
-            // Arrange
+            try
+            {
+                // Arrange
 
-            // Act
-            int actual = Cms.EncodedCMMVersion;
+                // Act
+                int actual = Cms.EncodedCMMVersion; // >= 2.8
 
-            // Assert
-            Assert.AreNotEqual(0, actual);
+                // Assert
+                Assert.AreNotEqual(0, actual);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.8 or later.");
+            }
         }
 
         [TestMethod]

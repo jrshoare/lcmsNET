@@ -178,47 +178,54 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void RegisterPluginsTest()
         {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            // Act
-            using (var context = Context.Create(plugin, userData))
+            try
             {
-                PluginTag tag = new PluginTag
+                // Arrange
+                IntPtr plugin = IntPtr.Zero;
+                IntPtr userData = IntPtr.Zero;
+
+                // Act
+                using (var context = Context.Create(plugin, userData))
                 {
-                    Base = new PluginBase
+                    PluginTag tag = new PluginTag
                     {
-                        Magic = PluginMagicNumber,
-                        ExpectedVersion = Cms.EncodedCMMVersion,
-                        Type = PluginTagSig,
-                        Next = IntPtr.Zero
-                    },
-                    Signature = (TagSignature)0x696e6b63,   // 'inkc'
-                    Descriptor = new TagDescriptor
+                        Base = new PluginBase
+                        {
+                            Magic = PluginMagicNumber,
+                            ExpectedVersion = Cms.EncodedCMMVersion,    // >= 2.8
+                            Type = PluginTagSig,
+                            Next = IntPtr.Zero
+                        },
+                        Signature = (TagSignature)0x696e6b63,   // 'inkc'
+                        Descriptor = new TagDescriptor
+                        {
+                            ElemCount = 1,
+                            nSupportedTypes = 1,
+                            SupportedTypes = new TagTypeSignature[MAX_TYPES_IN_LCMS_PLUGIN],
+                            Decider = null
+                        }
+                    };
+
+                    int rawsize = Marshal.SizeOf(tag);
+                    IntPtr buffer = Marshal.AllocHGlobal(rawsize);
+                    Marshal.StructureToPtr(tag, buffer, false);
+                    try
                     {
-                        ElemCount = 1,
-                        nSupportedTypes = 1,
-                        SupportedTypes = new TagTypeSignature[MAX_TYPES_IN_LCMS_PLUGIN],
-                        Decider = null
+                        var registered = context.RegisterPlugins(buffer);
+
+                        // Assert
+                        Assert.IsTrue(registered);
                     }
-                };
-
-                int rawsize = Marshal.SizeOf(tag);
-                IntPtr buffer = Marshal.AllocHGlobal(rawsize);
-                Marshal.StructureToPtr(tag, buffer, false);
-                try
-                {
-                    var registered = context.RegisterPlugins(buffer);
-
-                    // Assert
-                    Assert.IsTrue(registered);
+                    finally
+                    {
+                        context.UnregisterPlugins();
+                        Marshal.FreeHGlobal(buffer);
+                    }
                 }
-                finally
-                {
-                    context.UnregisterPlugins();
-                    Marshal.FreeHGlobal(buffer);
-                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.8 or later.");
             }
         }
 

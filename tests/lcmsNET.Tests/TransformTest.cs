@@ -373,40 +373,47 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void DoTransformTest3()
         {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            const int pixelsPerLine = 3;
-            const int lineCount = 1;
-            const int bytesPerLineIn = pixelsPerLine * 3 + 4;
-            const int bytesPerLineOut = pixelsPerLine * 3 + 2;
-            const int bytesPerPlaneIn = 0; // ignored as not using planar formats
-            const int bytesPerPlaneOut = 0; // ditto
-
             try
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var xyzpath = Path.Combine(tempPath, "xyz.icc");
-                Save(".Resources.D50_XYZ.icc", xyzpath);
+                // Arrange
+                var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+                Directory.CreateDirectory(tempPath);
+                const int pixelsPerLine = 3;
+                const int lineCount = 1;
+                const int bytesPerLineIn = pixelsPerLine * 3 + 4;
+                const int bytesPerLineOut = pixelsPerLine * 3 + 2;
+                const int bytesPerPlaneIn = 0; // ignored as not using planar formats
+                const int bytesPerPlaneOut = 0; // ditto
 
-                // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var xyz = Profile.Open(xyzpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
+                try
                 {
-                    byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
-                    byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
-                    transform.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
-                            bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
+                    var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                    Save(".Resources.sRGB.icc", srgbpath);
+                    var xyzpath = Path.Combine(tempPath, "xyz.icc");
+                    Save(".Resources.D50_XYZ.icc", xyzpath);
 
-                    // Assert
+                    // Act
+                    using (var srgb = Profile.Open(srgbpath, "r"))
+                    using (var xyz = Profile.Open(xyzpath, "r"))
+                    using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
+                    {
+                        byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
+                        byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
+                        transform.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+                                bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);    // >= 2.8
+
+                        // Assert
+                    }
+                }
+                finally
+                {
+                    Directory.Delete(tempPath, true);
                 }
             }
-            finally
+            catch (EntryPointNotFoundException)
             {
-                Directory.Delete(tempPath, true);
+                Assert.Inconclusive("Requires Little CMS 2.8 or later.");
             }
         }
 
