@@ -428,7 +428,7 @@ namespace lcmsNET
                 Encoding encoding = Encoding.UTF32;
                 byte[] arr = new byte[nbytes];
                 Marshal.Copy(buffer, arr, 0, nbytes);
-                return encoding.GetString(arr);
+                return encoding.GetString(arr).TrimEnd('\0'); // remove any trailing NULLs
             }
             finally
             {
