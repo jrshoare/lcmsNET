@@ -402,7 +402,7 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.U4)] uint info,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
-                IntPtr buffer,
+                IntPtr buffer, /* wchar_t */
                 [MarshalAs(UnmanagedType.U4)] uint bufferSize);
 
         internal static string GetProfileInfo(IntPtr handle, uint info, string languageCode, string countryCode)
@@ -412,11 +412,23 @@ namespace lcmsNET
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
-            buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
+            int nbytes = Convert.ToInt32(bytes);
+            buffer = Marshal.AllocHGlobal(nbytes);
             try
             {
                 GetProfileInfo_Internal(handle, info, language, country, buffer, bytes);
-                return Marshal.PtrToStringUni(buffer);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // On Windows wchar_t is 2 bytes so just use in-built marshaling
+                    return Marshal.PtrToStringUni(buffer);
+                }
+
+                // On Linux and OSX wchar_t is 4 bytes so we must convert accordingly
+                Encoding encoding = Encoding.UTF32;
+                byte[] arr = new byte[nbytes];
+                Marshal.Copy(buffer, arr, 0, nbytes);
+                return encoding.GetString(arr);
             }
             finally
             {
