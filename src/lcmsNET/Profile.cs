@@ -10,12 +10,13 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal Profile(IntPtr handle, Context context = null)
+        internal Profile(IntPtr handle, Context context = null, IOHandler iohandler = null)
         {
             Helper.CheckCreated<Profile>(handle);
 
             _handle = handle;
             Context = context;
+            IOHandler = iohandler;
         }
 
         #region Predefined virtual profiles
@@ -158,6 +159,16 @@ namespace lcmsNET
             return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, memory), context);
         }
 
+        public static Profile Open(Context context, IOHandler iohandler)
+        {
+            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero), context, iohandler);
+        }
+
+        public static Profile Open(Context context, IOHandler iohandler, bool writeable)
+        {
+            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero, writeable ? 1 : 0), context, iohandler);
+        }
+
         public bool Save(string filepath)
         {
             EnsureNotDisposed();
@@ -170,6 +181,13 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             return 0 != Interop.SaveProfile(_handle, profile, out bytesNeeded);
+        }
+
+        public int Save(IOHandler iohandler)
+        {
+            EnsureNotDisposed();
+
+            return Interop.SaveProfile(_handle, iohandler?.Handle ?? IntPtr.Zero);
         }
         #endregion
 
@@ -364,6 +382,25 @@ namespace lcmsNET
                 Interop.SetHeaderProfileID(_handle, value);
             }
         }
+
+        public IOHandler IOHandler
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                if (_iohandler is null)
+                {
+                    _iohandler = new IOHandler(Interop.GetProfileIOHandler(_handle), Context, isOwner: false);
+                }
+                return _iohandler;
+            }
+            private set
+            {
+                _iohandler = value;
+            }
+        }
+        private IOHandler _iohandler;
         #endregion
 
         #region IDisposable Support
@@ -384,6 +421,7 @@ namespace lcmsNET
             if (handle != IntPtr.Zero)
             {
                 Interop.CloseProfile(handle);
+                IOHandler = null; // profile closure also closes i/o handler
                 Context = null;
             }
         }

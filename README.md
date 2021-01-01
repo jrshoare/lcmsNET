@@ -85,6 +85,5 @@ See the unit tests for examples of how to invoke each supported method and prope
 
 # Future work
 * Plug ins
-* IO handlers
 * PostScript generation
 * Improved documentation

@@ -313,6 +313,27 @@ namespace lcmsNET
             }
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsOpenProfileFromIOhandlerTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr OpenProfileFromIOhandlerTHR_Internal(
+                IntPtr contextID,
+                IntPtr io);
+
+        internal static IntPtr OpenProfile(IntPtr contextID, IntPtr iohandler)
+        {
+            return OpenProfileFromIOhandlerTHR_Internal(contextID, iohandler);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsOpenProfileFromIOhandler2THR", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr OpenProfileFromIOhandler2THR_Internal(
+                IntPtr contextID,
+                IntPtr io,
+                int write);
+
+        internal static IntPtr OpenProfile(IntPtr contextID, IntPtr iohandler, int writeable)
+        {
+            return OpenProfileFromIOhandler2THR_Internal(contextID, iohandler, writeable);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsCloseProfile", CallingConvention = CallingConvention.StdCall)]
         private static extern int CloseProfile_Internal(IntPtr handle);
 
@@ -356,6 +377,16 @@ namespace lcmsNET
             }
             bytesNeeded = n;
             return result;
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSaveProfileToIOhandler", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int SaveProfileToIOhandler_Internal(
+                IntPtr handle,
+                IntPtr io);
+
+        internal unsafe static int SaveProfile(IntPtr handle, IntPtr iohandler)
+        {
+            return SaveProfileToIOhandler_Internal(handle, iohandler);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetColorSpace", CallingConvention = CallingConvention.StdCall)]

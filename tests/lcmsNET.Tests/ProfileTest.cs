@@ -585,6 +585,50 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void OpenTest5()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                // Act
+                using (var context = Context.Create(plugin, userData))
+                using (var profile = Profile.Open(context, IOHandler.Open(context, srgbpath, "r")))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void OpenTest6()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+
+            // Act
+            using (var context = Context.Create(plugin, userData))
+            using (var profile = Profile.Open(context, IOHandler.Open(context), true))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
         public void SaveTest()
         {
             // Arrange
@@ -653,6 +697,35 @@ namespace lcmsNET.Tests
                     // Assert
                     Assert.AreEqual(expected, actual);
                 }
+            }
+        }
+
+        [TestMethod()]
+        public void SaveTest4()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                // Act
+                using (var profile = Profile.Open(srgbpath, "r"))
+                using (var iohandler = IOHandler.Open(null))
+                {
+                    var bytesToWrite = profile.Save((IOHandler)null);
+                    var bytesWritten = profile.Save(iohandler);
+
+                    // Assert
+                    Assert.AreEqual(bytesToWrite, bytesWritten);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
             }
         }
 
@@ -1589,6 +1662,33 @@ namespace lcmsNET.Tests
                     profile.HeaderProfileID = profileID;
 
                     // Assert
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void IOHandlerGetTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    var iohandler = profile.IOHandler;
+
+                    // Assert
+                    Assert.IsNotNull(iohandler);
                 }
             }
             finally
