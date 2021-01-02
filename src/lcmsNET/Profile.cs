@@ -398,6 +398,7 @@ namespace lcmsNET
             private set
             {
                 _iohandler = value;
+                if (!(_iohandler is null)) _iohandler.IsOwner = false; // take ownership to avoid double free()
             }
         }
         private IOHandler _iohandler;

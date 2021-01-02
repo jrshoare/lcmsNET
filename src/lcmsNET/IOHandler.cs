@@ -69,7 +69,7 @@ namespace lcmsNET
         #endregion
 
         internal IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
+        // visibility must be 'internal' to allow ownership to be taken when used with Profile.Open(Context, IOHandler...)
+        internal bool IsOwner { get; set; }
     }
 }
