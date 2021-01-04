@@ -299,6 +299,30 @@ namespace lcmsNET
         }
         #endregion
 
+        #region PostScript generation
+        public uint GetPostScriptColorResource(Context context, PostScriptResourceType type, Intent intent, CmsFlags flags, IOHandler handler)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetPostScriptColorResource(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(type),
+                    Convert.ToUInt32(intent), Convert.ToUInt32(flags), handler?.Handle ?? IntPtr.Zero);
+        }
+
+        public byte[] GetPostScriptColorSpaceArray(Context context, Intent intent, CmsFlags flags)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetPostScriptCSA(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+        }
+
+        public byte[] GetPostScriptColorRenderingDictionary(Context context, Intent intent, CmsFlags flags)
+        {
+            EnsureNotDisposed();
+
+            return Interop.GetPostScriptCRD(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+        }
+        #endregion
+
         #region Properties
         public Context Context { get; private set; }
 

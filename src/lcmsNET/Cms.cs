@@ -474,6 +474,15 @@ namespace lcmsNET
         AsProof = 2
     }
 
+    /// <summary>
+    /// Defines the PostScript resource types.
+    /// </summary>
+    public enum PostScriptResourceType : uint
+    {
+        ColorSpaceArray = 0,
+        ColorRenderingDictionary = 1
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct ICCMeasurementConditions
     {

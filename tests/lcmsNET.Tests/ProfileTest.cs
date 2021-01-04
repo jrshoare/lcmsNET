@@ -1696,5 +1696,95 @@ namespace lcmsNET.Tests
                 Directory.Delete(tempPath, true);
             }
         }
+
+        [TestMethod()]
+        public void GetPostScriptColorResource()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            uint notExpected = 0;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
+                using (var iohandler = IOHandler.Open(context))
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    uint actual = profile.GetPostScriptColorResource(context, PostScriptResourceType.ColorRenderingDictionary, Intent.RelativeColorimetric, CmsFlags.None, iohandler);
+
+                    // Assert
+                    Assert.AreNotEqual(notExpected, actual);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void GetPostScriptColorSpaceArray()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            uint notExpected = 0;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    byte[] actual = profile.GetPostScriptColorSpaceArray(context, Intent.RelativeColorimetric, CmsFlags.None);
+
+                    // Assert
+                    Assert.IsNotNull(actual);
+                    Assert.AreNotEqual(notExpected, actual.Length);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void GetPostScriptColorRenderingDictionary()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+            uint notExpected = 0;
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+
+                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
+                using (var profile = Profile.Open(srgbpath, "r"))
+                {
+                    // Act
+                    byte[] actual = profile.GetPostScriptColorRenderingDictionary(context, Intent.AbsoluteColorimetric, CmsFlags.None);
+
+                    // Assert
+                    Assert.IsNotNull(actual);
+                    Assert.AreNotEqual(notExpected, actual.Length);
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
     }
 }

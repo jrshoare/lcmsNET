@@ -842,5 +842,75 @@ namespace lcmsNET
         {
             SetHeaderProfileID_Internal(handle, profileID);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetPostScriptColorResource", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetPostScriptColorResource_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)]uint type,
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)]uint intent,
+                [MarshalAs(UnmanagedType.U4)]uint flags,
+                IntPtr io);
+
+        internal static uint GetPostScriptColorResource(IntPtr handle, IntPtr contextID, uint type, uint intent, uint flags, IntPtr iohandler)
+        {
+            return GetPostScriptColorResource_Internal(contextID, type, handle, intent, flags, iohandler);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetPostScriptCSA", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetPostScriptCSA_Internal(
+                IntPtr contextID,
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)]uint intent,
+                [MarshalAs(UnmanagedType.U4)]uint flags,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+
+        internal static byte[] GetPostScriptCSA(IntPtr handle, IntPtr contextID, uint intent, uint flags)
+        {
+            IntPtr buffer = IntPtr.Zero;
+            uint bytes = GetPostScriptCSA_Internal(contextID, handle, intent, flags, buffer, 0);
+            int nbytes = Convert.ToInt32(bytes);
+            buffer = Marshal.AllocHGlobal(nbytes);
+            try
+            {
+                GetPostScriptCSA_Internal(contextID, handle, intent, flags, buffer, bytes);
+                byte[] arr = new byte[nbytes];
+                Marshal.Copy(buffer, arr, 0, nbytes);
+                return arr;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetPostScriptCRD", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetPostScriptCRD_Internal(
+                IntPtr contextID,
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.U4)]uint intent,
+                [MarshalAs(UnmanagedType.U4)]uint flags,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+
+        internal static byte[] GetPostScriptCRD(IntPtr handle, IntPtr contextID, uint intent, uint flags)
+        {
+            IntPtr buffer = IntPtr.Zero;
+            uint bytes = GetPostScriptCRD_Internal(contextID, handle, intent, flags, buffer, 0);
+            int nbytes = Convert.ToInt32(bytes);
+            buffer = Marshal.AllocHGlobal(nbytes);
+            try
+            {
+                GetPostScriptCRD_Internal(contextID, handle, intent, flags, buffer, bytes);
+                byte[] arr = new byte[nbytes];
+                Marshal.Copy(buffer, arr, 0, nbytes);
+                return arr;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
     }
 }
