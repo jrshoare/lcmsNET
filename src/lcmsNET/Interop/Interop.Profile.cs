@@ -6,29 +6,6 @@ using System.Text;
 
 namespace lcmsNET
 {
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct Tm
-    {
-        [MarshalAs(UnmanagedType.I4)]
-        public int sec;
-        [MarshalAs(UnmanagedType.I4)]
-        public int min;
-        [MarshalAs(UnmanagedType.I4)]
-        public int hour;
-        [MarshalAs(UnmanagedType.I4)]
-        public int mday;
-        [MarshalAs(UnmanagedType.I4)]
-        public int mon;
-        [MarshalAs(UnmanagedType.I4)]
-        public int year;
-        [MarshalAs(UnmanagedType.I4)]
-        public int wday;
-        [MarshalAs(UnmanagedType.I4)]
-        public int yday;
-        [MarshalAs(UnmanagedType.I4)]
-        public int isdst;
-    }
-
     internal static partial class Interop
     {
         [DllImport(Liblcms, EntryPoint = "cmsCreateProfilePlaceholder", CallingConvention = CallingConvention.StdCall)]
@@ -555,15 +532,14 @@ namespace lcmsNET
         internal static int GetHeaderCreationDateTime(IntPtr handle, out DateTime dest)
         {
             int size = Marshal.SizeOf(typeof(Tm));
-            IntPtr ptr = Marshal.AllocHGlobal(size + 16);   // workaround for memory corruption on Ubuntu systems
+            IntPtr ptr = Marshal.AllocHGlobal(size);
 
             try
             {
                 int result = GetHeaderCreationDateTime_Internal(handle, ptr);
                 if (result != 0)
                 {
-                    Tm tm = Marshal.PtrToStructure<Tm>(ptr);
-                    dest = new DateTime(tm.year + 1900, tm.mon + 1, tm.mday, tm.hour, tm.min, tm.sec);
+                    dest = Tm.FromHandle(ptr);
                 }
                 else
                 {
