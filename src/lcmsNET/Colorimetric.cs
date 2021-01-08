@@ -14,6 +14,11 @@ namespace lcmsNET
         public double Z;
 
         public static CIEXYZ D50 => Interop.GetD50_XYZ();
+
+        public static CIEXYZ FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<CIEXYZ>(handle);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -68,6 +73,11 @@ namespace lcmsNET
         public CIEXYZ Red;
         public CIEXYZ Green;
         public CIEXYZ Blue;
+
+        public static CIEXYZTRIPLE FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<CIEXYZTRIPLE>(handle);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -76,6 +86,11 @@ namespace lcmsNET
         public CIExyY Red;
         public CIExyY Green;
         public CIExyY Blue;
+
+        public static CIExyYTRIPLE FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<CIExyYTRIPLE>(handle);
+        }
     }
 
     public static class Colorimetric

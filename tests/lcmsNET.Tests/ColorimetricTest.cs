@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -226,6 +228,33 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CIEXYZ_FromHandleTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+                int size = Marshal.SizeOf(expected);
+                IntPtr data = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(expected, data, false);
+                try
+                {
+                    profile.WriteTag(TagSignature.BlueColorant, data);
+                    var tag = profile.ReadTag(TagSignature.BlueColorant);
+
+                    // Act
+                    var actual = CIEXYZ.FromHandle(tag);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
+        }
+
+        [TestMethod()]
         public void CIExyY_D50Test()
         {
             // Arrange
@@ -237,6 +266,70 @@ namespace lcmsNET.Tests
             Assert.AreEqual(0.3457, d50.x, 0.0001);
             Assert.AreEqual(0.3585, d50.y, 0.0001);
             Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+        }
+
+        [TestMethod()]
+        public void CIExyYTRIPLE_FromHandleTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIExyYTRIPLE
+                {
+                    Red = new CIExyY { x = 0.64, y = 0.33, Y = 1 },
+                    Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
+                    Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
+                };
+                int size = Marshal.SizeOf(expected);
+                IntPtr data = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(expected, data, false);
+                try
+                {
+                    profile.WriteTag(TagSignature.Chromaticity, data);
+                    var tag = profile.ReadTag(TagSignature.Chromaticity);
+
+                    // Act
+                    var actual = CIExyYTRIPLE.FromHandle(tag);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void CIEXYZTRIPLE_FromHandleTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIEXYZTRIPLE
+                {
+                    Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                    Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                    Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
+                };
+                int size = Marshal.SizeOf(expected);
+                IntPtr data = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(expected, data, false);
+                try
+                {
+                    profile.WriteTag(TagSignature.ChromaticAdaptation, data);
+                    var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
+
+                    // Act
+                    var actual = CIEXYZTRIPLE.FromHandle(tag);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
         }
     }
 }

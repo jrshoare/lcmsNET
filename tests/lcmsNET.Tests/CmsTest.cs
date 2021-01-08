@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -364,6 +365,72 @@ namespace lcmsNET.Tests
 
             // Assert
             Assert.IsTrue(success);
+        }
+
+        [TestMethod()]
+        public void ICCMeasurementConditions_FromHandleTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new ICCMeasurementConditions
+                {
+                    Observer = 1,
+                    Backing = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                    Geometry = 2,
+                    Flare = 0.5f,
+                    IlluminantType = IlluminantType.D65
+                };
+                int size = Marshal.SizeOf(expected);
+                IntPtr data = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(expected, data, false);
+                try
+                {
+                    profile.WriteTag(TagSignature.Measurement, data);
+                    var tag = profile.ReadTag(TagSignature.Measurement);
+
+                    // Act
+                    var actual = ICCMeasurementConditions.FromHandle(tag);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void ICCViewingConditions_FromHandleTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new ICCViewingConditions
+                {
+                    IlluminantXYZ = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                    SurroundXYZ = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                    IlluminantType = IlluminantType.E
+                };
+                int size = Marshal.SizeOf(expected);
+                IntPtr data = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(expected, data, false);
+                try
+                {
+                    profile.WriteTag(TagSignature.ViewingConditions, data);
+                    var tag = profile.ReadTag(TagSignature.ViewingConditions);
+
+                    // Act
+                    var actual = ICCViewingConditions.FromHandle(tag);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(data);
+                }
+            }
         }
     }
 }

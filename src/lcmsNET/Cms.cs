@@ -483,6 +483,22 @@ namespace lcmsNET
         ColorRenderingDictionary = 1
     }
 
+    /// <summary>
+    /// Defines the standard illuminant types.
+    /// </summary>
+    public enum IlluminantType : uint
+    {
+        Unknown = 0,
+        D50 = 1,
+        D65 = 2,
+        D93 = 3,
+        F2 = 4,
+        D55 = 5,
+        A = 6,
+        E = 7,  // Equi-Power
+        F8 = 8
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     public struct ICCMeasurementConditions
     {
@@ -494,7 +510,12 @@ namespace lcmsNET
         [MarshalAs(UnmanagedType.R4)]
         public float Flare;         // 0..1.0
         [MarshalAs(UnmanagedType.U4)]
-        public uint IlluminantType;
+        public IlluminantType IlluminantType;
+
+        public static ICCMeasurementConditions FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<ICCMeasurementConditions>(handle);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -503,7 +524,12 @@ namespace lcmsNET
         public CIEXYZ IlluminantXYZ;
         public CIEXYZ SurroundXYZ;
         [MarshalAs(UnmanagedType.U4)]
-        public uint IlluminantType;
+        public IlluminantType IlluminantType;
+
+        public static ICCViewingConditions FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<ICCViewingConditions>(handle);
+        }
     }
 
     public sealed class Cms
