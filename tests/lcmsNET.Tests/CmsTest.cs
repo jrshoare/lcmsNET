@@ -380,24 +380,15 @@ namespace lcmsNET.Tests
                     Flare = 0.5f,
                     IlluminantType = IlluminantType.D65
                 };
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.Measurement, data);
-                    var tag = profile.ReadTag(TagSignature.Measurement);
 
-                    // Act
-                    var actual = ICCMeasurementConditions.FromHandle(tag);
+                profile.WriteTag(TagSignature.Measurement, expected);
+                var tag = profile.ReadTag(TagSignature.Measurement);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var actual = ICCMeasurementConditions.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
 
@@ -412,24 +403,15 @@ namespace lcmsNET.Tests
                     SurroundXYZ = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
                     IlluminantType = IlluminantType.E
                 };
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.ViewingConditions, data);
-                    var tag = profile.ReadTag(TagSignature.ViewingConditions);
 
-                    // Act
-                    var actual = ICCViewingConditions.FromHandle(tag);
+                profile.WriteTag(TagSignature.ViewingConditions, expected);
+                var tag = profile.ReadTag(TagSignature.ViewingConditions);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var actual = ICCViewingConditions.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
     }

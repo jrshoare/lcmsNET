@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace lcmsNET
@@ -264,6 +265,24 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             return Interop.WriteTag(_handle, Convert.ToUInt32(tag), data) != 0;
+        }
+
+        public bool WriteTag<T>(TagSignature tag, in T data)
+            where T: struct
+        {
+            EnsureNotDisposed();
+
+            int size = Marshal.SizeOf<T>();
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(data, ptr, false);
+            try
+            {
+                return WriteTag(tag, ptr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
         }
 
         public bool LinkTag(TagSignature tag, TagSignature dest)

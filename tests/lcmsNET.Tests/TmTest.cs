@@ -125,25 +125,16 @@ namespace lcmsNET.Tests
             {
                 var expected = new DateTime(2021, 1, 8, 10, 4, 32);
                 Tm tm = new Tm(expected);
-                int size = Marshal.SizeOf(tm);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(tm, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.CalibrationDateTime, data);
-                    var tag = profile.ReadTag(TagSignature.CalibrationDateTime);
 
-                    // Act
-                    var target = Tm.FromHandle(tag);
-                    DateTime actual = target;
+                profile.WriteTag(TagSignature.CalibrationDateTime, tm);
+                var tag = profile.ReadTag(TagSignature.CalibrationDateTime);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var target = Tm.FromHandle(tag);
+                DateTime actual = target;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
     }

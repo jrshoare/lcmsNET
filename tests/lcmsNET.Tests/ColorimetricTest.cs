@@ -233,24 +233,15 @@ namespace lcmsNET.Tests
             using (var profile = Profile.CreatePlaceholder(null))
             {
                 var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.BlueColorant, data);
-                    var tag = profile.ReadTag(TagSignature.BlueColorant);
 
-                    // Act
-                    var actual = CIEXYZ.FromHandle(tag);
+                profile.WriteTag(TagSignature.BlueColorant, expected);
+                var tag = profile.ReadTag(TagSignature.BlueColorant);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var actual = CIEXYZ.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
 
@@ -279,24 +270,15 @@ namespace lcmsNET.Tests
                     Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
                     Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
                 };
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.Chromaticity, data);
-                    var tag = profile.ReadTag(TagSignature.Chromaticity);
 
-                    // Act
-                    var actual = CIExyYTRIPLE.FromHandle(tag);
+                profile.WriteTag(TagSignature.Chromaticity, expected);
+                var tag = profile.ReadTag(TagSignature.Chromaticity);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var actual = CIExyYTRIPLE.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
 
@@ -311,24 +293,15 @@ namespace lcmsNET.Tests
                     Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
                     Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
                 };
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.ChromaticAdaptation, data);
-                    var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
 
-                    // Act
-                    var actual = CIEXYZTRIPLE.FromHandle(tag);
+                profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
+                var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(data);
-                }
+                // Act
+                var actual = CIEXYZTRIPLE.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
     }

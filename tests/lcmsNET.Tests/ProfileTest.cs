@@ -1490,6 +1490,29 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void WriteTagTest2()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIEXYZTRIPLE
+                {
+                    Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                    Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                    Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
+                };
+
+                profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
+                var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
+
+                // Act
+                var actual = CIEXYZTRIPLE.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
         public void LinkTagTest()
         {
             // Arrange
