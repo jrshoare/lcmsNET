@@ -276,6 +276,11 @@ namespace lcmsNET
             return (T)method.Invoke(null, new object[] { ptr });
         }
 
+        public bool WriteTag(TagSignature tag, IWrapper wrapper)
+        {
+            return WriteTag(tag, wrapper.Handle);
+        }
+
         public bool WriteTag(TagSignature tag, IntPtr data)
         {
             EnsureNotDisposed();

@@ -20,7 +20,7 @@ namespace lcmsNET
         public string Value;        // wchar_t *
     }
 
-    public sealed class Dict : IEnumerable<DictEntry>, IDisposable
+    public sealed class Dict : IEnumerable<DictEntry>, IDisposable, IWrapper
     {
         private IntPtr _handle;
 

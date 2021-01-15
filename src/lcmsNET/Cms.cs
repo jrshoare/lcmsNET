@@ -6,6 +6,11 @@ namespace lcmsNET
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ErrorHandler(IntPtr contextID, [MarshalAs(UnmanagedType.U4)] int errorCode, [MarshalAs(UnmanagedType.LPStr)] string errorText);
 
+    public interface IWrapper
+    {
+        IntPtr Handle { get; }
+    }
+
     /// <summary>
     /// Defines the intents.
     /// </summary>

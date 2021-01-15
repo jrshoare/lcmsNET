@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace lcmsNET
 {
-    public sealed class MultiLocalizedUnicode : IDisposable
+    public sealed class MultiLocalizedUnicode : IDisposable, IWrapper
     {
         public const string NoLanguage = "\0\0";
         public const string NoCountry = "\0\0";

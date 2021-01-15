@@ -13,7 +13,7 @@ namespace lcmsNET
         At_End = 1
     }
 
-    public sealed class Pipeline : IEnumerable<Stage>, IDisposable
+    public sealed class Pipeline : IEnumerable<Stage>, IDisposable, IWrapper
     {
         private IntPtr _handle;
 

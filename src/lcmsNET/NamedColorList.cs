@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace lcmsNET
 {
-    public sealed class NamedColorList : IDisposable
+    public sealed class NamedColorList : IDisposable, IWrapper
     {
         private IntPtr _handle;
 

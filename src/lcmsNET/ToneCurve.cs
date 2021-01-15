@@ -23,7 +23,7 @@ namespace lcmsNET
         public IntPtr sampledPoints;
     }
 
-    public sealed class ToneCurve : IDisposable
+    public sealed class ToneCurve : IDisposable, IWrapper
     {
         private IntPtr _handle;
 

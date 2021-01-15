@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace lcmsNET
 {
-    public sealed class ProfileSequenceDescriptor : IDisposable
+    public sealed class ProfileSequenceDescriptor : IDisposable, IWrapper
     {
         private IntPtr _handle;
 
