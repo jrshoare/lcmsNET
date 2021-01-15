@@ -1,6 +1,7 @@
 ﻿using lcmsNET.Impl;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -258,6 +259,21 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             return Interop.ReadTag(_handle, Convert.ToUInt32(tag));
+        }
+
+        public T ReadTag<T>(TagSignature tag)
+        {
+            EnsureNotDisposed();
+
+            IntPtr ptr = ReadTag(tag);
+            if (ptr == IntPtr.Zero) return default;
+
+            Type t = typeof(T);
+            MethodInfo method = t.GetMethod("FromHandle", BindingFlags.Public | BindingFlags.Static,
+                    null, new Type[] { typeof(IntPtr) }, null);
+            if (method is null) throw new MissingMethodException(nameof(T), "FromHandle(IntPtr)");
+
+            return (T)method.Invoke(null, new object[] { ptr });
         }
 
         public bool WriteTag(TagSignature tag, IntPtr data)

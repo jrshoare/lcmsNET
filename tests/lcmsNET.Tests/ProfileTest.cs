@@ -87,6 +87,19 @@ namespace lcmsNET.Tests
             return ms;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct TestCIEXYZ
+        {
+            [MarshalAs(UnmanagedType.R8)]
+            public double X;
+            [MarshalAs(UnmanagedType.R8)]
+            public double Y;
+            [MarshalAs(UnmanagedType.R8)]
+            public double Z;
+
+            // Must be missing a 'public static TestCIEXYZ FromHandle(IntPtr)' method!
+        }
+
         [TestMethod()]
         public void CreatePlaceholderTest()
         {
@@ -1425,6 +1438,43 @@ namespace lcmsNET.Tests
             finally
             {
                 Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTagTTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIEXYZTRIPLE
+                {
+                    Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                    Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                    Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
+                };
+
+                profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
+
+                // Act
+                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTagTMissingMethodTest()
+        {
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+
+                profile.WriteTag(TagSignature.BlueColorant, expected);
+
+                // Act & Assert
+                var actual = Assert.ThrowsException<MissingMethodException>(
+                        () => profile.ReadTag<TestCIEXYZ>(TagSignature.BlueColorant));
             }
         }
 

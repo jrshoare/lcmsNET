@@ -482,5 +482,29 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        [TestMethod()]
+        public void ReadTagTest()
+        {
+            // Arrange
+            double expected = 2.2;
+            double precision = 0.01;
+
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                using (var toneCurve = ToneCurve.BuildGamma(null, expected))
+                {
+                    profile.WriteTag(TagSignature.RedTRC, toneCurve.Handle);
+                }
+
+                // Act
+                using (var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
+                {
+                    // Assert
+                    var actual = roToneCurve.EstimateGamma(precision);
+                    Assert.AreEqual(expected, actual, precision);
+                }
+            }
+        }
     }
 }
