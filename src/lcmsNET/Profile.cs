@@ -306,6 +306,21 @@ namespace lcmsNET
             }
         }
 
+        public bool WriteTag(TagSignature tag, ICCData data)
+        {
+            EnsureNotDisposed();
+
+            IntPtr ptr = data.ToHandle();
+            try
+            {
+                return WriteTag(tag, ptr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
+        }
+
         public bool LinkTag(TagSignature tag, TagSignature dest)
         {
             EnsureNotDisposed();

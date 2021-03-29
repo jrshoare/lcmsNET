@@ -1563,6 +1563,27 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void WriteTagTest3()
+        {
+            // Arrange
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
+                var iccData = new ICCData(expected);
+
+                // do not use TagSignature.Data as this is not supported
+                profile.WriteTag(TagSignature.Ps2CRD0, iccData);
+
+                // Act
+                var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
+
+                // Assert
+                var actual = iccData2.Data;
+                CollectionAssert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
         public void LinkTagTest()
         {
             // Arrange
