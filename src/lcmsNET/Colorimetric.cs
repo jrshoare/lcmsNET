@@ -3,122 +3,266 @@ using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents an XYZ tristimulus value.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIEXYZ
     {
+        /// <summary>
+        /// XYZ X.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double X;
+        /// <summary>
+        /// XYZ Y.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double Y;
+        /// <summary>
+        /// XYZ Z.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double Z;
 
+        /// <summary>
+        /// Gets the D50 white point in XYZ.
+        /// </summary>
         public static CIEXYZ D50 => Interop.GetD50_XYZ();
 
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="CIEXYZ"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="CIEXYZ"/> instance.</returns>
         public static CIEXYZ FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZ>(handle);
         }
     }
 
+    /// <summary>
+    /// Represents an xyY tristimulus value.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIExyY
     {
+        /// <summary>
+        /// xyY x.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double x;
+        /// <summary>
+        /// xyY y.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double y;
+        /// <summary>
+        /// xyY Y.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double Y;
 
+        /// <summary>
+        /// Gets the D50 white point in xyY.
+        /// </summary>
         public static CIExyY D50 => Interop.GetD50_xyY();
     }
 
+    /// <summary>
+    /// Represents a CIELAB tristimulus value.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIELab
     {
+        /// <summary>
+        /// CIELAB L* lightness value.
+        /// </summary>
+        /// <remarks>
+        /// Black is 0 and white is 100.
+        /// </remarks>
         [MarshalAs(UnmanagedType.R8)]
         public double L;
+        /// <summary>
+        /// CIELAB a axis value representing the green-red opponent colors.
+        /// </summary>
+        /// <remarks>
+        /// Negative values are towards green and positive values towards red.
+        /// </remarks>
         [MarshalAs(UnmanagedType.R8)]
         public double a;
+        /// <summary>
+        /// CIELAB b axis value representing the blue-yellow opponent colors.
+        /// </summary>
+        /// <remarks>
+        /// Negative values are towards blue and positive values towards yellow.
+        /// </remarks>
         [MarshalAs(UnmanagedType.R8)]
         public double b;
     }
 
+    /// <summary>
+    /// Represents a CIELCh tristimulus value.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIELCh
     {
+        /// <summary>
+        /// CIELCh L lightness value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double L;
+        /// <summary>
+        /// CIELCh C chroma value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double C;
+        /// <summary>
+        /// CIELCh h hue value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double h;
     }
 
+    /// <summary>
+    /// Represents a CIE CAM02 JCh tristimulus value.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct JCh
     {
+        /// <summary>
+        /// CIE CAM02 J lightness value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double J;
+        /// <summary>
+        /// CIE CAM02 C chroma value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double C;
+        /// <summary>
+        /// CIE CAM02 h hue value.
+        /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double h;
     }
 
+    /// <summary>
+    /// Represents a triple of CIEXYZ values.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIEXYZTRIPLE
     {
+        /// <summary>
+        /// The CIEXYZ Red component.
+        /// </summary>
         public CIEXYZ Red;
+        /// <summary>
+        /// The CIEXYZ Green component.
+        /// </summary>
         public CIEXYZ Green;
+        /// <summary>
+        /// The CIEXYZ Blue component.
+        /// </summary>
         public CIEXYZ Blue;
 
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="CIEXYZTRIPLE"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="CIEXYZTRIPLE"/> instance.</returns>
         public static CIEXYZTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZTRIPLE>(handle);
         }
     }
 
+    /// <summary>
+    /// Represents a triple of CIExyY values.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIExyYTRIPLE
     {
+        /// <summary>
+        /// The CIExyY Red component.
+        /// </summary>
         public CIExyY Red;
+        /// <summary>
+        /// The CIExyY Green component.
+        /// </summary>
         public CIExyY Green;
+        /// <summary>
+        /// The CIExyY Blue component.
+        /// </summary>
         public CIExyY Blue;
 
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="CIExyYTRIPLE"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="CIExyYTRIPLE"/> instance.</returns>
         public static CIExyYTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIExyYTRIPLE>(handle);
         }
     }
 
+    /// <summary>
+    /// Provides static methods to convert between color spaces.
+    /// </summary>
     public static class Colorimetric
     {
+        /// <summary>
+        /// Converts a <see cref="CIEXYZ"/> value to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="whitePoint">The white point to be used in the conversion.</param>
+        /// <param name="xyz">The <see cref="CIEXYZ"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab XYZ2Lab(in CIEXYZ whitePoint, in CIEXYZ xyz)
         {
             Interop.XYZ2Lab(whitePoint, out CIELab lab, xyz);
             return lab;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIELab"/> value to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="whitePoint">The white point to be used in the conversion.</param>
+        /// <param name="lab">The <see cref="CIELab"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
         public static CIEXYZ Lab2XYZ(in CIEXYZ whitePoint, in CIELab lab)
         {
             Interop.Lab2XYZ(whitePoint, out CIEXYZ xyz, lab);
             return xyz;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIELab"/> value to <see cref="CIELCh"/>.
+        /// </summary>
+        /// <param name="lab">The <see cref="CIELab"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIELCh"/> value.</returns>
         public static CIELCh Lab2LCh(in CIELab lab)
         {
             Interop.Lab2LCh(out CIELCh lch, lab);
             return lch;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIELCh"/> value to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="lch">The <see cref="CIELCh"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab LCh2Lab(in CIELCh lch)
         {
             Interop.LCh2Lab(out CIELab lab, lch);
             return lab;
         }
 
+        /// <summary>
+        /// Converts an Lab value encoded using ICC v4 convention to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="wLab">An array of 3 values encoding an Lab value using ICC v4 convention.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab LabEncoded2Float(ushort[] wLab)
         {
             if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
@@ -127,6 +271,11 @@ namespace lcmsNET
             return lab;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIELab"/> value to an Lab value using ICC v4 convention.
+        /// </summary>
+        /// <param name="lab">The <see cref="CIELab"/> to be converted.</param>
+        /// <returns>An array of 3 values encoding an Lab value using ICC v4 convention.</returns>
         public static ushort[] Float2LabEncoded(in CIELab lab)
         {
             ushort[] wLab = new ushort[3];
@@ -134,6 +283,11 @@ namespace lcmsNET
             return wLab;
         }
 
+        /// <summary>
+        /// Converts an Lab value encoded using ICC v2 convention to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="wLab">An array of 3 values encoding an Lab value using ICC v2 convention.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab LabEncoded2FloatV2(ushort[] wLab)
         {
             if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
@@ -142,6 +296,11 @@ namespace lcmsNET
             return lab;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIELab"/> value to an Lab value using ICC v2 convention.
+        /// </summary>
+        /// <param name="lab">The <see cref="CIELab"/> to be converted.</param>
+        /// <returns>An array of 3 values encoding an Lab value using ICC v2 convention.</returns>
         public static ushort[] Float2LabEncodedV2(in CIELab lab)
         {
             ushort[] wLab = new ushort[3];
@@ -149,6 +308,11 @@ namespace lcmsNET
             return wLab;
         }
 
+        /// <summary>
+        /// Converts an XYZ value encoded using ICC convention to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="xyz">An array of 3 values encoding an XYZ value using ICC convention.</param>
+        /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
         public static CIEXYZ XYZEncoded2Float(ushort[] xyz)
         {
             if (xyz?.Length != 3) throw new ArgumentException($"'{nameof(xyz)}' array size must equal 3.");
@@ -157,6 +321,11 @@ namespace lcmsNET
             return fxyz;
         }
 
+        /// <summary>
+        /// Converts a <see cref="CIEXYZ"/> value to an XYZ value using ICC convention.
+        /// </summary>
+        /// <param name="fxyz">The <see cref="CIEXYZ"/> to be converted.</param>
+        /// <returns>An array of 3 values encoding an XYZ value using ICC convention.</returns>
         public static ushort[] Float2XYZEncoded(in CIEXYZ fxyz)
         {
             ushort[] xyz = new ushort[3];
@@ -164,13 +333,28 @@ namespace lcmsNET
             return xyz;
         }
 
+        /// <summary>
+        /// Performs gamut mapping on the supplied <see cref="CIELab"/> value.
+        /// </summary>
+        /// <param name="lab">The <see cref="CIELab"/> to be mapped.</param>
+        /// <param name="aMax">The maximum a gamut boundary.</param>
+        /// <param name="aMin">The minimum a gamut boundary.</param>
+        /// <param name="bMax">The maximum b gamut boundary.</param>
+        /// <param name="bMin">The minimum b gamut boundary.</param>
+        /// <returns></returns>
         public static bool Desaturate(ref CIELab lab, double aMax, double aMin, double bMax, double bMin)
         {
             return Interop.DesaturateLab(ref lab, aMax, aMin, bMax, bMin) != 0;
         }
 
+        /// <summary>
+        /// Gets the D50 white point in XYZ.
+        /// </summary>
         public static CIEXYZ D50_XYZ => CIEXYZ.D50;
 
+        /// <summary>
+        /// Gets the D50 white point in xyY.
+        /// </summary>
         public static CIExyY D50_xyY => CIExyY.D50;
     }
 }
