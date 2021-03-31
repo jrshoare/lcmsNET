@@ -374,10 +374,10 @@ namespace lcmsNET.Tests
             {
                 var expected = new ICCMeasurementConditions
                 {
-                    Observer = 1,
+                    Observer = Observer.CIE1931,
                     Backing = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                    Geometry = 2,
-                    Flare = 0.5f,
+                    Geometry = MeasurementGeometry.ZeroDOrDZero,
+                    Flare = 0.5,
                     IlluminantType = IlluminantType.D65
                 };
 
