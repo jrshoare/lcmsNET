@@ -65,7 +65,7 @@ namespace lcmsNET.Tests
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
                 La = 0.0,
-                surround = 3,
+                surround = Surround.Dark,
                 D_value = 0.75
             };
 
@@ -89,7 +89,7 @@ namespace lcmsNET.Tests
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
                 La = 0.0,
-                surround = 3,
+                surround = Surround.Dark,
                 D_value = 0.75
             };
             CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
@@ -115,7 +115,7 @@ namespace lcmsNET.Tests
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
                 La = 0.0,
-                surround = 3,
+                surround = Surround.Dark,
                 D_value = 0.75
             };
             CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
