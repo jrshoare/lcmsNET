@@ -105,6 +105,30 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void ForwardTestDisposed()
+        {
+            // Arrange
+            ViewingConditions conditions = new ViewingConditions
+            {
+                whitePoint = Colorimetric.D50_XYZ,
+                Yb = 1.0,
+                La = 0.0,
+                surround = Surround.Dark,
+                D_value = 0.75
+            };
+            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+
+            using (var cam02 = CAM02.Create(null, conditions))
+            {
+                // Act
+                cam02.Dispose();
+
+                // Assert
+                Assert.ThrowsException<ObjectDisposedException>(() => cam02.Forward(xyz, out JCh jch));
+            }
+        }
+
+        [TestMethod()]
         public void ReverseTest()
         {
             // Arrange
@@ -129,6 +153,32 @@ namespace lcmsNET.Tests
                 cam02.Reverse(jch, out CIEXYZ xyz2);
 
                 // Assert
+            }
+        }
+
+        [TestMethod()]
+        public void ReverseTestDisposed()
+        {
+            // Arrange
+            ViewingConditions conditions = new ViewingConditions
+            {
+                whitePoint = Colorimetric.D50_XYZ,
+                Yb = 1.0,
+                La = 0.0,
+                surround = Surround.Dark,
+                D_value = 0.75
+            };
+            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+
+            using (var cam02 = CAM02.Create(null, conditions))
+            {
+                cam02.Forward(xyz, out JCh jch);
+
+                // Act
+                cam02.Dispose();
+
+                // Assert
+                Assert.ThrowsException<ObjectDisposedException>(() => cam02.Reverse(jch, out CIEXYZ xyz2));
             }
         }
     }

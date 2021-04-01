@@ -55,10 +55,10 @@ namespace lcmsNET
         [MarshalAs(UnmanagedType.I4)]
         public Surround surround;
         /// <summary>
-        /// D value.
+        /// Degree of chromatic adaptation.
         /// </summary>
         /// <remarks>
-        /// A value of -1 causes D to be calculated.
+        /// A value of -1 causes D to be calculated, otherwise specify in the range 0..1.0.
         /// </remarks>
         [MarshalAs(UnmanagedType.R8)]
         public double D_value;
@@ -82,9 +82,12 @@ namespace lcmsNET
         /// <summary>
         /// Creates a new instance of the <see cref="CAM02"/> class.
         /// </summary>
-        /// <param name="context">The context, can be null.</param>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
         /// <param name="conditions">The viewing conditions.</param>
         /// <returns>A new <see cref="CAM02"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
         /// <remarks>
         /// Creates the instance in the global context if <paramref name="context"/> is null.
         /// </remarks>
@@ -98,8 +101,13 @@ namespace lcmsNET
         /// </summary>
         /// <param name="xyz">The input XYZ value.</param>
         /// <param name="jch">Returns the JCh value.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The model has already been disposed.
+        /// </exception>
         public void Forward(in CIEXYZ xyz, out JCh jch)
         {
+            EnsureNotDisposed();
+
             Interop.CIECAM02Forward(_handle, xyz, out jch);
         }
 
@@ -108,8 +116,13 @@ namespace lcmsNET
         /// </summary>
         /// <param name="jch">The input JCh value.</param>
         /// <param name="xyz">Returns the XYZ value.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The model has already been disposed.
+        /// </exception>
         public void Reverse(in JCh jch, out CIEXYZ xyz)
         {
+            EnsureNotDisposed();
+
             Interop.CIECAM02Reverse(_handle, jch, out xyz);
         }
 
