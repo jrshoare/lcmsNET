@@ -25,13 +25,13 @@ namespace lcmsNET
         /// <summary>
         /// Implicitly converts a <see cref="ColorantOrder"/> to a <see cref="byte"/> array.
         /// </summary>
-        /// <param name="colorantOrder"></param>
+        /// <param name="colorantOrder">The <see cref="ColorantOrder"/> to be converted.</param>
         public static implicit operator byte[](ColorantOrder colorantOrder) => colorantOrder._;
 
         /// <summary>
         /// Explicitly converts a <see cref="byte"/> array of 16 values to a <see cref="ColorantOrder"/>.
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="bytes">The byte array to be converted.</param>
         public static explicit operator ColorantOrder(byte[] bytes) => new ColorantOrder(bytes);
 
         /// <summary>
