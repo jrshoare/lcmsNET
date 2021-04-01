@@ -20,6 +20,9 @@ namespace lcmsNET
         public string Value;        // wchar_t *
     }
 
+    /// <summary>
+    /// Represents a dictionary of <see cref="DictEntry"/> items.
+    /// </summary>
     public sealed class Dict : IEnumerable<DictEntry>, IDisposable, IWrapper
     {
         private IntPtr _handle;
@@ -40,6 +43,9 @@ namespace lcmsNET
         /// <returns>
         /// A new <see cref="Dict"/> instance referencing an existing dictionary.
         /// </returns>
+        /// <exception cref="LcmsNETException">
+        /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
+        /// </exception>
         /// <remarks>
         /// The instance created should be considered read-only for <paramref name="handle"/>
         /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
@@ -49,11 +55,40 @@ namespace lcmsNET
             return new Dict(handle, context: null, isOwner: false);
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Dict"/> class.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <returns>A new <see cref="Dict"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.2 or later.
+        /// </para>
+        /// </remarks>
         public static Dict Create(Context context)
         {
             return new Dict(Interop.DictAlloc(context?.Handle ?? IntPtr.Zero), context);
         }
 
+        /// <summary>
+        /// Duplicates a dictionary.
+        /// </summary>
+        /// <returns>A new <see cref="Dict"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        /// The Dict has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.2 or later.
+        /// </remarks>
         public Dict Duplicate()
         {
             EnsureNotDisposed();
@@ -61,6 +96,25 @@ namespace lcmsNET
             return new Dict(Interop.DictDup(_handle), Context);
         }
 
+        /// <summary>
+        /// Adds an item to the dictionary.
+        /// </summary>
+        /// <param name="name">The name of the item.</param>
+        /// <param name="value">The value of the item.</param>
+        /// <param name="displayName">The display name of the item. Can be null.</param>
+        /// <param name="displayValue">The display value of the item. Can be null.</param>
+        /// <returns>true if the item has been added, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Dict has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// No check is made for duplicate entries.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.2 or later.
+        /// </para>
+        /// </remarks>
         public bool Add(string name, string value, MultiLocalizedUnicode displayName, MultiLocalizedUnicode displayValue)
         {
             EnsureNotDisposed();
@@ -71,6 +125,10 @@ namespace lcmsNET
         }
 
         #region IEnumerable<DictEntry> Support
+        /// <summary>
+        /// Returns an enumerator that iterates through the dictionary.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the dictionary.</returns>
         public IEnumerator<DictEntry> GetEnumerator()
         {
             EnsureNotDisposed();
@@ -78,11 +136,18 @@ namespace lcmsNET
             return new DictEntryEnumerator(_handle);
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the dictionary.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the dictionary.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets the context in which the instance was created.
+        /// </summary>
         public Context Context { get; private set; }
 
         private class DictEntryEnumerator : IEnumerator<DictEntry>
@@ -173,6 +238,9 @@ namespace lcmsNET
         #endregion
 
         #region IDisposable Support
+        /// <summary>
+        /// Gets a value indicating whether the instance has been disposed.
+        /// </summary>
         public bool IsDisposed => _handle == IntPtr.Zero;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -194,11 +262,17 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
         ~Dict()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -206,6 +280,9 @@ namespace lcmsNET
         }
         #endregion
 
+        /// <summary>
+        /// Gets the handle to the dictionary.
+        /// </summary>
         public IntPtr Handle => _handle;
 
         private bool IsOwner { get; set; }
