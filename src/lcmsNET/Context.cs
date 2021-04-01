@@ -5,6 +5,9 @@ using System.Threading;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents a context.
+    /// </summary>
     public sealed class Context : IDisposable
     {
         private IntPtr _handle;
@@ -16,11 +19,46 @@ namespace lcmsNET
             _handle = handle;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Context"/> class.
+        /// </summary>
+        /// <param name="plugin">
+        /// A pointer to a collection of plug-ins, or <see cref="IntPtr.Zero"/> if no plug-ins.
+        /// </param>
+        /// <param name="userData">
+        /// A pointer to user-defined data that will be forwarded to plug-ins and the
+        /// context-specific logger, or <see cref="IntPtr.Zero"/> if none.
+        /// </param>
+        /// <returns>A new <see cref="Context"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public static Context Create(IntPtr plugin, IntPtr userData)
         {
             return new Context(Interop.CreateContext(plugin, userData));
         }
 
+        /// <summary>
+        /// Duplicates a context with all associated plug-ins.
+        /// </summary>
+        /// <param name="userData">
+        /// A pointer to user-defined data that will be forwarded to plug-ins and the
+        /// context-specific logger, or <see cref="IntPtr.Zero"/> to use the user-defined
+        /// data from this <see cref="Context"/> instance.
+        /// </param>
+        /// <returns>A new <see cref="Context"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public Context Duplicate(IntPtr userData)
         {
             EnsureNotDisposed();
@@ -28,6 +66,17 @@ namespace lcmsNET
             return new Context(Interop.DuplicateContext(_handle, userData));
         }
 
+        /// <summary>
+        /// Installs a collection of plug-ins to the context.
+        /// </summary>
+        /// <param name="plugin">A pointer to the collection of plug-ins.</param>
+        /// <returns>true if successfule, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public bool RegisterPlugins(IntPtr plugin)
         {
             EnsureNotDisposed();
@@ -35,6 +84,15 @@ namespace lcmsNET
             return Interop.RegisterContextPlugins(_handle, plugin) == 1;
         }
 
+        /// <summary>
+        /// Uninstalls all plug-ins from the context.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public void UnregisterPlugins()
         {
             EnsureNotDisposed();
@@ -42,6 +100,19 @@ namespace lcmsNET
             Interop.UnregisterContextPlugins(_handle);
         }
 
+        /// <summary>
+        /// Sets the error handler for the context.
+        /// </summary>
+        /// <param name="handler">The error handler to be set or null to reset to default.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// The default error handler does nothing.
+        /// </remarks>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public void SetErrorHandler(ErrorHandler handler)
         {
             EnsureNotDisposed();
@@ -49,6 +120,19 @@ namespace lcmsNET
             Interop.SetContextErrorHandler(_handle, handler);
         }
 
+        /// <summary>
+        /// Gets or sets the codes used to mark out-of-gamut on proofing transforms
+        /// for the context.
+        /// </summary>
+        /// <value>
+        /// An array of 16 values.
+        /// </value>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public ushort[] AlarmCodes
         {
             get
@@ -69,6 +153,27 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Gets or sets the adaptation state for absolute colorimetric intent for the context.
+        /// </summary>
+        /// <value>
+        /// <list type="bullet">
+        /// <item>d = Degree on adaptation.</item>
+        /// <item>0 = Not adapted.</item>
+        /// <item>1 = Complete adaptation.</item>
+        /// <item>in-between = Partial adaptation.</item>
+        /// </list>
+        /// </value>
+        /// <exception cref="ObjectDisposedException">
+        /// The Context has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// Ignored for transforms created using
+        /// <see cref="Transform.Create(Context, Profile[], bool[], Intent[], double[], Profile, int, uint, uint, CmsFlags)"/>.
+        /// </remarks>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public double AdaptationState
         {
             get
@@ -85,11 +190,24 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Gets the user data associated with this context, or <see cref="IntPtr.Zero"/>
+        /// if no user was attached on creation or the instance has been disposed.
+        /// </summary>
+        /// <remarks>
+        /// Requires Little CMS version 2.6 or later.
+        /// </remarks>
         public IntPtr UserData => Interop.GetContextUserData(_handle);
 
+        /// <summary>
+        /// Gets the identifier of this context.
+        /// </summary>
         public IntPtr ID => _handle;
 
         #region IDisposable Support
+        /// <summary>
+        /// Gets a value indicating whether the instance has been disposed.
+        /// </summary>
         public bool IsDisposed => _handle == IntPtr.Zero;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -110,11 +228,17 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
         ~Context()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);

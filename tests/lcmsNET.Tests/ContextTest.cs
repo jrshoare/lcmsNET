@@ -133,7 +133,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetUserData()
+        public void GetUserDataTest()
         {
             // Arrange
             IntPtr plugin = IntPtr.Zero;
@@ -142,9 +142,57 @@ namespace lcmsNET.Tests
             IntPtr expected = handle.AddrOfPinnedObject();
             try
             {
-                // Act
                 using (var context = Context.Create(plugin, expected))
                 {
+                    // Act
+                    IntPtr actual = context.UserData;
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+
+        [TestMethod()]
+        public void GetUserDataTest2()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr expected = IntPtr.Zero;
+
+            using (var context = Context.Create(plugin, expected))
+            {
+                // Act
+                IntPtr actual = context.UserData;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void GetUserDataTestDisposed()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            byte[] bytes = new byte[] { 0xff, 0xaa, 0xdd, 0xee };
+            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+            IntPtr userData = handle.AddrOfPinnedObject();
+
+            // when disposed the context ID is zero which also identifies the global context so
+            // the user data will be null as it is not possible to set global context user data
+            IntPtr expected = IntPtr.Zero;
+            try
+            {
+                using (var context = Context.Create(plugin, userData))
+                {
+                    context.Dispose();
+
+                    // Act
                     IntPtr actual = context.UserData;
 
                     // Assert
