@@ -677,6 +677,37 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void SetDataTest2()
+        {
+            // Arrange
+            string[] sampleNames = new string[] { "SAMPLE_ID", "PatchName", "PatchX", "PatchY" };
+            string[] strValues = new string[] { "A2", "HL" };
+            double[] dblValues = new double[] { 3.1, 2.7 };
+            string patch = strValues[0];
+
+            using (var it8 = IT8.Create(null))
+            {
+                it8.SetProperty(NUMBER_OF_FIELDS, sampleNames.Length);
+                it8.SetProperty(NUMBER_OF_SETS, 1);
+
+                int n = 0;
+                foreach (var sampleName in sampleNames)
+                {
+                    it8.SetDataFormat(n++, sampleName);
+                }
+
+                // Act
+                bool isSet = it8.SetData(patch, sampleNames[0], strValues[0]);
+                isSet = isSet && it8.SetData(patch, sampleNames[1], strValues[1]);
+                isSet = isSet && it8.SetData(patch, sampleNames[2], dblValues[0]);
+                isSet = isSet && it8.SetData(patch, sampleNames[3], dblValues[1]);
+
+                // Assert
+                Assert.IsTrue(isSet);
+            }
+        }
+
+        [TestMethod()]
         public void SetDataDoubleTest()
         {
             // Arrange

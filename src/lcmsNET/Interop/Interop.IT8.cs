@@ -296,12 +296,24 @@ namespace lcmsNET
             return IT8GetDataDbl_Internal(handle, patch, sample);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetData", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetData_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string patch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample,
+                [MarshalAs(UnmanagedType.LPStr)] string value);
+
+        internal static int IT8SetData(IntPtr handle, string patch, string sample, string value)
+        {
+            return IT8SetData_Internal(handle, patch, sample, value);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataRowCol", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int IT8SetDataRowCol_Internal(
-            IntPtr handle,
-            [MarshalAs(UnmanagedType.I4)] int row,
-            [MarshalAs(UnmanagedType.I4)] int col,
-            [MarshalAs(UnmanagedType.LPStr)] string value);
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int row,
+                [MarshalAs(UnmanagedType.I4)] int col,
+                [MarshalAs(UnmanagedType.LPStr)] string value);
 
         internal static int IT8SetDataRowCol(IntPtr handle, int row, int column, string value)
         {
@@ -318,6 +330,18 @@ namespace lcmsNET
         internal static int IT8SetDataRowColDbl(IntPtr handle, int row, int column, double value)
         {
             return IT8SetDataRowColDbl_Internal(handle, row, column, value);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataDbl", CallingConvention = CallingConvention.StdCall)]
+        private unsafe static extern int IT8SetDataDbl_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string patch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample,
+                [MarshalAs(UnmanagedType.R8)] double value);
+
+        internal static int IT8SetDataDbl(IntPtr handle, string patch, string sample, double value)
+        {
+            return IT8SetDataDbl_Internal(handle, patch, sample, value);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsIT8FindDataFormat", CallingConvention = CallingConvention.StdCall)]
