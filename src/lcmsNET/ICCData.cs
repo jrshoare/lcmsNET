@@ -5,15 +5,47 @@ using System.Text;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents a data structure that contains either 7-bit ASCII or binary data.
+    /// </summary>
     public class ICCData
     {
+        /// <summary>
+        /// 7-bit ASCII data type.
+        /// </summary>
         public const uint ASCII = 0;
+        /// <summary>
+        /// Binary (transparent 8-bit bytes) data type.
+        /// </summary>
         public const uint Binary = 1;
 
+        /// <summary>
+        /// Gets the data type contained by this instance.
+        /// </summary>
         public uint Flag { get; }
 
+        /// <summary>
+        /// Gets the raw data contained by this instance.
+        /// </summary>
         public byte[] Data { get; }
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="ICCData"/> class from the
+        /// specified <see cref="string"/>.
+        /// </summary>
+        /// <param name="s">A string.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="s"/> is null.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Sets the data type to <see cref="ASCII"/>.
+        /// </para>
+        /// <para>
+        /// Non-ASCII characters are replaced with the value 63 which is the ASCII
+        /// character code for '?'.
+        /// </para>
+        /// </remarks>
         public ICCData(string s)
         {
             if (s is null) throw new ArgumentNullException(nameof(s));
@@ -22,6 +54,17 @@ namespace lcmsNET
             Data = Encoding.ASCII.GetBytes(s);
         }
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="ICCData"/> class from the
+        /// specified byte array.
+        /// </summary>
+        /// <param name="bytes">An array of bytes.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="bytes"/> is null.
+        /// </exception>
+        /// <remarks>
+        /// Sets the data type to <see cref="Binary"/>.
+        /// </remarks>
         public ICCData(byte[] bytes)
         {
             if (bytes is null) throw new ArgumentNullException(nameof(bytes));
@@ -30,12 +73,24 @@ namespace lcmsNET
             Data = bytes;
         }
 
+        /// <summary>
+        /// Explicitly converts an <see cref="ICCData"/> to a <see cref="string"/>.
+        /// </summary>
+        /// <param name="iccData">The <see cref="ICCData"/> to be converted.</param>
+        /// <exception cref="InvalidCastException">
+        /// <paramref name="iccData"/> does not have a data type of <see cref="ASCII"/>.
+        /// </exception>
         public static explicit operator string(ICCData iccData)
         {
             if (iccData.Flag != ASCII) throw new InvalidCastException("Data is not ASCII.");
             return Helper.ToString(iccData.Data);
         }
 
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="ICCData"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="ICCData"/> instance.</returns>
         public static ICCData FromHandle(IntPtr handle)
         {
             IntPtr ptr = handle;
