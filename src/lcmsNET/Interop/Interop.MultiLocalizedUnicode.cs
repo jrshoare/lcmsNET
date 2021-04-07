@@ -1,6 +1,7 @@
 ﻿using lcmsNET.Impl;
 using System;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace lcmsNET
 {
@@ -78,6 +79,8 @@ namespace lcmsNET
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = MLUgetASCII_Internal(handle, language, country, buffer, 0);
+            if (bytes == 0) return null;
+
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
@@ -105,6 +108,8 @@ namespace lcmsNET
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = MLUgetWide_Internal(handle, language, country, buffer, 0);
+            if (bytes == 0) return null;
+
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
@@ -136,13 +141,13 @@ namespace lcmsNET
             int result = MLUgetTranslation_Internal(handle, language, country, obtainedLanguage, obtainedCountry);
             if (result != 0)
             {
-                char[] trimChars = new char[] { '\0' };
-                translationLanguage = Helper.ToString(obtainedLanguage).TrimEnd(trimChars);
-                translationCountry = Helper.ToString(obtainedCountry).TrimEnd(trimChars);
+                // remove any single trailing null character
+                translationLanguage = Regex.Replace(Helper.ToString(obtainedLanguage), "\0$", "");
+                translationCountry = Regex.Replace(Helper.ToString(obtainedCountry), "\0$", "");
             }
             else
             {
-                translationLanguage = translationCountry = string.Empty;
+                translationLanguage = translationCountry = null;
             }
             return result;
         }
@@ -172,13 +177,13 @@ namespace lcmsNET
             int result = MLUtranslationsCodes_Internal(handle, index, language, country);
             if (result != 0)
             {
-                char[] trimChars = new char[] { '\0' };
-                languageCode = Helper.ToString(language).TrimEnd(trimChars);
-                countryCode = Helper.ToString(country).TrimEnd(trimChars);
+                // remove any single trailing null character
+                languageCode = Regex.Replace(Helper.ToString(language), "\0$", "");
+                countryCode = Regex.Replace(Helper.ToString(country), "\0$", "");
             }
             else
             {
-                languageCode = countryCode = string.Empty;
+                languageCode = countryCode = null;
             }
             return result;
         }

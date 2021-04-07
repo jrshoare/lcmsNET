@@ -173,6 +173,20 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void GetASCIITestNonExistent()
+        {
+            // Arrange
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                // Act
+                var actual = mlu.GetASCII("en", "US");
+
+                // Assert
+                Assert.IsNull(actual);
+            }
+        }
+
+        [TestMethod()]
         public void GetWideTest()
         {
             // Arrange
@@ -196,6 +210,20 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void GetWideTestNonExistent()
+        {
+            // Arrange
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                // Act
+                var actual = mlu.GetWide("en", "US");
+
+                // Assert
+                Assert.IsNull(actual);
+            }
+        }
+
+        [TestMethod()]
         public void GetTranslationTest()
         {
             // Arrange
@@ -214,6 +242,93 @@ namespace lcmsNET.Tests
                         out string actualLanguageCode, out string actualCountryCode);
 
                 // Assert
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void GetTranslationTestNonExistent()
+        {
+            // Arrange
+            string expectedLanguageCode = null;
+            string expectedCountryCode = null;
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                // Act
+                var actual = mlu.GetTranslation("en", "US",
+                        out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.IsFalse(actual);
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void GetTranslationTestNoLanguage()
+        {
+            // Arrange
+            var expectedLanguageCode = MultiLocalizedUnicode.NoLanguage;
+            var expectedCountryCode = "US";
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "GetTranslationNoLanguage");
+
+                // Act
+                var actual = mlu.GetTranslation(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry,
+                        out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.IsTrue(actual);
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void GetTranslationTestLanguageOnlyMatch()
+        {
+            // Arrange
+            var expectedLanguageCode = "en";
+            var expectedCountryCode = "US";
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                mlu.SetASCII("fr", "FR", "Pomme");
+                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
+
+                // Act
+                var actual = mlu.GetTranslation(expectedLanguageCode, "GB",
+                        out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.IsTrue(actual);
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void GetTranslationTestNoMatch()
+        {
+            // Arrange
+            var expectedLanguageCode = "en";
+            var expectedCountryCode = "US";
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
+
+                // Act
+                var actual = mlu.GetTranslation("fr", "FR",
+                        out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.IsTrue(actual);
                 Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
                 Assert.AreEqual(expectedCountryCode, actualCountryCode);
             }
@@ -243,7 +358,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void TranslationsCodeTest()
+        public void TranslationsCodesTest()
         {
             // Arrange
             IntPtr plugin = IntPtr.Zero;
@@ -257,10 +372,51 @@ namespace lcmsNET.Tests
             using (var context = Context.Create(plugin, userData))
             using (var mlu = MultiLocalizedUnicode.Create(context, nItems))
             {
-                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "TranslationsCount");
+                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "TranslationsCodes");
                 var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
 
                 // Assert
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void TranslationsCodesTestNoLanguageNoCountry()
+        {
+            // Arrange
+            var expectedLanguageCode = MultiLocalizedUnicode.NoLanguage;
+            var expectedCountryCode = MultiLocalizedUnicode.NoCountry;
+            uint index = 0;
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "TranslationsCodes");
+
+                // Act
+                var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
+                Assert.AreEqual(expectedCountryCode, actualCountryCode);
+            }
+        }
+
+        [TestMethod()]
+        public void TranslationsCodesTestIndexOutOfRange()
+        {
+            // Arrange
+            uint index = 3;
+            string expectedLanguageCode = null;
+            string expectedCountryCode = null;
+
+            using (var mlu = MultiLocalizedUnicode.Create(null))
+            {
+                // Act
+                var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
+
+                // Assert
+                Assert.IsFalse(actual);
                 Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
                 Assert.AreEqual(expectedCountryCode, actualCountryCode);
             }
