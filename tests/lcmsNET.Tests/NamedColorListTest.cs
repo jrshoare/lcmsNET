@@ -67,6 +67,32 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CreateTestNullPrefix()
+        {
+            // Arrange
+
+            // Act
+            using (var ncl = NamedColorList.Create(null, 0, 4, null, "suffix"))
+            {
+                // Assert
+                Assert.IsNotNull(ncl);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateTestNullSuffix()
+        {
+            // Arrange
+
+            // Act
+            using (var ncl = NamedColorList.Create(null, 0, 4, "prefix", null))
+            {
+                // Assert
+                Assert.IsNotNull(ncl);
+            }
+        }
+
+        [TestMethod()]
         public void DuplicateTest()
         {
             // Arrange
@@ -124,6 +150,22 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CountTestEmptyList()
+        {
+            // Arrange
+            uint expected = 0;
+
+            using (var ncl = NamedColorList.Create(null, 256, 3, null, null))
+            {
+                // Act
+                var actual = ncl.Count;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
         public void IndexerTest()
         {
             // Arrange
@@ -142,6 +184,22 @@ namespace lcmsNET.Tests
 
                 // Act
                 int actual = ncl[$"#{expected}"];
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod]
+        public void IndexerTestNotFound()
+        {
+            // Arrange
+            int expected = -1;
+
+            using (var ncl = NamedColorList.Create(null, 256, 3, null, null))
+            {
+                // Act
+                int actual = ncl["notfound"];
 
                 // Assert
                 Assert.AreEqual(expected, actual);
