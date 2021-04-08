@@ -138,7 +138,7 @@ namespace lcmsNET
         /// <exception cref="ObjectDisposedException">
         /// The object has already been disposed.
         /// </exception>
-        public bool Save(byte[] it8, out int bytesNeeded)
+        public bool Save(byte[] it8, out uint bytesNeeded)
         {
             EnsureNotDisposed();
 

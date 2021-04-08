@@ -236,11 +236,11 @@ namespace lcmsNET.Tests
                 byte[] memory = ms.GetBuffer();
                 using (var it8 = IT8.Open(null, memory))
                 {
-                    it8.Save(null, out int expected);
+                    it8.Save(null, out uint expected);
                     byte[] mem = new byte[expected];
 
                     // Act
-                    var result = it8.Save(mem, out int actual);
+                    var result = it8.Save(mem, out uint actual);
 
                     // Assert
                     Assert.IsTrue(result);
@@ -258,10 +258,10 @@ namespace lcmsNET.Tests
                 byte[] memory = ms.GetBuffer();
                 using (var it8 = IT8.Open(null, memory))
                 {
-                    int notExpected = 0;
+                    uint notExpected = 0;
 
                     // Act
-                    var result = it8.Save(null, out int actual);
+                    var result = it8.Save(null, out uint actual);
 
                     // Assert
                     Assert.IsTrue(result);
