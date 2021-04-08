@@ -83,12 +83,12 @@ namespace lcmsNET
         private unsafe static extern int IT8SaveToMem_Internal(
                 IntPtr handle,
                 void* memPtr,
-                int* bytesNeeded);
+                uint* bytesNeeded);
 
-        internal unsafe static int IT8SaveToMem(IntPtr handle, byte[] memPtr, out int bytesNeeded)
+        internal unsafe static int IT8SaveToMem(IntPtr handle, byte[] memPtr, out uint bytesNeeded)
         {
             int result = 0;
-            int n = memPtr?.Length ?? 0;
+            uint n = (uint)(memPtr?.Length ?? 0);
             if (memPtr is null)
             {
                 result = IT8SaveToMem_Internal(handle, null, &n);
