@@ -494,7 +494,7 @@ namespace lcmsNET.Tests
             {
                 using (var toneCurve = ToneCurve.BuildGamma(null, expected))
                 {
-                    profile.WriteTag(TagSignature.RedTRC, (IWrapper)toneCurve);
+                    profile.WriteTag(TagSignature.RedTRC, toneCurve.Handle);
                 }
 
                 // Act

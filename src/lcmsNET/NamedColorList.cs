@@ -8,7 +8,7 @@ namespace lcmsNET
     /// <summary>
     /// Represents a named color list.
     /// </summary>
-    public sealed class NamedColorList : IDisposable, IWrapper
+    public sealed class NamedColorList : IDisposable
     {
         private IntPtr _handle;
 

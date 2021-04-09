@@ -27,7 +27,7 @@ namespace lcmsNET
     /// stage performs a single operation on image data. The output of a first stage
     /// provides the input to the next and so on through the pipeline.
     /// </summary>
-    public sealed class Pipeline : IEnumerable<Stage>, IDisposable, IWrapper
+    public sealed class Pipeline : IEnumerable<Stage>, IDisposable
     {
         private IntPtr _handle;
 

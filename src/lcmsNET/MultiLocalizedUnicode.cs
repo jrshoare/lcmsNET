@@ -8,7 +8,7 @@ namespace lcmsNET
     /// <summary>
     /// Represents a multi-localized Unicode string.
     /// </summary>
-    public sealed class MultiLocalizedUnicode : IDisposable, IWrapper
+    public sealed class MultiLocalizedUnicode : IDisposable
     {
         /// <summary>
         /// The language code for 'no language'.

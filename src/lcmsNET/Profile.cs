@@ -759,23 +759,6 @@ namespace lcmsNET
         }
 
         /// <summary>
-        /// Writes an object that implements the <see cref="IWrapper"/> interface to the
-        /// profile using the given tag signature.
-        /// </summary>
-        /// <param name="tag">The tag signature.</param>
-        /// <param name="wrapper">An object that implements the <see cref="IWrapper"/> interface.</param>
-        /// <returns>true if successfully written, otherwise false.</returns>
-        /// <exception cref="ObjectDisposedException">
-        /// The Profile has already been disposed.
-        /// </exception>
-        public bool WriteTag(TagSignature tag, IWrapper wrapper)
-        {
-            EnsureNotDisposed();
-
-            return WriteTag(tag, wrapper.Handle);
-        }
-
-        /// <summary>
         /// Writes an object identified from the wrappered handle allocated by Little CMS
         /// to the profile using the given tag signature.
         /// </summary>

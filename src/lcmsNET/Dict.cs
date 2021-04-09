@@ -23,7 +23,7 @@ namespace lcmsNET
     /// <summary>
     /// Represents a dictionary of <see cref="DictEntry"/> items.
     /// </summary>
-    public sealed class Dict : IEnumerable<DictEntry>, IDisposable, IWrapper
+    public sealed class Dict : IEnumerable<DictEntry>, IDisposable
     {
         private IntPtr _handle;
 

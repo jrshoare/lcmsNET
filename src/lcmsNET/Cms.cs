@@ -17,17 +17,6 @@ namespace lcmsNET
     public delegate void ErrorHandler(IntPtr contextID, [MarshalAs(UnmanagedType.U4)] int errorCode, [MarshalAs(UnmanagedType.LPStr)] string errorText);
 
     /// <summary>
-    /// Defines a wrapper for a handle.
-    /// </summary>
-    public interface IWrapper
-    {
-        /// <summary>
-        /// Gets the wrapped handle.
-        /// </summary>
-        IntPtr Handle { get; }
-    }
-
-    /// <summary>
     /// Defines ICC and non-ICC intents.
     /// </summary>
     public enum Intent : uint
