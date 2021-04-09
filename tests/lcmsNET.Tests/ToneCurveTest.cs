@@ -498,10 +498,10 @@ namespace lcmsNET.Tests
                 }
 
                 // Act
-                using (var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
+                using (var toneCurve2 = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
                 {
                     // Assert
-                    var actual = roToneCurve.EstimateGamma(precision);
+                    var actual = toneCurve2.EstimateGamma(precision);
                     Assert.AreEqual(expected, actual, precision);
                 }
             }

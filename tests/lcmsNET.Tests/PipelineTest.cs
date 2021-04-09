@@ -507,5 +507,22 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        [TestMethod()]
+        public void ReadTagTest()
+        {
+            // Arrange
+            using (var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0))
+            {
+                profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
+
+                // Act
+                using (var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB1))
+                {
+                    // Assert
+                    Assert.IsNotNull(pipeline);
+                }
+            }
+        }
     }
 }

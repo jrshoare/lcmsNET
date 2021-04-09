@@ -441,5 +441,21 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        [TestMethod()]
+        public void ReadTagTest()
+        {
+            // Arrange
+            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            {
+                // Act
+                using (var profile = Profile.Open(ms.GetBuffer()))
+                using (var mlu = profile.ReadTag<MultiLocalizedUnicode>(TagSignature.ProfileDescription))
+                {
+                    // Assert
+                    Assert.IsNotNull(mlu);
+                }
+            }
+        }
     }
 }
