@@ -46,10 +46,6 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        /// <remarks>
-        /// The instance created should be considered read-only for <paramref name="handle"/>
-        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
-        /// </remarks>
         public static Dict FromHandle(IntPtr handle)
         {
             return new Dict(handle, context: null, isOwner: false);

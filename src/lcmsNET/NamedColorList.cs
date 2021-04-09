@@ -26,10 +26,6 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing named color list.</param>
         /// <returns>A new <see cref="NamedColorList"/> instance referencing an existing named color list.</returns>
-        /// <remarks>
-        /// The instance created should be considered read-only for <paramref name="handle"/>
-        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
-        /// </remarks>
         public static NamedColorList FromHandle(IntPtr handle)
         {
             return new NamedColorList(handle, context: null, isOwner: false);

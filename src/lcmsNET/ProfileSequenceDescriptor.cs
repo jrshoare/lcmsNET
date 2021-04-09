@@ -29,10 +29,6 @@ namespace lcmsNET
         /// A new <see cref="ProfileSequenceDescriptor"/> instance referencing an
         /// existing profile sequence descriptor.
         /// </returns>
-        /// <remarks>
-        /// The instance created should be considered read-only for <paramref name="handle"/>
-        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
-        /// </remarks>
         public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
         {
             return new ProfileSequenceDescriptor(handle, context: null, isOwner: false);

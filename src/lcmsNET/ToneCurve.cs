@@ -41,10 +41,6 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing tone curve.</param>
         /// <returns>A new <see cref="ToneCurve"/> instance referencing an existing tone curve.</returns>
-        /// <remarks>
-        /// The instance created should be considered read-only for <paramref name="handle"/>
-        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
-        /// </remarks>
         public static ToneCurve FromHandle(IntPtr handle)
         {
             return new ToneCurve(handle, context: null, isOwner: false);

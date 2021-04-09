@@ -35,10 +35,6 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing multi-localized Unicode string.</param>
         /// <returns>A new <see cref="MultiLocalizedUnicode"/> instance referencing an existing multi-localized Unicode string.</returns>
-        /// <remarks>
-        /// The instance created should be considered read-only for <paramref name="handle"/>
-        /// values returned from <see cref="Profile.ReadTag(TagSignature)"/>.
-        /// </remarks>
         public static MultiLocalizedUnicode FromHandle(IntPtr handle)
         {
             return new MultiLocalizedUnicode(handle, context: null, isOwner: false);
