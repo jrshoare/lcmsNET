@@ -335,12 +335,12 @@ namespace lcmsNET
         private unsafe static extern int SaveProfileToMem_Internal(
                 IntPtr handle,
                 void* memPtr,
-                int* bytesNeeded);
+                uint* bytesNeeded);
 
-        internal unsafe static int SaveProfile(IntPtr handle, byte[] memPtr, out int bytesNeeded)
+        internal unsafe static int SaveProfile(IntPtr handle, byte[] memPtr, out uint bytesNeeded)
         {
             int result = 0;
-            int n = memPtr?.Length ?? 0;
+            uint n = (uint)(memPtr?.Length ?? 0);
             if (memPtr is null)
             {
                 result = SaveProfileToMem_Internal(handle, null, &n);
@@ -357,11 +357,11 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsSaveProfileToIOhandler", CallingConvention = CallingConvention.StdCall)]
-        private unsafe static extern int SaveProfileToIOhandler_Internal(
+        private unsafe static extern uint SaveProfileToIOhandler_Internal(
                 IntPtr handle,
                 IntPtr io);
 
-        internal unsafe static int SaveProfile(IntPtr handle, IntPtr iohandler)
+        internal unsafe static uint SaveProfile(IntPtr handle, IntPtr iohandler)
         {
             return SaveProfileToIOhandler_Internal(handle, iohandler);
         }
@@ -420,6 +420,8 @@ namespace lcmsNET
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfo_Internal(handle, info, language, country, buffer, 0);
+            if (bytes == 0) return null;
+
             int nbytes = Convert.ToInt32(bytes);
             buffer = Marshal.AllocHGlobal(nbytes);
             try
@@ -460,6 +462,8 @@ namespace lcmsNET
 
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetProfileInfoASCII_Internal(handle, info, language, country, buffer, 0);
+            if (bytes == 0) return null;
+
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
@@ -846,6 +850,8 @@ namespace lcmsNET
         {
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetPostScriptCSA_Internal(contextID, handle, intent, flags, buffer, 0);
+            if (bytes == 0) return null;
+
             int nbytes = Convert.ToInt32(bytes);
             buffer = Marshal.AllocHGlobal(nbytes);
             try
@@ -874,6 +880,8 @@ namespace lcmsNET
         {
             IntPtr buffer = IntPtr.Zero;
             uint bytes = GetPostScriptCRD_Internal(contextID, handle, intent, flags, buffer, 0);
+            if (bytes == 0) return null;
+
             int nbytes = Convert.ToInt32(bytes);
             buffer = Marshal.AllocHGlobal(nbytes);
             try

@@ -679,11 +679,11 @@ namespace lcmsNET.Tests
                 byte[] memory = ms.GetBuffer();
                 using (var srcProfile = Profile.Open(memory))
                 {
-                    var expected = memory.Length + 1; // add 1 for '\0' termination
+                    uint expected = (uint)(memory.Length + 1); // add 1 for '\0' termination
                     byte[] destProfile = new byte[expected];
 
                     // Act
-                    var result = srcProfile.Save(destProfile, out int actual);
+                    var result = srcProfile.Save(destProfile, out uint actual);
 
                     // Assert
                     Assert.AreEqual(expected, actual);
@@ -702,10 +702,10 @@ namespace lcmsNET.Tests
                 {
                     // oddly the method returns the size of the profile ignoring
                     // the fact that it always terminates with `\0`
-                    var expected = memory.Length;
+                    uint expected = (uint)memory.Length;
 
                     // Act
-                    var result = profile.Save(null, out int actual);
+                    var result = profile.Save(null, out uint actual);
 
                     // Assert
                     Assert.AreEqual(expected, actual);
@@ -1475,6 +1475,18 @@ namespace lcmsNET.Tests
                 // Act & Assert
                 var actual = Assert.ThrowsException<MissingMethodException>(
                         () => profile.ReadTag<TestCIEXYZ>(TagSignature.BlueColorant));
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTagTTagNotFound()
+        {
+            // Arrange
+            using (var profile = Profile.CreatePlaceholder())
+            {
+                // Act & Assert
+                var actual = Assert.ThrowsException<LcmsNETException>(
+                        () => profile.ReadTag<Dict>(TagSignature.Meta));
             }
         }
 
