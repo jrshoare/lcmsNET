@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents a profile sequence descriptor.
+    /// </summary>
     public sealed class ProfileSequenceDescriptor : IDisposable
     {
         private IntPtr _handle;
@@ -29,17 +32,42 @@ namespace lcmsNET
         /// A new <see cref="ProfileSequenceDescriptor"/> instance referencing an
         /// existing profile sequence descriptor.
         /// </returns>
+        /// <exception cref="LcmsNETException">
+        /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
+        /// </exception>
         public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
         {
             return new ProfileSequenceDescriptor(handle, context: null, isOwner: false);
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ProfileSequenceDescriptor"/> class.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="nItems">The number of profiles in the sequence.</param>
+        /// <returns>A new <see cref="ProfileSequenceDescriptor"/>.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </remarks>
         public static ProfileSequenceDescriptor Create(Context context, uint nItems)
         {
             return new ProfileSequenceDescriptor(
                     Interop.AllocProfileSequenceDescription(context?.Handle ?? IntPtr.Zero, nItems), context);
         }
 
+        /// <summary>
+        /// Duplicates a profile sequence descriptor.
+        /// </summary>
+        /// <returns>A new <see cref="ProfileSequenceDescriptor"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <exception cref="ObjectDisposedException">
+        /// The ProfileSequenceDescriptor has already been disposed.
+        /// </exception>
         public ProfileSequenceDescriptor Duplicate()
         {
             EnsureNotDisposed();
@@ -47,10 +75,21 @@ namespace lcmsNET
             return new ProfileSequenceDescriptor(Interop.DupProfileSequenceDescription(_handle), Context);
         }
 
+        /// <summary>
+        /// Gets the context in which the instance was created.
+        /// </summary>
         public Context Context { get; private set; }
 
+        /// <summary>
+        /// Gets the number of profiles in the sequence.
+        /// </summary>
         public uint Length => GetLength();
 
+        /// <summary>
+        /// Gets the <see cref="ProfileSequenceItem"/> at a given index position.
+        /// </summary>
+        /// <param name="index">The index position.</param>
+        /// <returns>A <see cref="ProfileSequenceItem"/>.</returns>
         public ProfileSequenceItem this[int index]
         {
             get { return Items[index]; }
@@ -85,6 +124,9 @@ namespace lcmsNET
         private ProfileSequenceItem[] Items { get; set; }
 
         #region IDisposable Support
+        /// <summary>
+        /// Gets a value indicating whether the instance has been disposed.
+        /// </summary>
         public bool IsDisposed => _handle == IntPtr.Zero;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,11 +148,17 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
         ~ProfileSequenceDescriptor()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
@@ -128,6 +176,9 @@ namespace lcmsNET
         }
         #endregion
 
+        /// <summary>
+        /// Gets the handle to the profile sequence descriptor.
+        /// </summary>
         public IntPtr Handle => _handle;
 
         private bool IsOwner { get; set; }

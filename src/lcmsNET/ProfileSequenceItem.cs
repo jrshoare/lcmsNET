@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents an item in a profile sequence.
+    /// </summary>
     public sealed class ProfileSequenceItem
     {
         internal ProfileSequenceItem(IntPtr ptr, ProfileSequenceDescriptor parent)
@@ -12,36 +15,59 @@ namespace lcmsNET
             Parent = parent;
         }
 
+        /// <summary>
+        /// Gets or sets the signature of the device manufacturer of the profile.
+        /// </summary>
         public uint DeviceMfg
         {
             get { return GetDeviceMfg(); }
             set { SetDeviceMfg(value); }
         }
 
+        /// <summary>
+        /// Gets or sets the signature of the device model of the profile.
+        /// </summary>
         public uint DeviceModel
         {
             get { return GetDeviceModel(); }
             set { SetDeviceModel(value); }
         }
 
+        /// <summary>
+        /// Gets or sets the attributes unique to the particular device setup for which
+        /// the profile is applicable.
+        /// </summary>
         public DeviceAttributes Attributes
         {
             get { return GetAttributes(); }
             set { SetAttributes(value); }
         }
 
+        /// <summary>
+        /// Gets or sets the ICC technology of the profile.
+        /// </summary>
         public TechnologySignature Technology
         {
             get { return GetTechnology(); }
             set { SetTechnology(value); }
         }
 
+        /// <summary>
+        /// Gets or sets the profile ID of the profile.
+        /// </summary>
         public byte[] ProfileID
         {
             get { return GetProfileID(); }
             set { SetProfileID(value); }
         }
 
+        /// <summary>
+        /// Gets or sets the manufacturer string of the profile.
+        /// </summary>
+        /// <remarks>
+        /// Responsibility for freeing resources associated with the <see cref="MultiLocalizedUnicode"/>
+        /// object used to set the value is passed to the <see cref="ProfileSequenceItem"/>.
+        /// </remarks>
         public MultiLocalizedUnicode Manufacturer
         {
             get
@@ -61,6 +87,13 @@ namespace lcmsNET
         }
         private MultiLocalizedUnicode manufacturer;
 
+        /// <summary>
+        /// Gets or sets the model string of the profile.
+        /// </summary>
+        /// <remarks>
+        /// Responsibility for freeing resources associated with the <see cref="MultiLocalizedUnicode"/>
+        /// object used to set the value is passed to the <see cref="ProfileSequenceItem"/>.
+        /// </remarks>
         public MultiLocalizedUnicode Model
         {
             get
@@ -80,6 +113,13 @@ namespace lcmsNET
         }
         private MultiLocalizedUnicode model;
 
+        /// <summary>
+        /// Gets or sets the description of the profile.
+        /// </summary>
+        /// <remarks>
+        /// Responsibility for freeing resources associated with the <see cref="MultiLocalizedUnicode"/>
+        /// object used to set the value is passed to the <see cref="ProfileSequenceItem"/>.
+        /// </remarks>
         public MultiLocalizedUnicode Description
         {
             get
