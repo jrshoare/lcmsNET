@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Represents a color transform.
+    /// </summary>
     public sealed class Transform : IDisposable
     {
         private IntPtr _handle;
@@ -18,6 +21,24 @@ namespace lcmsNET
             Context = context;
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class.
+        /// </summary>
+        /// <param name="input">A profile capable to work in the input direction.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="output">A profile capable to work in the output direction.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Creates the instance in the global context.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
@@ -25,6 +46,25 @@ namespace lcmsNET
                     output.Handle, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="input">A profile capable to work in the input direction.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="output">A profile capable to work in the output direction.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
@@ -32,6 +72,29 @@ namespace lcmsNET
                     output.Handle, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class for a proofing transform.
+        /// </summary>
+        /// <param name="input">A profile capable to work in the input direction.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="output">A profile capable to work in the output direction.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="proofing">A proofing profile.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="proofingIntent">The proofing intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// To enable proofing and gamut check include <see cref="CmsFlags.SoftProofing"/>|<see cref="CmsFlags.GamutCheck"/>.
+        /// </para>
+        /// <para>
+        /// Creates the instance in the global context.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Profile proofing, Intent intent, Intent proofingIntent, CmsFlags flags)
         {
@@ -40,6 +103,30 @@ namespace lcmsNET
                     Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)));
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class for a proofing transform.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="input">A profile capable to work in the input direction.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="output">A profile capable to work in the output direction.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="proofing">A proofing profile.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="proofingIntent">The proofing intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// To enable proofing and gamut check include <see cref="CmsFlags.SoftProofing"/>|<see cref="CmsFlags.GamutCheck"/>.
+        /// </para>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Profile proofing, Intent intent, Intent proofingIntent, CmsFlags flags)
         {
@@ -48,6 +135,23 @@ namespace lcmsNET
                     Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)), context);
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class for a multiprofile transform.
+        /// </summary>
+        /// <param name="profiles">An array of profiles.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Creates the instance in the global context.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Profile[] profiles, uint inputFormat, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
@@ -55,6 +159,24 @@ namespace lcmsNET
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class for a multiprofile transform.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="profiles">An array of profiles.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_Lab_8"/>.</param>
+        /// <param name="intent">The intent.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Context context, Profile[] profiles, uint inputFormat, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
@@ -63,6 +185,33 @@ namespace lcmsNET
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="Transform"/> class for a multiprofile transform
+        /// exposing all parameters for each profile in the chain.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="profiles">An array of profiles.</param>
+        /// <param name="bpc">An array of black point compensation states.</param>
+        /// <param name="intents">An array of intents.</param>
+        /// <param name="adaptationStates">An array of adaptation states.</param>
+        /// <param name="gamut">A profile holding gamut information for a gamut check, can be null.</param>
+        /// <param name="gamutPCSPosition">Position in the chain of Lab/XYZ PCS to check gamut.</param>
+        /// <param name="inputFormat">The input format, e.g., <see cref="Cms.TYPE_RGB_8"/>.</param>
+        /// <param name="outputFormat">The output format, e.g. <see cref="Cms.TYPE_XYZ_16"/>.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns>A new <see cref="Transform"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// <paramref name="gamut"/> and <paramref name="gamutPCSPosition"/> are only used if
+        /// <paramref name="flags"/> includes <see cref="CmsFlags.GamutCheck"/>.
+        /// </para>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// </remarks>
         public static Transform Create(Context context, Profile[] profiles, bool[] bpc, Intent[] intents,
                 double[] adaptationStates, Profile gamut, int gamutPCSPosition, uint inputFormat, uint outputFormat, CmsFlags flags)
         {
@@ -73,6 +222,15 @@ namespace lcmsNET
                     gamutPCSPosition, inputFormat, outputFormat, Convert.ToUInt32(flags)), context);
         }
 
+        /// <summary>
+        /// Translates a bitmap according to the parameters setup when creating the transform.
+        /// </summary>
+        /// <param name="inputBuffer">An array of bytes containing the input bitmap.</param>
+        /// <param name="outputBuffer">An array of bytes to contain the output bitmap.</param>
+        /// <param name="pixelCount">The number of pixels to be transformed.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Profile has already been disposed.
+        /// </exception>
         public void DoTransform(byte[] inputBuffer, byte[] outputBuffer, int pixelCount)
         {
             EnsureNotDisposed();
@@ -80,6 +238,28 @@ namespace lcmsNET
             Interop.DoTransform(Handle, inputBuffer, outputBuffer, pixelCount);
         }
 
+        /// <summary>
+        /// Translates a bitmap according to the parameters setup when creating the transform.
+        /// </summary>
+        /// <param name="inputBuffer">An array of bytes containing the input bitmap.</param>
+        /// <param name="outputBuffer">An array of bytes to contain the output bitmap.</param>
+        /// <param name="pixelsPerLine">The number of pixels per line; same on input and in output.</param>
+        /// <param name="lineCount">The number of lines; same on input as in output.</param>
+        /// <param name="bytesPerLineIn">The distance in bytes from one line to the next on the input bitmap.</param>
+        /// <param name="bytesPerLineOut">The distance in bytes from one line to the next in the output bitmap.</param>
+        /// <param name="bytesPerPlaneIn">The distance in bytes from one plance to the next inside a line on the input bitmap.</param>
+        /// <param name="bytesPerPlaneOut">The distance in bytes from one plance to the next inside a line in the output bitmap.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Transform has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// <paramref name="bytesPerPlaneIn"/> and <paramref name="bytesPerPlaneOut"/> are only used in planar formats.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.8 or later.
+        /// </para>
+        /// </remarks>
         public void DoTransform(byte[] inputBuffer, byte[] outputBuffer, int pixelsPerLine, int lineCount,
                 int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
         {
@@ -89,6 +269,23 @@ namespace lcmsNET
                     bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
         }
 
+        /// <summary>
+        /// Changes the encoding of buffers in a transform originally created with at least 16 bits of precision.
+        /// </summary>
+        /// <param name="inputFormat">The input format.</param>
+        /// <param name="outputFormat">The output format.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Transform has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is provided for backwards compatibility and should be avoided whenever possible.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.1 or later.
+        /// </para>
+        /// </remarks>
         public bool ChangeBuffersFormat(uint inputFormat, uint outputFormat)
         {
             EnsureNotDisposed();
@@ -96,15 +293,40 @@ namespace lcmsNET
             return Interop.ChangeBuffersFormat(_handle, inputFormat, outputFormat) != 0;
         }
 
+        /// <summary>
+        /// Gets the context in which the instance was created.
+        /// </summary>
         public Context Context { get; private set; }
 
+        /// <summary>
+        /// Gets the input format of the transform, or 0 if the instance has been disposed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.2 or later.
+        /// </para>
+        /// </remarks>
         public uint InputFormat => Interop.GetTransformInputFormat(_handle);
 
+        /// <summary>
+        /// Gets the output format of the transform, or 0 if the instance has been disposed.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.2 or later.
+        /// </para>
+        /// </remarks>
         public uint OutputFormat => Interop.GetTransformOutputFormat(_handle);
 
+        /// <summary>
+        /// Gets a named color list from the transform.
+        /// </summary>
         public NamedColorList NamedColorList => NamedColorList.CopyRef(Interop.GetNamedColorList(_handle));
 
         #region IDisposable Support
+        /// <summary>
+        /// Gets a value indicating whether the instance has been disposed.
+        /// </summary>
         public bool IsDisposed => _handle == IntPtr.Zero;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,11 +348,17 @@ namespace lcmsNET
             }
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
         ~Transform()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
