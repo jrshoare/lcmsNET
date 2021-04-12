@@ -59,7 +59,7 @@ namespace lcmsNET.Tests
         public void ConstructorTest()
         {
             // Arrange
-            uint expectedFlag = 2;
+            ScreeningFlags expectedFlag = ScreeningFlags.FrequencyUnitLinesInch;
             uint expectedNChannels = 1;
             ScreeningChannel[] expectedChannels = new ScreeningChannel[16];
             expectedChannels[0].Frequency = 2.0;
@@ -83,7 +83,7 @@ namespace lcmsNET.Tests
         {
             using (var profile = Profile.CreatePlaceholder(null))
             {
-                uint expectedFlag = 0;
+                ScreeningFlags expectedFlag = ScreeningFlags.FrequencyUnitLinesCm;
                 uint expectedNChannels = 1;
                 ScreeningChannel[] expectedChannels = new ScreeningChannel[16];
                 expectedChannels[0].Frequency = 2.0;
