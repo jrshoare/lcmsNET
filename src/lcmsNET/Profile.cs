@@ -802,6 +802,7 @@ namespace lcmsNET
             }
             finally
             {
+                Marshal.DestroyStructure<T>(ptr);
                 Marshal.FreeHGlobal(ptr);
             }
         }

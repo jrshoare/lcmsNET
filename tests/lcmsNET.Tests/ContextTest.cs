@@ -267,6 +267,7 @@ namespace lcmsNET.Tests
                     finally
                     {
                         context.UnregisterPlugins();
+                        Marshal.DestroyStructure(buffer, typeof(PluginTag));
                         Marshal.FreeHGlobal(buffer);
                     }
                 }

@@ -116,6 +116,7 @@ namespace lcmsNET.Tests
                 }
                 finally
                 {
+                    Marshal.DestroyStructure(data, typeof(Screening));
                     Marshal.FreeHGlobal(data);
                 }
             }
