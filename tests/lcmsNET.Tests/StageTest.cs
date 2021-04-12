@@ -94,6 +94,20 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CreateTest2a()
+        {
+            // Arrange
+            uint nChannels = 3;
+
+            // Act
+            using (var stage = Stage.Create(null, nChannels, null))
+            {
+                // Assert
+                Assert.IsNotNull(stage);
+            }
+        }
+
+        [TestMethod()]
         public void CreateTest3()
         {
             // Arrange
