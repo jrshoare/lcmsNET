@@ -112,7 +112,7 @@ namespace lcmsNET.Tests
             var target = new ICCData(expectedData);
 
             // Assert
-            var actualData = target.Data;
+            var actualData = (byte[])target;
             var actualFlag = target.Flag;
             Assert.AreEqual(expectedData, actualData);
             Assert.AreEqual(expectedFlag, actualFlag);
@@ -132,14 +132,14 @@ namespace lcmsNET.Tests
         public void StringOperatorTest()
         {
             // Arrange
-            string expectedString = "stringoperatortest";
+            string expected = "stringoperatortest";
 
             // Act
-            var target = new ICCData(expectedString);
+            var target = new ICCData(expected);
 
             // Assert
-            var actualString = (string)target;
-            Assert.AreEqual(expectedString, actualString);
+            var actual = (string)target;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -153,6 +153,33 @@ namespace lcmsNET.Tests
 
             // Assert
             var actual = Assert.ThrowsException<InvalidCastException>(() => (string)target);
+        }
+
+        [TestMethod()]
+        public void ByteArrayOperatorTest()
+        {
+            // Arrange
+            var expected = new byte[] { 12, 96, 14, 2 };
+
+            // Act
+            var target = new ICCData(expected);
+
+            // Assert
+            var actual = (byte[])target;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod()]
+        public void ByteArrayOperatorTestNotBinary()
+        {
+            // Arrange
+            string s = "notbinarytest";
+
+            // Act
+            var target = new ICCData(s);
+
+            // Assert
+            var actual = Assert.ThrowsException<InvalidCastException>(() => (byte[])target);
         }
 
         [TestMethod()]
@@ -192,7 +219,7 @@ namespace lcmsNET.Tests
                 var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
 
                 // Assert
-                var actual = iccData2.Data;
+                var actual = (byte[])iccData2;
                 CollectionAssert.AreEqual(expected, actual);
             }
         }

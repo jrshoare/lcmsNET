@@ -1610,7 +1610,7 @@ namespace lcmsNET.Tests
                 var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
 
                 // Assert
-                var actual = iccData2.Data;
+                var actual = (byte[])iccData2;
                 CollectionAssert.AreEqual(expected, actual);
             }
         }

@@ -44,10 +44,7 @@ namespace lcmsNET
         /// </summary>
         public uint Flag { get; }
 
-        /// <summary>
-        /// Gets the raw data contained by this instance.
-        /// </summary>
-        public byte[] Data { get; }
+        private byte[] Data { get; set; }
 
         /// <summary>
         /// Initialises a new instance of the <see cref="ICCData"/> class from the
@@ -107,6 +104,19 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Explicitly converts an <see cref="ICCData"/> to a <see cref="byte"/> array.
+        /// </summary>
+        /// <param name="iccData">The <see cref="ICCData"/> to be converted.</param>
+        /// <exception cref="InvalidCastException">
+        /// <paramref name="iccData"/> does not have a data type of <see cref="Binary"/>.
+        /// </exception>
+        public static explicit operator byte[](ICCData iccData)
+        {
+            if (iccData.Flag != Binary) throw new InvalidCastException("Data is not binary.");
+            return iccData.Data;
+        }
+
+        /// <summary>
         /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="ICCData"/> object.
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
@@ -131,7 +141,7 @@ namespace lcmsNET
             else if (flag == Binary)
                 return new ICCData(data);
             else
-                throw new ArgumentException($"Value must be either {ASCII} or {Binary}'.", nameof(flag));
+                throw new ArgumentException($"Value must be either {ASCII} or {Binary}.", nameof(flag));
         }
 
         internal IntPtr ToHandle()
