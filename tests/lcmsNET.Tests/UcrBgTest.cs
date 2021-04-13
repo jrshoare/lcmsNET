@@ -86,27 +86,22 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string text = "constructor";
 
-            using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-            using (var ucr = ToneCurve.BuildParametric(context, type, parameters))
-            using (var bg = ToneCurve.BuildGamma(context, gamma))
-            using (var desc = MultiLocalizedUnicode.Create(context, nItems))
+            using (var expectedUcr = ToneCurve.BuildParametric(null, type, parameters))
+            using (var expectedBg = ToneCurve.BuildGamma(null, gamma))
+            using (var expectedDesc = MultiLocalizedUnicode.Create(null, nItems))
             {
-                desc.SetASCII(languageCode, countryCode, text);
-
-                var expectedUcr = ucr.Handle;
-                var expectedBg = bg.Handle;
-                var expectedDesc = desc.Handle;
+                expectedDesc.SetASCII(languageCode, countryCode, text);
 
                 // Act
-                var target = new UcrBg(ucr, bg, desc);
+                var target = new UcrBg(expectedUcr, expectedBg, expectedDesc);
                 var actualUcr = target.Ucr;
                 var actualBg = target.Bg;
                 var actualDesc = target.Desc;
 
                 // Assert
-                Assert.AreEqual(expectedUcr, actualUcr);
-                Assert.AreEqual(expectedBg, actualBg);
-                Assert.AreEqual(expectedDesc, actualDesc);
+                Assert.AreSame(expectedUcr, actualUcr);
+                Assert.AreSame(expectedBg, actualBg);
+                Assert.AreSame(expectedDesc, actualDesc);
             }
         }
 
@@ -114,27 +109,18 @@ namespace lcmsNET.Tests
         public void FromHandleTest()
         {
             // Arrange
-            int type = 4;
-            double[] parameters = new double[] { 2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045 };
-            double gamma = 2.2;
-            uint nItems = 0;
+            double gammaUcr = 2.4, gammaBg = -2.2;
             string languageCode = "en";
             string countryCode = "US";
             string expectedText = "from-handle";
 
-            using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-            using (var ucr = ToneCurve.BuildParametric(context, type, parameters))
-            using (var bg = ToneCurve.BuildGamma(context, gamma))
-            using (var desc = MultiLocalizedUnicode.Create(context, nItems))
+            using (var ucr = ToneCurve.BuildGamma(null, gammaUcr))
+            using (var bg = ToneCurve.BuildGamma(null, gammaBg))
+            using (var desc = MultiLocalizedUnicode.Create(null))
             {
                 desc.SetASCII(languageCode, countryCode, expectedText);
 
-                var notExpectedUcr = IntPtr.Zero;
-                var notExpectedBg = IntPtr.Zero;
-                var notExpectedDesc = IntPtr.Zero;
-
                 var target = new UcrBg(ucr, bg, desc);
-
                 using (var profile = Profile.CreatePlaceholder(null))
                 {
                     profile.WriteTag(TagSignature.UcrBg, target);
@@ -147,11 +133,46 @@ namespace lcmsNET.Tests
                     var actualDesc = actual.Desc;
 
                     // Assert
-                    Assert.AreNotEqual(notExpectedUcr, actualUcr);
-                    Assert.AreNotEqual(notExpectedBg, actualBg);
-                    Assert.AreNotEqual(notExpectedDesc, actualDesc);
-                    var desc2 = MultiLocalizedUnicode.FromHandle(actualDesc);
-                    var actualText = desc2.GetASCII(languageCode, countryCode);
+                    Assert.IsNotNull(actualUcr);
+                    Assert.IsNotNull(actualBg);
+                    Assert.IsNotNull(actualDesc);
+                    var actualText = actualDesc.GetASCII(languageCode, countryCode);
+                    Assert.AreEqual(expectedText, actualText);
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void ReadTagTest()
+        {
+            // Arrange
+            double gammaUcr = 2.4, gammaBg = -2.2;
+            string languageCode = "en";
+            string countryCode = "US";
+            string expectedText = "read-tag";
+
+            using (var ucr = ToneCurve.BuildGamma(null, gammaUcr))
+            using (var bg = ToneCurve.BuildGamma(null, gammaBg))
+            using (var desc = MultiLocalizedUnicode.Create(null))
+            {
+                desc.SetASCII(languageCode, countryCode, expectedText);
+
+                var target = new UcrBg(ucr, bg, desc);
+                using (var profile = Profile.CreatePlaceholder(null))
+                {
+                    profile.WriteTag(TagSignature.UcrBg, target);
+
+                    // Act
+                    var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
+                    var actualUcr = actual.Ucr;
+                    var actualBg = actual.Bg;
+                    var actualDesc = actual.Desc;
+
+                    // Assert
+                    Assert.IsNotNull(actualUcr);
+                    Assert.IsNotNull(actualBg);
+                    Assert.IsNotNull(actualDesc);
+                    var actualText = actualDesc.GetASCII(languageCode, countryCode);
                     Assert.AreEqual(expectedText, actualText);
                 }
             }

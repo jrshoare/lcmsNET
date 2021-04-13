@@ -26,22 +26,8 @@ namespace lcmsNET
     /// <summary>
     /// Represents an under color removal and black generation.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    public struct UcrBg
+    public sealed class UcrBg
     {
-        /// <summary>
-        /// Pointer to under color removal tone curve.
-        /// </summary>
-        public IntPtr Ucr;
-        /// <summary>
-        /// Pointer to black generation tone curve.
-        /// </summary>
-        public IntPtr Bg;
-        /// <summary>
-        /// Pointer to multi-localized Unicode description.
-        /// </summary>
-        public IntPtr Desc;
-
         /// <summary>
         /// Creates an under color removal and black generation from the supplied handle.
         /// </summary>
@@ -49,7 +35,15 @@ namespace lcmsNET
         /// <returns>A new <see cref="UcrBg"/> instance referencing an existing under color removal and black generation.</returns>
         public static UcrBg FromHandle(IntPtr handle)
         {
-            return Marshal.PtrToStructure<UcrBg>(handle);
+            return new UcrBg(Marshal.PtrToStructure<_ucrBg>(handle));
+        }
+
+        private UcrBg(_ucrBg ucrBg)
+        {
+            this.ucrBg = ucrBg;
+            Ucr = ToneCurve.FromHandle(ucrBg.ucr);
+            Bg = ToneCurve.FromHandle(ucrBg.bg);
+            Desc = MultiLocalizedUnicode.FromHandle(ucrBg.desc);
         }
 
         /// <summary>
@@ -57,12 +51,47 @@ namespace lcmsNET
         /// </summary>
         /// <param name="ucr">A tone curve for under color removal.</param>
         /// <param name="bg">A tone curve for black generation.</param>
-        /// <param name="desc">A description for the under color removal and black generation.</param>
+        /// <param name="desc">A description of the method used for under color removal and black generation.</param>
         public UcrBg(ToneCurve ucr, ToneCurve bg, MultiLocalizedUnicode desc)
         {
-            Ucr = ucr.Handle;
-            Bg = bg.Handle;
-            Desc = desc.Handle;
+            Ucr = ucr;
+            ucrBg.ucr = ucr.Handle;
+            Bg = bg;
+            ucrBg.bg = bg.Handle;
+            Desc = desc;
+            ucrBg.desc = desc.Handle;
         }
+
+        /// <summary>
+        /// Gets the under color removal tone curve.
+        /// </summary>
+        public ToneCurve Ucr { get; private set; }
+
+        /// <summary>
+        /// Gets the black generation tone curve.
+        /// </summary>
+        public ToneCurve Bg { get; private set; }
+
+        /// <summary>
+        /// Gets the description of the method used for under color removal and black generation.
+        /// </summary>
+        public MultiLocalizedUnicode Desc { get; set; }
+
+        internal IntPtr ToHandle()
+        {
+            int size = Marshal.SizeOf<_ucrBg>();
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(ucrBg, ptr, false);
+            return ptr;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct _ucrBg
+        {
+            public IntPtr ucr;
+            public IntPtr bg;
+            public IntPtr desc;
+        }
+        private _ucrBg ucrBg;
     }
 }

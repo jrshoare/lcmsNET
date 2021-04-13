@@ -838,9 +838,33 @@ namespace lcmsNET
         /// </exception>
         public bool WriteTag(TagSignature tag, ICCData data)
         {
+            return WriteTag<ICCData>(tag, data);
+        }
+
+        /// <summary>
+        /// Writes an <see cref="UcrBg"/> instance to the profile using the given tag signature.
+        /// </summary>
+        /// <param name="tag">The tag signature.</param>
+        /// <param name="ucrBg">The under color removal and black generation instance.</param>
+        /// <returns>true if successfully written, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Profile has already been disposed.
+        /// </exception>
+        public bool WriteTag(TagSignature tag, UcrBg ucrBg)
+        {
+            return WriteTag<UcrBg>(tag, ucrBg);
+        }
+
+        private bool WriteTag<T>(TagSignature tag, T t)
+            where T: class
+        {
             EnsureNotDisposed();
 
-            IntPtr ptr = data.ToHandle();
+            MethodInfo method = typeof(T).GetMethod("ToHandle", BindingFlags.NonPublic | BindingFlags.Instance,
+                    null, new Type[] { }, null);
+            if (method is null) throw new MissingMethodException(nameof(T), "ToHandle()");
+
+            IntPtr ptr = (IntPtr)method.Invoke(t, new object[] { });
             try
             {
                 return WriteTag(tag, ptr);
