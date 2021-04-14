@@ -22,10 +22,53 @@ using lcmsNET.Impl;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Defines the flags to control stage sampling.
+    /// </summary>
+    [Flags]
+    public enum StageSamplingFlags : uint
+    {
+        /// <summary>
+        /// No flags.
+        /// </summary>
+        None = 0x0000,
+        /// <summary>
+        /// CLUT is to be accessed as read-only.
+        /// </summary>
+        Inspect = 0x01000000
+    }
+
+    /// <summary>
+    /// Defines a delegate that can used to populate CLUT stages in a way that is
+    /// independent of the number of nodes.
+    /// </summary>
+    /// <param name="input">The node coordinates.</param>
+    /// <param name="output">The contents of the CLUT on the node.</param>
+    /// <param name="cargo">User supplied content.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int Sampler16(
+        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = Stage.MAX_INPUT_DIMENSIONS + 1), In] ushort[] input,
+        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = Stage.MAX_STAGE_CHANNELS)] ushort[] output,
+        IntPtr cargo);
+
+    /// <summary>
+    /// Defines a delegate that can used to populate CLUT stages in a way that is
+    /// independent of the number of nodes.
+    /// </summary>
+    /// <param name="input">The node coordinates.</param>
+    /// <param name="output">The contents of the CLUT on the node.</param>
+    /// <param name="cargo">User supplied content.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int SamplerFloat(
+        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4, SizeConst = Stage.MAX_INPUT_DIMENSIONS + 1), In] float[] input,
+        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4, SizeConst = Stage.MAX_STAGE_CHANNELS)] float[] output,
+        IntPtr cargo);
+
     /// <summary>
     /// Represents a stage in a pipeline.
     /// </summary>
@@ -214,6 +257,80 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Iterates on all nodes of the stage calling a 16-bit sampler on each node.
+        /// </summary>
+        /// <param name="sampler">The callback to be executed on each node.</param>
+        /// <param name="cargo">A user-supplied value to be passed to the callback.</param>
+        /// <param name="flags">Flags to control stage sampling.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Stage has already been disposed.
+        /// </exception>
+        public bool SampleCLUT(Sampler16 sampler, IntPtr cargo, StageSamplingFlags flags)
+        {
+            EnsureNotDisposed();
+
+            return Interop.StageSampleClut16Bit(_handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
+        }
+
+        /// <summary>
+        /// Iterates on all nodes of the stage calling a floating point sampler on each node.
+        /// </summary>
+        /// <param name="sampler">The callback to be executed on each node.</param>
+        /// <param name="cargo">A user-supplied value to be passed to the callback.</param>
+        /// <param name="flags">Flags to control stage sampling.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Stage has already been disposed.
+        /// </exception>
+        public bool SampleCLUT(SamplerFloat sampler, IntPtr cargo, StageSamplingFlags flags)
+        {
+            EnsureNotDisposed();
+
+            return Interop.StageSampleClutFloat(_handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
+        }
+
+        /// <summary>
+        /// Slices the target space calling a 16-bit sampler on each node.
+        /// </summary>
+        /// <param name="clutPoints">An array holding the division slices for each component.</param>
+        /// <param name="sampler">The callback to be executed on each node.</param>
+        /// <param name="cargo">A user-supplied value to be passed to the callback.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="clutPoints"/> is null or array size is zero.
+        /// </exception>
+        /// <remarks>
+        /// When invoked, the <see cref="Sampler16"/> 'output' parameter is set to null.
+        /// </remarks>
+        public static bool SliceSpace(uint[] clutPoints, Sampler16 sampler, IntPtr cargo)
+        {
+            if (!(clutPoints?.Length > 0)) throw new ArgumentException($"'{nameof(clutPoints)}' array size must be greater than 0.");
+
+            return Interop.SliceSpace16Bit((uint)clutPoints.Length, clutPoints, sampler, cargo) != 0;
+        }
+
+        /// <summary>
+        /// Slices the target space calling a 16-bit sampler on each node.
+        /// </summary>
+        /// <param name="clutPoints">An array holding the division slices for each component.</param>
+        /// <param name="sampler">The callback to be executed on each node.</param>
+        /// <param name="cargo">A user-supplied value to be passed to the callback.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="clutPoints"/> is null or array size is zero.
+        /// </exception>
+        /// <remarks>
+        /// When invoked, the <see cref="SamplerFloat"/> 'output' parameter is set to null.
+        /// </remarks>
+        public static bool SliceSpace(uint[] clutPoints, SamplerFloat sampler, IntPtr cargo)
+        {
+            if (!(clutPoints?.Length > 0)) throw new ArgumentException($"'{nameof(clutPoints)}' array size must be greater than 0.");
+
+            return Interop.SliceSpaceFloat((uint)clutPoints.Length, clutPoints, sampler, cargo) != 0;
+        }
+
+        /// <summary>
         /// Gets the context in which the instance was created.
         /// </summary>
         public Context Context { get; private set; }
@@ -279,5 +396,9 @@ namespace lcmsNET
         internal IntPtr Handle => _handle;
 
         private bool IsOwner { get; set; }
+
+        // Constants from lcms_plugin.h and lcms_internal.h
+        internal const int MAX_INPUT_DIMENSIONS = 8;
+        internal const int MAX_STAGE_CHANNELS = 128;
     }
 }

@@ -160,5 +160,53 @@ namespace lcmsNET
         {
             return StageNext_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsStageSampleCLut16bit", CallingConvention = CallingConvention.StdCall)]
+        private static extern int StageSampleCLut16bit_Internal(
+                IntPtr mpe,
+                Sampler16 sampler,
+                IntPtr cargo,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static int StageSampleClut16Bit(IntPtr handle, Sampler16 sampler, IntPtr cargo, uint flags)
+        {
+            return StageSampleCLut16bit_Internal(handle, sampler, cargo, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsStageSampleCLutFloat", CallingConvention = CallingConvention.StdCall)]
+        private static extern int StageSampleCLutFloat_Internal(
+                IntPtr mpe,
+                SamplerFloat sampler,
+                IntPtr cargo,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static int StageSampleClutFloat(IntPtr handle, SamplerFloat sampler, IntPtr cargo, uint flags)
+        {
+            return StageSampleCLutFloat_Internal(handle, sampler, cargo, flags);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSliceSpace16", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SliceSpace16_Internal(
+                [MarshalAs(UnmanagedType.U4)] uint nPoints,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)] uint[] clutPoints,
+                Sampler16 sampler,
+                IntPtr cargo);
+
+        internal static int SliceSpace16Bit(uint nPoints, uint[] clutPoints, Sampler16 sampler, IntPtr cargo)
+        {
+            return SliceSpace16_Internal(nPoints, clutPoints, sampler, cargo);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsSliceSpaceFloat", CallingConvention = CallingConvention.StdCall)]
+        private static extern int SliceSpaceFloat_Internal(
+                [MarshalAs(UnmanagedType.U4)] uint nPoints,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)] uint[] clutPoints,
+                SamplerFloat sampler,
+                IntPtr cargo);
+
+        internal static int SliceSpaceFloat(uint nPoints, uint[] clutPoints, SamplerFloat sampler, IntPtr cargo)
+        {
+            return SliceSpaceFloat_Internal(nPoints, clutPoints, sampler, cargo);
+        }
     }
 }

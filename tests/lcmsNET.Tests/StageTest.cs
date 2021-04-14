@@ -327,5 +327,102 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        private static ushort Fn8D1(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
+        {
+            return (ushort)((a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8) / m);
+        }
+
+        private static ushort Fn8D2(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
+        {
+            return (ushort)((a1 + 3 * a2 + 3 * a3 + a4 + a5 + a6 + a7 + a8) / (m + 4));
+        }
+
+        private static ushort Fn8D3(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
+        {
+            return (ushort)((3 * a1 + 2 * a2 + 3 * a3 + a4 + a5 + a6 + a7 + a8) / (m + 5));
+        }
+
+        private static int Sampler3D16Bit(ushort[] input, ushort[] output, IntPtr cargo)
+        {
+            output[0] = Fn8D1(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
+            output[1] = Fn8D2(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
+            output[2] = Fn8D3(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
+
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void SampleCLUTTest1()
+        {
+            // Arrange
+            using (var stage = Stage.Create(null, 9, 3, 3, (ushort[])null))
+            {
+                // Act
+                var actual = stage.SampleCLUT(Sampler3D16Bit, IntPtr.Zero, StageSamplingFlags.None);
+
+                // Assert
+                Assert.IsTrue(actual);
+            }
+        }
+
+        private static int Sampler3DFloat(float[] input, float[] output, IntPtr cargo)
+        {
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void SampleCLUTTest2()
+        {
+            // Arrange
+            using (var stage = Stage.Create(null, 9, 3, 3, (float[])null))
+            {
+                // Act
+                var actual = stage.SampleCLUT(Sampler3DFloat, IntPtr.Zero, StageSamplingFlags.None);
+
+                // Assert
+                Assert.IsTrue(actual);
+            }
+        }
+
+        private static int EstimateTAC16Bit(ushort[] input, ushort[] output, IntPtr cargo)
+        {
+            Assert.IsNull(output);
+
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void SliceSpaceTest1()
+        {
+            // Arrange
+            uint[] gridPoints = { 6, 74, 74 };
+
+            // Act
+            var actual = Stage.SliceSpace(gridPoints, EstimateTAC16Bit, IntPtr.Zero);
+
+            // Assert
+            // (in callback)
+        }
+
+        private static int EstimateTACFloat(float[] input, float[] output, IntPtr cargo)
+        {
+            Assert.IsNull(output);
+
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void SliceSpaceTest2()
+        {
+            // Arrange
+            uint[] gridPoints = { 2, 16, 16 };
+
+            // Act
+            var actual = Stage.SliceSpace(gridPoints, EstimateTACFloat, IntPtr.Zero);
+
+            // Assert
+            // (in callback)
+        }
     }
 }
