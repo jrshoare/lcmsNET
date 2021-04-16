@@ -855,6 +855,20 @@ namespace lcmsNET
             return WriteTag<UcrBg>(tag, ucrBg);
         }
 
+        /// <summary>
+        /// Writes a <see cref="VideoCardGamma"/> instance to the profile using the given tag signature.
+        /// </summary>
+        /// <param name="tag">The tag signature.</param>
+        /// <param name="vcgt">The video card gamma table instance.</param>
+        /// <returns>true if successfully written, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The Profile has already been disposed.
+        /// </exception>
+        public bool WriteTag(TagSignature tag, VideoCardGamma vcgt)
+        {
+            return WriteTag<VideoCardGamma>(tag, vcgt);
+        }
+
         private bool WriteTag<T>(TagSignature tag, T t)
             where T: class
         {

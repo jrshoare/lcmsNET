@@ -20,7 +20,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -390,6 +389,7 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void ICCMeasurementConditions_FromHandleTest()
         {
+            // Arrange
             using (var profile = Profile.CreatePlaceholder(null))
             {
                 var expected = new ICCMeasurementConditions
@@ -415,6 +415,7 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void ICCViewingConditions_FromHandleTest()
         {
+            // Arrange
             using (var profile = Profile.CreatePlaceholder(null))
             {
                 var expected = new ICCViewingConditions
@@ -429,6 +430,30 @@ namespace lcmsNET.Tests
 
                 // Act
                 var actual = ICCViewingConditions.FromHandle(tag);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        // https://www.argyllcms.com/doc/ArgyllCMS_arts_tag.html
+        [TestMethod()]
+        public void TagSignatureTest_ArgyllArts()
+        {
+            // Arrange
+            using (var profile = Profile.CreatePlaceholder(null))
+            {
+                // Bradford matrix
+                CIEXYZTRIPLE expected = new CIEXYZTRIPLE
+                {
+                    Red = new CIEXYZ { X = 0.89509583, Y = 0.26640320, Z = -0.16140747 },
+                    Green = new CIEXYZ { X = -0.75019836, Y = 1.71350098, Z = 0.03669739 },
+                    Blue = new CIEXYZ { X = 0.03889465, Y = -0.06849670, Z = 1.02960205 }
+                };
+
+                // Act
+                profile.WriteTag(TagSignature.ArgyllArts, expected);
+                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ArgyllArts);
 
                 // Assert
                 Assert.AreEqual(expected, actual);

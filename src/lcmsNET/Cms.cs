@@ -595,17 +595,17 @@ namespace lcmsNET
         /// </summary>
         ViewingConditions = 0x76696577,
         /// <summary>
-        /// 'vcgt'
+        /// 'vcgt' - read/write using <see cref="lcmsNET.VideoCardGamma"/>.
         /// </summary>
-        Vcgt = 0x76636774, // TODO: cmsSigVcgtType
+        Vcgt = 0x76636774,
         /// <summary>
         /// 'meta' - read/write using <see cref="Dict"/>.
         /// </summary>
         Meta = 0x6D657461,
         /// <summary>
-        /// 'arts'
+        /// 'arts' - read/write using <see cref="CIEXYZTRIPLE"/>.
         /// </summary>
-        ArgyllArts = 0x61727473 // TODO: cmsSigS15Fixed16ArrayType
+        ArgyllArts = 0x61727473
     }
 
     /// <summary>
