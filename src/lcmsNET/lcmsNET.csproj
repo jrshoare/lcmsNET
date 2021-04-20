@@ -20,7 +20,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
     <Copyright>Copyright (c) 2019-2021 John Stevenson-Hoare</Copyright>
-    <PackageLicenseUrl>https://github.com/jrshoare/lcmsNET/raw/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
