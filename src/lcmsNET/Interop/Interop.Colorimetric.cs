@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -144,6 +143,22 @@ namespace lcmsNET
         internal static CIExyY GetD50_xyY()
         {
             return D50_xyY_Internal();
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsXYZ2xyY", CallingConvention = CallingConvention.StdCall)]
+        private static extern void XYZ2xyY_Internal(out CIExyY xyY, in CIEXYZ xyz);
+
+        internal static void XYZ2xyY(out CIExyY xyY, in CIEXYZ xyz)
+        {
+            XYZ2xyY_Internal(out xyY, xyz);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsxyY2XYZ", CallingConvention = CallingConvention.StdCall)]
+        private static extern void xyY2XYZ_Internal(out CIEXYZ xyz, in CIExyY xyY);
+
+        internal static void xyY2XYZ(out CIEXYZ xyz, in CIExyY xyY)
+        {
+            xyY2XYZ_Internal(out xyz, xyY);
         }
     }
 }

@@ -46,6 +46,17 @@ namespace lcmsNET
         public double Z;
 
         /// <summary>
+        /// Converts the value to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="whitePoint">The white point to be used in the conversion.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
+        public CIELab ToLab(in CIEXYZ whitePoint)
+        {
+            Interop.XYZ2Lab(whitePoint, out CIELab lab, this);
+            return lab;
+        }
+
+        /// <summary>
         /// Gets the D50 white point in XYZ.
         /// </summary>
         public static CIEXYZ D50 => Interop.GetD50_XYZ();
@@ -58,6 +69,16 @@ namespace lcmsNET
         public static CIEXYZ FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZ>(handle);
+        }
+
+        /// <summary>
+        /// Implicitly converts a <see cref="CIEXYZ"/> value to <see cref="CIExyY"/>.
+        /// </summary>
+        /// <param name="xyz">The <see cref="CIEXYZ"/> value to be converted.</param>
+        public static implicit operator CIExyY(in CIEXYZ xyz)
+        {
+            Interop.XYZ2xyY(out CIExyY xyY, xyz);
+            return xyY;
         }
     }
 
@@ -87,6 +108,16 @@ namespace lcmsNET
         /// Gets the D50 white point in xyY.
         /// </summary>
         public static CIExyY D50 => Interop.GetD50_xyY();
+
+        /// <summary>
+        /// Implicitly converts a <see cref="CIExyY"/> value to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="xyY">The <see cref="CIExyY"/> value to be converted.</param>
+        public static implicit operator CIEXYZ(in CIExyY xyY)
+        {
+            Interop.xyY2XYZ(out CIEXYZ xyz, xyY);
+            return xyz;
+        }
     }
 
     /// <summary>
@@ -119,6 +150,27 @@ namespace lcmsNET
         /// </remarks>
         [MarshalAs(UnmanagedType.R8)]
         public double b;
+
+        /// <summary>
+        /// Converts the value to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="whitePoint">The white point to be used in the conversion.</param>
+        /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
+        public CIEXYZ ToXYZ(in CIEXYZ whitePoint)
+        {
+            Interop.Lab2XYZ(whitePoint, out CIEXYZ xyz, this);
+            return xyz;
+        }
+
+        /// <summary>
+        /// Implicitly converts a <see cref="CIELab"/> value to <see cref="CIELCh"/>.
+        /// </summary>
+        /// <param name="lab">The <see cref="CIELab"/> value to be converted.</param>
+        public static implicit operator CIELCh(in CIELab lab)
+        {
+            Interop.Lab2LCh(out CIELCh lch, lab);
+            return lch;
+        }
     }
 
     /// <summary>
@@ -142,6 +194,16 @@ namespace lcmsNET
         /// </summary>
         [MarshalAs(UnmanagedType.R8)]
         public double h;
+
+        /// <summary>
+        /// Implicitly converts a <see cref="CIELCh"/> value to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="lch">The <see cref="CIELCh"/> value to be converted.</param>
+        public static implicit operator CIELab(in CIELCh lch)
+        {
+            Interop.LCh2Lab(out CIELab lab, lch);
+            return lab;
+        }
     }
 
     /// <summary>
@@ -376,5 +438,27 @@ namespace lcmsNET
         /// Gets the D50 white point in xyY.
         /// </summary>
         public static CIExyY D50_xyY => CIExyY.D50;
+
+        /// <summary>
+        /// Converts a <see cref="CIEXYZ"/> value to <see cref="CIExyY"/>.
+        /// </summary>
+        /// <param name="xyz">The <see cref="CIEXYZ"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIExyY"/> value.</returns>
+        public static CIExyY XYZ2xyY(in CIEXYZ xyz)
+        {
+            Interop.XYZ2xyY(out CIExyY xyY, xyz);
+            return xyY;
+        }
+
+        /// <summary>
+        /// Converts a <see cref="CIExyY"/> value to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="xyY">The <see cref="CIExyY"/> value to be converted.</param>
+        /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
+        public static CIEXYZ xyY2XYZ(in CIExyY xyY)
+        {
+            Interop.xyY2XYZ(out CIEXYZ xyz, xyY);
+            return xyz;
+        }
     }
 }

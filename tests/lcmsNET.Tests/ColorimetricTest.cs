@@ -264,6 +264,38 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void CIEXYZ_ToLabTest()
+        {
+            // Arrange
+            CIEXYZ whitePoint = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
+            CIEXYZ xyz = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 };
+
+            // Act
+            CIELab lab = xyz.ToLab(whitePoint);
+
+            // Assert
+            Assert.AreEqual(100.0, lab.L);
+            Assert.AreEqual(0.0, lab.a);
+            Assert.AreEqual(0.0, lab.b);
+        }
+
+        [TestMethod()]
+        public void CIEXYZ_operatorCIExyYTest()
+        {
+            // Arrange
+            CIEXYZ xyz = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 };
+            CIExyY expected = Colorimetric.XYZ2xyY(xyz);
+
+            // Act
+            CIExyY actual = xyz;
+
+            // Assert
+            Assert.AreEqual(expected.x, actual.x, double.Epsilon);
+            Assert.AreEqual(expected.y, actual.y, double.Epsilon);
+            Assert.AreEqual(expected.Y, actual.Y, double.Epsilon);
+        }
+
+        [TestMethod()]
         public void CIExyY_D50Test()
         {
             // Arrange
@@ -275,6 +307,22 @@ namespace lcmsNET.Tests
             Assert.AreEqual(0.3457, d50.x, 0.0001);
             Assert.AreEqual(0.3585, d50.y, 0.0001);
             Assert.AreEqual(1.0, d50.Y, double.Epsilon);
+        }
+
+        [TestMethod()]
+        public void CIExyY_operatorCIEXYZTest()
+        {
+            // Arrange
+            CIExyY xyY = Colorimetric.D50_xyY;
+            CIEXYZ expected = Colorimetric.xyY2XYZ(xyY);
+
+            // Act
+            CIEXYZ actual = xyY;
+
+            // Assert
+            Assert.AreEqual(expected.X, actual.X, double.Epsilon);
+            Assert.AreEqual(expected.Y, actual.Y, double.Epsilon);
+            Assert.AreEqual(expected.Z, actual.Z, double.Epsilon);
         }
 
         [TestMethod()]
@@ -322,5 +370,52 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod()]
+        public void CIELab_ToXYZTest()
+        {
+            // Arrange
+            CIEXYZ whitePoint = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
+            CIELab lab = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+
+            // Act
+            CIEXYZ xyz = lab.ToXYZ(whitePoint);
+
+            // Assert
+            Assert.AreEqual(0.9642, xyz.X);
+            Assert.AreEqual(1.0, xyz.Y);
+            Assert.AreEqual(0.8249, xyz.Z);
+        }
+
+        [TestMethod()]
+        public void CIELab_operatorCIELChTest()
+        {
+            // Arrange
+            CIELab lab = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
+
+            // Act
+            CIELCh lch = lab;
+
+            // Assert
+            Assert.AreEqual(100.0, lch.L);
+            Assert.AreEqual(0.0, lch.C);
+            Assert.AreEqual(0.0, lch.h);
+        }
+
+        [TestMethod()]
+        public void CIELCh_operatorCIELabTest()
+        {
+            // Arrange
+            CIELCh lch = new CIELCh { L = 100.0, C = 0.0, h = 0.0 };
+
+            // Act
+            CIELab lab = lch;
+
+            // Assert
+            Assert.AreEqual(100.0, lab.L);
+            Assert.AreEqual(0.0, lab.a);
+            Assert.AreEqual(0.0, lab.b);
+        }
+
     }
 }
