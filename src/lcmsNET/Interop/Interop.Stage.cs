@@ -208,5 +208,22 @@ namespace lcmsNET
         {
             return SliceSpaceFloat_Internal(nPoints, clutPoints, sampler, cargo);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetStageContextID", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr GetStageContextID_Internal(
+                IntPtr mpe);
+
+        internal static IntPtr GetStageContextID(IntPtr handle)
+        {
+            try
+            {
+                // Requires Little CMS version 2.13 or later.
+                return GetStageContextID_Internal(handle);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return IntPtr.Zero;
+            }
+        }
     }
 }

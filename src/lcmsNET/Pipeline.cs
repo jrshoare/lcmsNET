@@ -222,12 +222,14 @@ namespace lcmsNET
             IntPtr ptr = IntPtr.Zero;
             Interop.PipelineUnlinkStage(_handle, Convert.ToInt32(location), ref ptr);
 
-            // The new Stage should really be initialised using the same Context with which it was
-            // originally created but there is not an accessor method to obtain this. Using the internal
-            // _cmsStage_struct is possible but this may be subject to change so is considered dangerous.
-            // Other options could be to allow caller to provide, or assume same as pipeline!?
-            // See also possible option suggested in https://github.com/mm2/Little-CMS/issues/253.
-            return (ptr != IntPtr.Zero) ? new Stage(ptr) : null;
+            if (ptr != IntPtr.Zero)
+            {
+                IntPtr handle = Interop.GetStageContextID(ptr);
+                Context context = handle != IntPtr.Zero ? Context.CopyRef(handle) : null;
+                return new Stage(ptr, context);
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -32,11 +32,17 @@ namespace lcmsNET
     {
         private IntPtr _handle;
 
-        internal Context(IntPtr handle)
+        internal Context(IntPtr handle, bool isOwner = true)
         {
             Helper.CheckCreated<Context>(handle);
 
             _handle = handle;
+            IsOwner = isOwner;
+        }
+
+        internal static Context CopyRef(IntPtr handle)
+        {
+            return new Context(handle, isOwner: false);
         }
 
         /// <summary>
@@ -242,7 +248,7 @@ namespace lcmsNET
         private void Dispose(bool disposing)
         {
             var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
+            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
             {
                 Interop.DeleteContext(handle);
             }
@@ -267,5 +273,7 @@ namespace lcmsNET
         #endregion
 
         internal IntPtr Handle => _handle;
+
+        private bool IsOwner { get; set; }
     }
 }

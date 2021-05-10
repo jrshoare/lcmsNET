@@ -423,6 +423,21 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        [TestMethod()]
+        public void UnlinkTestNoStages()
+        {
+            // Arrange
+            uint inputChannels = 3;
+            uint outputChannels = 3;
+
+            using (var pipeline = Pipeline.Create(null, inputChannels, outputChannels))
+            using (var unlinkedStage = pipeline.Unlink(StageLoc.At_Begin))
+            {
+                Assert.IsNull(unlinkedStage);
+            }
+        }
+
         [TestMethod()]
         public void UnlinkAndDisposeTest()
         {
