@@ -166,7 +166,7 @@ Returns an enumerator that iterates through the dictionary.
 ### Returns
 
 `IEnumerator<DictEntry>`  
-An enumerator that can be used to iterate through each [DictEntry](./DictEntry) item in the dictionary.
+An enumerator that can be used to iterate through each [DictEntry](./DictEntry.md) item in the dictionary.
 
 ---
 ## IEnumerable.GetEnumerator() Method
