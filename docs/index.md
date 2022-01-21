@@ -19,6 +19,7 @@
 [DictEntry](./DictEntry.md)  
 [ErrorHandler](./ErrorHandler.md)  
 [GamutBoundaryDescriptor](./GamutBoundaryDescriptor.md)  
+[ICCData](./ICCData.md)  
 [ICCMeasurementConditions](./ICCMeasurementConditions.md)  
 [ICCViewingConditions](./ICCViewingConditions.md)  
 [InfoType](./InfoType.md)  
