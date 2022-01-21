@@ -16,6 +16,7 @@
 [DeltaE](./DeltaE.md)  
 [DeviceAttributes](./DeviceAttributes.md)  
 [Dict](./Dict.md)  
+[DictEntry](./DictEntry.md)  
 [ErrorHandler](./ErrorHandler.md)  
 [GamutBoundaryDescriptor](./GamutBoundaryDescriptor.md)  
 [ICCMeasurementConditions](./ICCMeasurementConditions.md)  

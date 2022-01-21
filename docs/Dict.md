@@ -154,3 +154,30 @@ using (var profile = Profile.CreatePlaceholder(null))
 
 The instance created should be considered read-only for `handle` values returned from `Profile.ReadTag(TagSignature)`.
 
+---
+## GetEnumerator() Method
+
+```csharp
+public IEnumerator<DictEntry> GetEnumerator()
+```
+
+Returns an enumerator that iterates through the dictionary.
+
+### Returns
+
+`IEnumerator<DictEntry>`  
+An enumerator that can be used to iterate through each [DictEntry](./DictEntry) item in the dictionary.
+
+---
+## IEnumerable.GetEnumerator() Method
+
+```csharp
+IEnumerator IEnumerable.GetEnumerator()
+```
+
+Returns an enumerator that iterates through the dictionary.
+
+### Returns
+
+`IEnumerator`  
+An enumerator that can be used to iterate through each item in the dictionary.
