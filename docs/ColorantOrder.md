@@ -62,7 +62,7 @@ Initialises a new instance of the ColorantOrder class.
 An array of 16 values.
 
 ## Methods
-## implicit operator byte[]\(ColorantOrder)
+## implicit operator byte[]\(ColorantOrder) Method
 
 ```csharp
 public static implicit operator byte[](ColorantOrder colorantOrder)
@@ -76,7 +76,7 @@ Implicitly converts a ColorantOrder to a byte array.
 The ColorantOrder to be converted.
 
 ---
-## explicit operator ColorantOrder(byte[])
+## explicit operator ColorantOrder(byte[]) Method
 
 ```csharp
 public static explicit operator ColorantOrder(byte[] bytes)
@@ -90,15 +90,15 @@ Explicitly converts a byte array of 16 values to a ColorantOrder.
 The byte array to be converted.
 
 ---
-## ColorantOrder FromHandle(IntPtr)
+## FromHandle(IntPtr) Method
 
 ```csharp
 public static ColorantOrder FromHandle(IntPtr handle)
 ```
 
-Marshals data from an unmanaged block of memory to a newly allocated ColorantOrder object.
+Creates an instance of the ColorantOrder class from the supplied handle.
 
 ### Parameters
 
 `handle` IntPtr  
-A handle to the unmanaged block of memory.
+A handle returned from a call to `Profile.ReadTag(TagSignature.ColorantOrder)`.
