@@ -193,7 +193,7 @@ namespace lcmsNET
         /// Adds a comment to the file.
         /// </summary>
         /// <param name="comment">The comment to be inserted.</param>
-        /// <returns>true if successfule, otherwise false.</returns>
+        /// <returns>true if added successfully, otherwise false.</returns>
         /// <exception cref="ObjectDisposedException">
         /// The object has already been disposed.
         /// </exception>
@@ -219,7 +219,7 @@ namespace lcmsNET
         }
 
         /// <summary>
-        /// Gets the value of a property in the current table a floating point number.
+        /// Gets the value of a property in the current table as a floating point number.
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <returns>The floating point value of the property, or 0 on error.</returns>
