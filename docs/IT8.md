@@ -231,7 +231,7 @@ the current table.
 `row` int  
 The zero-based row index.
 
-`column` int
+`column` int  
 The zero-based column index.
 
 ### Returns
@@ -615,7 +615,8 @@ The property value to be set.
 Sub-properties are allowed if the value is a string in
 the form:  
 
-"SUBPROP1,1;SBPROP2,2;..."
+"SUBPROP1,1;SUBPROP2,2;..."
+
 ---
 ## SetProperty(string, string, string) Method
 
