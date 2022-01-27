@@ -81,7 +81,7 @@ public static MultiLocalizedUnicode Create(Context context, uint nItems=0)
 
 Creates a new instance of the `MultiLocalizedUnicode` class.
 
-## Parameters
+### Parameters
 
 `context` [Context](./Context.md)  
 A context, or null for the global context.
@@ -89,7 +89,7 @@ A context, or null for the global context.
 `nItems` uint  
 The initial number of items to be allocated.
 
-## Returns
+### Returns
 
 `MultiLocalizedUnicode`  
 A new `MultiLocalizedUnicode` instance.
@@ -112,7 +112,7 @@ public MultiLocalizedUnicode Duplicate()
 
 Duplicates a multi-localized Unicode string.
 
-## Returns
+### Returns
 
 `MultiLocalizedUnicode`  
 A new `MultiLocalizedUnicode` instance.
