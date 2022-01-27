@@ -28,6 +28,7 @@
 [IT8](./IT8.md)  
 [JCh](./JCh.md)  
 [LcmsNETException](./LcmsNETException.md)  
+[MeasurementGeometry](./MeasurementGeometry.md)  
 [MultiLocalizedUnicode](./MultiLocalizedUnicode.md)  
 [NamedColorList](./NamedColorList.md)  
 [PixelType](./PixelType.md)  
