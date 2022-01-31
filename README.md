@@ -15,7 +15,7 @@ The following applications are needed to build this library:
 
 To use on Windows, make sure that `lcms2.dll` is in the [DLL search path](https://docs.microsoft.com/en-gb/windows/win32/dlls/dynamic-link-library-search-order), e.g. the PATH environment variable.
 
-To use on Linux see the [API Reference](https://www.littlecms.com/LittleCMS2.12%20API.pdf) documentation on the Little CMS web site for installation instructions.
+To use on Linux see the [API Reference](https://www.littlecms.com/LittleCMS2.13%20API.pdf) documentation on the Little CMS web site for installation instructions.
 
 This library is available as a [NuGet package](https://www.nuget.org/packages/lcmsNET/) too.
 
