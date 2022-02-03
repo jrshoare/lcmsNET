@@ -13,7 +13,7 @@ public delegate void Sampler16(
     IntPtr cargo);
 ```
 
-Inheritance Object → Delegate → ErrorHandler
+Inheritance Object → Delegate → Sampler16
 
 ### Parameters
 
