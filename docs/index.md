@@ -40,7 +40,7 @@
 [ProfileClassSignature](./ProfileClassSignature.md)  
 [ProfileSequenceDescriptor](./ProfileSequenceDescriptor.md)  
 [ProfileSequenceItem](./ProfileSequenceItem.md)  
-[Sampler16](/Sampler16.md)  
+[Sampler16](./Sampler16.md)  
 [SamplerFloat](./SamplerFloat.md)  
 [Screening](./Screening.md)  
 [ScreeningChannel](./ScreeningChannel.md)  
