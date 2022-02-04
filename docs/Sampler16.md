@@ -9,7 +9,7 @@ Defines a delegate that can be used to populate CLUT stages in a way that is ind
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 public delegate void Sampler16(
     [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = Stage.MAX_INPUT_DIMENSIONS + 1), In] ushort[] input,
-    [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = Stage.MAX_STAGE_CHANNELS), In] ushort[] output,
+    [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = Stage.MAX_STAGE_CHANNELS)] ushort[] output,
     IntPtr cargo);
 ```
 
