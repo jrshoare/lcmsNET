@@ -3,7 +3,7 @@
 Namespace: lcmsNET  
 Assembly: lcmsNET.dll
 
-Defines a set of viewing conditions.
+Represents screening information.
 
 ```csharp
 public struct Screening
