@@ -15,6 +15,6 @@ Inheritance Object → ValueType → ICCViewingConditions
 
 |  |  |  |
 | --- | --- | --- |
-| IlluminantXYZ | [CIEXYZ](./CIEXYZ) | Not the same struct as CAM02, |
-| SurroundXYZ | [CIEXYZ](./CIEXYZ) | This is for storing the tag |
+| IlluminantXYZ | [CIEXYZ](./CIEXYZ.md) | Not the same struct as CAM02, |
+| SurroundXYZ | [CIEXYZ](./CIEXYZ.md) | This is for storing the tag |
 | IlluminantType | `uint` | viewing condition. |
