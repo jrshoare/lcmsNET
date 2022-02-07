@@ -70,7 +70,7 @@ Implicitly converts a `Tm` to a `DateTime`.
 ### Parameters
 
 `tm` [Tm](./Tm.md)  
-The `Tm` to be cpnverted.
+The `Tm` to be converted.
 
 ### Returns
 
