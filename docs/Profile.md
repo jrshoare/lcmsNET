@@ -806,7 +806,7 @@ Detects whether the profile works in linear (gamma 1.0) space.
 ### Parameters
 
 `threshold` double  
-The standard devistion above which gamma is returned.
+The standard deviation above which gamma is returned.
 
 ### Returns
 
