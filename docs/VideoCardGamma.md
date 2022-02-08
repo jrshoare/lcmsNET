@@ -48,7 +48,7 @@ public ToneCurve Red { get; }
 Gets the video card gamma table red tone curve.
 
 ## Constructors
-## UcrBg(ToneCurve, ToneCurve, MultiLocalizedUnicode)
+## VideoCardGamma(ToneCurve, ToneCurve, ToneCurve)
 
 ```csharp
 public VideoCardGamma(ToneCurve red, ToneCurve green, ToneCurve blue)
