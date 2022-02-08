@@ -9,7 +9,7 @@ Represents an International Color Consortium Profile. This class cannot be inher
 public sealed class Profile : IDisposable
 ```
 
-Inheritance Object → Pipeline
+Inheritance Object → Profile
 
 Implements IDisposable
 
