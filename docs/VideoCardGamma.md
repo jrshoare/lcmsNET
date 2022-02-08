@@ -1,0 +1,88 @@
+# VideoCardGamma Class
+
+Namespace: lcmsNET  
+Assembly: lcmsNET.dll
+
+Represents an under color removal and black generation. This class cannot be inherited.
+
+```csharp
+public sealed class VideoCardGamma
+```
+
+Inheritance Object → VideoCardGamma
+
+## Properties
+## Blue Property
+
+```csharp
+public ToneCurve Blue { get; }
+```
+
+### Property Value
+
+`Blue` [ToneCurve](./ToneCurve.md)  
+Gets the video card gamma table blue tone curve.
+
+---
+## Green Property
+
+```csharp
+public ToneCurve Green { get; }
+```
+
+### Property Value
+
+`Green` [ToneCurve](./ToneCurve.md)  
+Gets the video card gamma table green tone curve.
+
+---
+## Red Property
+
+```csharp
+public ToneCurve Red { get; }
+```
+
+### Property Value
+
+`Red` [ToneCurve](./ToneCurve.md)  
+Gets the video card gamma table red tone curve.
+
+## Constructors
+## UcrBg(ToneCurve, ToneCurve, MultiLocalizedUnicode)
+
+```csharp
+public VideoCardGamma(ToneCurve red, ToneCurve green, ToneCurve blue)
+```
+
+Initialises a new instance of the `VideoCardGamma` class.
+
+### Parameters
+
+`red` [ToneCurve](./ToneCurve.md)  
+A tone curve for the red component.
+
+`green` [ToneCurve](./ToneCurve.md)  
+A tone curve for the green component.
+
+`blue` [ToneCurve](./ToneCurve.md)  
+A tone curve for the blue component.
+
+## Methods
+## FromHandle(IntPtr) Method
+
+```csharp
+public static VideoCardGamma FromHandle(IntPtr handle)
+```
+
+Creates a video card gamma table from the supplied handle.
+
+### Parameters
+
+`handle` IntPtr  
+A handle to an existing video card gamma table.
+
+### Returns
+
+`VideoCardGamma`  
+A new `VideoCardGamma` instance referencing an
+existing vidoe card gamma table.
