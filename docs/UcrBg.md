@@ -20,7 +20,7 @@ public ToneCurve Bg { get; }
 
 ### Property Value
 
-`Bg`  
+`Bg` [ToneCurve](./ToneCurve.md)  
 Gets the black generation tone curve.
 
 ---
