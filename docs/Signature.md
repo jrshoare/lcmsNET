@@ -62,22 +62,3 @@ The unsigned integer value to be converted.
 
 `Signature`  
 A new `Signature` instance.
-
----
-## FromHandle(IntPtr) Method
-
-```csharp
-public static Signature FromHandle(IntPtr handle)
-```
-
-Marshals data from an unmanaged block of memory to a newly allocated `Signature` object.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to the unmanaged block of memory.
-
-### Returns
-
-`Signature`  
-A new `Signature` instance.

@@ -40,25 +40,6 @@ Create a new instance of the `Tm` structure.
 A `DateTime` instance.
 
 ## Methods
-## FromHandle(IntPtr) Methods
-
-```csharp
-public static Tm FromHandle(IntPtr handle)
-```
-
-Creates a `Tm` instance from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr   
-A handle to an existing calendar date and time.
-
-### Returns
-
-`Tm`  
-A new `Tm` instance referencing an existing calendar date and time.
-
----
 ## implicit operator DateTime(Tm) Method
 
 ```csharp

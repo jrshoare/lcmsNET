@@ -66,7 +66,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        public static Dict FromHandle(IntPtr handle)
+        internal static Dict FromHandle(IntPtr handle)
         {
             return new Dict(handle, context: null, isOwner: false);
         }

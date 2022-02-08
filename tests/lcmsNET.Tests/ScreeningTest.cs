@@ -118,10 +118,10 @@ namespace lcmsNET.Tests
                 try
                 {
                     profile.WriteTag(TagSignature.Screening, data);
-                    var tag = profile.ReadTag(TagSignature.Screening);
 
                     // Act
-                    var target = Screening.FromHandle(tag);
+                    // implicit call to FromHandle
+                    var target = profile.ReadTag<Screening>(TagSignature.Screening);
                     var actualFlag = target.Flag;
                     var actualNChannels = target.nChannels;
                     var actualChannels = target.Channels;

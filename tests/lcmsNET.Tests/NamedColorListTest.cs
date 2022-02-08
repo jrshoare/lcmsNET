@@ -286,7 +286,8 @@ namespace lcmsNET.Tests
                 }
 
                 // Act
-                using (var roNcl = NamedColorList.FromHandle(profile.ReadTag(TagSignature.NamedColor2)))
+                // implicit call to FromHandle
+                using (var roNcl = profile.ReadTag<NamedColorList>(TagSignature.NamedColor2))
                 {
                     // Assert
                     int actual = roNcl[$"#{expected}"];

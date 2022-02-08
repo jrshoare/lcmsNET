@@ -38,22 +38,3 @@ The number of screening channels defined for use.
 
 `channels` [ScreeningChannel[]](./ScreeningChannel.md)  
 An array of 16 screening channels.
-
-## Methods
-## FromHandle(IntPtr) Method
-
-```csharp
-public static Screening FromHandle(IntPtr handle)
-```
-
-Marshals data from an unmanaged block of memory to a newly allocated `Screening` object.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to the unmanaged block of memory.
-
-### Returns
-
-`Screening`  
-A new `Screening` instance.

@@ -66,23 +66,3 @@ A tone curve for black generation.
 
 `desc` [MultLocalizedUnicode](./MultLocalizedUnicode.md)  
 A description of the method used for under color removal and black generation.
-
-## Methods
-## FromHandle(IntPtr) Method
-
-```csharp
-public static UcrBg FromHandle(IntPtr handle)
-```
-
-Creates an under color removal and black generation from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to an existing under color removal and black generation.
-
-### Returns
-
-`UcrBg`  
-A new `UcrBg` instance referencing an
-existing under color removal and black generation.

@@ -193,7 +193,8 @@ namespace lcmsNET.Tests
                 }
 
                 // Act
-                using (var roPsd = ProfileSequenceDescriptor.FromHandle(profile.ReadTag(TagSignature.ProfileSequenceDesc)))
+                // implicit call to FromHandle
+                using (var roPsd = profile.ReadTag<ProfileSequenceDescriptor>(TagSignature.ProfileSequenceDesc))
                 {
                     // Assert
                     uint actual = roPsd.Length;

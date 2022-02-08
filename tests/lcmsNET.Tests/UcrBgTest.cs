@@ -124,10 +124,10 @@ namespace lcmsNET.Tests
                 using (var profile = Profile.CreatePlaceholder(null))
                 {
                     profile.WriteTag(TagSignature.UcrBg, target);
-                    IntPtr handle = profile.ReadTag(TagSignature.UcrBg);
 
                     // Act
-                    var actual = UcrBg.FromHandle(handle);
+                    // implicit call to FromHandle
+                    var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
                     var actualUcr = actual.Ucr;
                     var actualBg = actual.Bg;
                     var actualDesc = actual.Desc;

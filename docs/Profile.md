@@ -1266,7 +1266,7 @@ A new instance of type T.
 
 ### Remarks
 
-The type T must contain a public static method with signature `T FromHandle(IntPtr)`.
+The type T must contain a non-public static method with signature `T FromHandle(IntPtr)`.
 
 ---
 ## Save(byte[], uint) Method

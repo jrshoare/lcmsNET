@@ -59,7 +59,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ColorantOrder"/> instance.</returns>
-        public static ColorantOrder FromHandle(IntPtr handle)
+        internal static ColorantOrder FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ColorantOrder>(handle);
         }

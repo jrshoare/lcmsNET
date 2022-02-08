@@ -212,25 +212,6 @@ otherwise `false`.
 The values resulting from evaluation of the pipeline.
 
 ---
-## FromHandle(intPtr) Method
-
-```csharp
-public static Pipeline FromHandle(IntPtr handle)
-```
-
-Creates a pipeline from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to an existing pipeline.
-
-### Returns
-
-`Pipeline`  
-A new `Pipeline` instance referencing an existing pipeline.
-
----
 ## GetEnumerator() Method
 
 ```csharp

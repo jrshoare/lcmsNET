@@ -195,7 +195,8 @@ namespace lcmsNET.Tests
                 profile.WriteTag(TagSignature.Ps2CRD0, iccData);
 
                 // Act
-                var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
+                // implicit call to FromHandle
+                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
 
                 // Assert
                 var actual = (string)iccData2;
@@ -237,7 +238,8 @@ namespace lcmsNET.Tests
                 profile.WriteTag(TagSignature.Ps2CRD2, iccData);
 
                 // Act
-                var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD2));
+                // implicit call to FromHandle
+                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD2);
 
                 // Assert
                 var actual = (byte[])iccData2;

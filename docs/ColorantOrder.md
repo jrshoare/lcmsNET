@@ -25,9 +25,8 @@ using (var profile = Profile.CreatePlaceholder(null))
     var target = (ColorantOrder)expected; // explicit conversion
 
     profile.WriteTag(TagSignature.ColorantOrder, target);
-    IntPtr tag = profile.ReadTag(TagSignature.ColorantOrder);
 
-    byte[] actual = ColorantOrder.FromHandle(tag);
+    byte[] actual = profile.ReadTag<ColorantOrder>(TagSignature.ColorantOrder);
 }
 ```
 
@@ -88,17 +87,3 @@ Explicitly converts a byte array of 16 values to a ColorantOrder.
 
 'bytes' byte[]  
 The byte array to be converted.
-
----
-## FromHandle(IntPtr) Method
-
-```csharp
-public static ColorantOrder FromHandle(IntPtr handle)
-```
-
-Creates an instance of the ColorantOrder class from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle returned from a call to `Profile.ReadTag(TagSignature.ColorantOrder)`.

@@ -746,19 +746,13 @@ namespace lcmsNET
         }
 
         /// <summary>
-        /// Gets a pointer to a tag with the given tag signature.
+        /// Gets a raw pointer to a tag with the given tag signature.
         /// </summary>
         /// <param name="tag">The tag signature.</param>
         /// <returns>A pointer to the tag, or <see cref="IntPtr.Zero"/> if not found.</returns>
         /// <exception cref="ObjectDisposedException">
         /// The Profile has already been disposed.
         /// </exception>
-        /// <remarks>
-        /// The returned pointer can be used with many types to create a new instance
-        /// that wrappers the underlying structure provided by Little CMS. For example,
-        /// the <see cref="Pipeline.FromHandle(IntPtr)"/> method creates a new <see cref="Pipeline"/>
-        /// instance from a pointer returned by this method.
-        /// </remarks>
         public IntPtr ReadTag(TagSignature tag)
         {
             EnsureNotDisposed();
@@ -777,7 +771,7 @@ namespace lcmsNET
         /// Failed to create instance as no tag was found with the given tag signature.
         /// </exception>
         /// <exception cref="MissingMethodException">
-        /// Type <typeparamref name="T"/> does not contain a public static method with signature
+        /// Type <typeparamref name="T"/> does not contain a non-public static method with signature
         /// '<typeparamref name="T"/> FromHandle(<see cref="IntPtr"/>)'.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
@@ -791,7 +785,7 @@ namespace lcmsNET
             Helper.CheckCreated<T>(ptr);
 
             Type t = typeof(T);
-            MethodInfo method = t.GetMethod("FromHandle", BindingFlags.Public | BindingFlags.Static,
+            MethodInfo method = t.GetMethod("FromHandle", BindingFlags.NonPublic | BindingFlags.Static,
                     null, new Type[] { typeof(IntPtr) }, null);
             if (method is null) throw new MissingMethodException(nameof(T), "FromHandle(IntPtr)");
 

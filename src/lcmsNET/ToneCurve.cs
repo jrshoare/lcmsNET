@@ -84,7 +84,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing tone curve.</param>
         /// <returns>A new <see cref="ToneCurve"/> instance referencing an existing tone curve.</returns>
-        public static ToneCurve FromHandle(IntPtr handle)
+        internal static ToneCurve FromHandle(IntPtr handle)
         {
             return new ToneCurve(handle, context: null, isOwner: false);
         }

@@ -494,7 +494,7 @@ namespace lcmsNET.Tests
                 }
 
                 // Act
-                using (var roToneCurve = ToneCurve.FromHandle(profile.ReadTag(TagSignature.RedTRC)))
+                using (var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
                 {
                     // Assert
                     var actual = roToneCurve.EstimateGamma(precision);

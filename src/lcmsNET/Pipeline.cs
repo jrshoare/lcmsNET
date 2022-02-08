@@ -86,7 +86,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        public static Pipeline FromHandle(IntPtr handle)
+        internal static Pipeline FromHandle(IntPtr handle)
         {
             return new Pipeline(handle, context: null, isOwner: false);
         }

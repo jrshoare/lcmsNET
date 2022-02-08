@@ -535,7 +535,8 @@ namespace lcmsNET.Tests
                 profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
 
                 // Act
-                using (var roPipeline = Pipeline.FromHandle(profile.ReadTag(TagSignature.AToB1)))
+                // implicit call to FromHandle
+                using (var roPipeline = profile.ReadTag<Pipeline>(TagSignature.AToB1))
                 {
                     // Assert
                     Assert.IsNotNull(roPipeline);

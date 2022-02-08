@@ -117,7 +117,7 @@ namespace lcmsNET.Tests
             [MarshalAs(UnmanagedType.R8)]
             public double Z;
 
-            // Must be missing a 'public static TestCIEXYZ FromHandle(IntPtr)' method!
+            // Must be missing an 'internal static TestCIEXYZ FromHandle(IntPtr)' method!
         }
 
         [TestMethod()]
@@ -1584,10 +1584,10 @@ namespace lcmsNET.Tests
                 };
 
                 profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
-                var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
 
                 // Act
-                var actual = CIEXYZTRIPLE.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -1607,7 +1607,7 @@ namespace lcmsNET.Tests
                 profile.WriteTag(TagSignature.Ps2CRD0, iccData);
 
                 // Act
-                var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
+                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
 
                 // Assert
                 var actual = (byte[])iccData2;

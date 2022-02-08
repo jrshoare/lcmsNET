@@ -55,7 +55,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
+        internal static ProfileSequenceDescriptor FromHandle(IntPtr handle)
         {
             return new ProfileSequenceDescriptor(handle, context: null, isOwner: false);
         }

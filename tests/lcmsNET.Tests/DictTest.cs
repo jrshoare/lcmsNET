@@ -166,7 +166,8 @@ namespace lcmsNET.Tests
                 }
 
                 // Act
-                using (var roDict = Dict.FromHandle(profile.ReadTag(TagSignature.Meta)))
+                // implicit call to FromHandle
+                using (var roDict = profile.ReadTag<Dict>(TagSignature.Meta))
                 {
                     // Assert
                     int actual = roDict.Count();

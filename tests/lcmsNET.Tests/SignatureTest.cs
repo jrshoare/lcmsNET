@@ -124,10 +124,10 @@ namespace lcmsNET.Tests
                 var expected = (Signature)0xF32794E2;
 
                 profile.WriteTag(TagSignature.Technology, expected);
-                var tag = profile.ReadTag(TagSignature.Technology);
 
                 // Act
-                var actual = Signature.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<Signature>(TagSignature.Technology);
 
                 // Assert
                 Assert.AreEqual(expected, actual);

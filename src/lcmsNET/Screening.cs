@@ -132,7 +132,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="Screening"/> instance.</returns>
-        public static Screening FromHandle(IntPtr handle)
+        internal static Screening FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Screening>(handle);
         }

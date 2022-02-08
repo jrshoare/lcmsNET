@@ -114,10 +114,10 @@ namespace lcmsNET.Tests
                 using (var profile = Profile.CreatePlaceholder(null))
                 {
                     profile.WriteTag(TagSignature.Vcgt, target);
-                    IntPtr handle = profile.ReadTag(TagSignature.Vcgt);
 
                     // Act
-                    var actual = VideoCardGamma.FromHandle(handle);
+                    // implicit call to FromHandle
+                    var actual = profile.ReadTag<VideoCardGamma>(TagSignature.Vcgt);
                     var actualRed = actual.Red;
                     var actualGreen = actual.Green;
                     var actualBlue = actual.Blue;

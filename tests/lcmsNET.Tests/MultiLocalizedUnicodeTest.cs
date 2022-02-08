@@ -451,9 +451,10 @@ namespace lcmsNET.Tests
             using (MemoryStream ms = Save(".Resources.sRGB.icc"))
             {
                 using (var profile = Profile.Open(ms.GetBuffer()))
-                using (var mlu = MultiLocalizedUnicode.FromHandle(profile.ReadTag(TagSignature.ProfileDescription)))
+                // Act
+                // implicit call to FromHandle
+                using (var mlu = profile.ReadTag<MultiLocalizedUnicode>(TagSignature.ProfileDescription))
                 {
-                    // Act
                     string actual = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
 
                     // Assert

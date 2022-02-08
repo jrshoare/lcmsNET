@@ -89,7 +89,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing calendar date and time.</param>
         /// <returns>A new <see cref="Tm"/> instance referencing an existing calendar date and time.</returns>
-        public static Tm FromHandle(IntPtr handle)
+        internal static Tm FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Tm>(handle);
         }

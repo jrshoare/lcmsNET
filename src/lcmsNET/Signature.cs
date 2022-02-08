@@ -58,7 +58,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="Signature"/> instance.</returns>
-        public static Signature FromHandle(IntPtr handle)
+        internal static Signature FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Signature>(handle);
         }

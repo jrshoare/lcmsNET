@@ -46,7 +46,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing named color list.</param>
         /// <returns>A new <see cref="NamedColorList"/> instance referencing an existing named color list.</returns>
-        public static NamedColorList FromHandle(IntPtr handle)
+        internal static NamedColorList FromHandle(IntPtr handle)
         {
             return new NamedColorList(handle, context: null, isOwner: false);
         }

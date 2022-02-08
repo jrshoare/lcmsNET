@@ -144,10 +144,10 @@ namespace lcmsNET.Tests
                 Tm tm = new Tm(expected);
 
                 profile.WriteTag(TagSignature.CalibrationDateTime, tm);
-                var tag = profile.ReadTag(TagSignature.CalibrationDateTime);
 
                 // Act
-                var target = Tm.FromHandle(tag);
+                // implicit call to FromHandle
+                var target = profile.ReadTag<Tm>(TagSignature.CalibrationDateTime);
                 DateTime actual = target;
 
                 // Assert

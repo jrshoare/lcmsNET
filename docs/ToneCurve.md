@@ -332,25 +332,6 @@ The value evaluated across the tone curve.
 This function is significantly faster than `Evaluate(float)` since it uses a pre-computed 16-bit lookup table.
 
 ---
-## FromHandle(IntPtr) Method
-
-```csharp
-public static ToneCurve FromHandle(IntPtr handle)
-```
-
-Creates an instance of the ToneCurve class from the supplied handle.
-
-### Parameters
-
-`handle` `IntPtr`  
-A handle to an existing tone curve.
-
-### Returns
-
-`ToneCurve`  
-The new `ToneCurve` that this method creates.
-
----
 ## Join(Context, ToneCurve, int) Method
 
 ```csharp

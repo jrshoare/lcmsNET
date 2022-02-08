@@ -27,8 +27,7 @@ using (var profile = Profile.CreatePlaceholder(null))
     // do not use TagSignature.Data as this is not supported
     profile.WriteTag(TagSignature.Ps2CRD0, iccData);
 
-    var iccData2 = ICCData.FromHandle(profile.ReadTag(TagSignature.Ps2CRD0));
-    var actual = (byte[])iccData2;
+    var actual = (byte[])profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
 }
 ```
 
@@ -106,17 +105,3 @@ Explicitly converts an ICCData to a string.
 
 'iccData' [ICCData](./ICCData.md)  
 The ICCData to be converted.
-
----
-## FromHandle(IntPtr) Method
-
-```csharp
-public static ICCData FromHandle(IntPtr handle)
-```
-
-Creates an instance of the ICCData class from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle returned from a call to `Profile.ReadTag(TagSignature.Ps2*)`.

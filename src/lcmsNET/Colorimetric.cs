@@ -66,7 +66,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIEXYZ"/> instance.</returns>
-        public static CIEXYZ FromHandle(IntPtr handle)
+        internal static CIEXYZ FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZ>(handle);
         }
@@ -253,7 +253,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIEXYZTRIPLE"/> instance.</returns>
-        public static CIEXYZTRIPLE FromHandle(IntPtr handle)
+        internal static CIEXYZTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZTRIPLE>(handle);
         }
@@ -283,7 +283,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIExyYTRIPLE"/> instance.</returns>
-        public static CIExyYTRIPLE FromHandle(IntPtr handle)
+        internal static CIExyYTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIExyYTRIPLE>(handle);
         }

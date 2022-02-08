@@ -66,23 +66,3 @@ A tone curve for the green component.
 
 `blue` [ToneCurve](./ToneCurve.md)  
 A tone curve for the blue component.
-
-## Methods
-## FromHandle(IntPtr) Method
-
-```csharp
-public static VideoCardGamma FromHandle(IntPtr handle)
-```
-
-Creates a video card gamma table from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to an existing video card gamma table.
-
-### Returns
-
-`VideoCardGamma`  
-A new `VideoCardGamma` instance referencing an
-existing video card gamma table.

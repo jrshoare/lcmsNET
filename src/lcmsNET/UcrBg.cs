@@ -33,7 +33,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing under color removal and black generation.</param>
         /// <returns>A new <see cref="UcrBg"/> instance referencing an existing under color removal and black generation.</returns>
-        public static UcrBg FromHandle(IntPtr handle)
+        internal static UcrBg FromHandle(IntPtr handle)
         {
             return new UcrBg(Marshal.PtrToStructure<_ucrBg>(handle));
         }

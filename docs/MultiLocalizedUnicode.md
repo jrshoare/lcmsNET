@@ -118,26 +118,6 @@ Duplicates a multi-localized Unicode string.
 A new `MultiLocalizedUnicode` instance.
 
 ---
-## FromHandle(intPtr) Method
-
-```csharp
-public static MultiLocalizedUnicode FromHandle(IntPtr handle)
-```
-
-Creates a multi-localized Unicode string from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to an existing multi-localized Unicode string.
-
-### Returns
-
-`MultiLocalizedUnicode`  
-A new `MultiLocalizedUnicode` instance referencing an
-existing multi-localized Unicode string.
-
----
 ## GetASCII(string, string) Method
 
 ```csharp

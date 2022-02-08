@@ -253,10 +253,10 @@ namespace lcmsNET.Tests
                 var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
                 profile.WriteTag(TagSignature.BlueColorant, expected);
-                var tag = profile.ReadTag(TagSignature.BlueColorant);
 
                 // Act
-                var actual = CIEXYZ.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<CIEXYZ>(TagSignature.BlueColorant);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -338,10 +338,10 @@ namespace lcmsNET.Tests
                 };
 
                 profile.WriteTag(TagSignature.Chromaticity, expected);
-                var tag = profile.ReadTag(TagSignature.Chromaticity);
 
                 // Act
-                var actual = CIExyYTRIPLE.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<CIExyYTRIPLE>(TagSignature.Chromaticity);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -361,10 +361,10 @@ namespace lcmsNET.Tests
                 };
 
                 profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
-                var tag = profile.ReadTag(TagSignature.ChromaticAdaptation);
 
                 // Act
-                var actual = CIEXYZTRIPLE.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
 
                 // Assert
                 Assert.AreEqual(expected, actual);

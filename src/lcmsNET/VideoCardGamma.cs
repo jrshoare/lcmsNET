@@ -33,7 +33,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing video card gamma table.</param>
         /// <returns>A new <see cref="VideoCardGamma"/> instance referencing an existing video card gamma table.</returns>
-        public static VideoCardGamma FromHandle(IntPtr handle)
+        internal static VideoCardGamma FromHandle(IntPtr handle)
         {
             return new VideoCardGamma(Marshal.PtrToStructure<_vcgt>(handle));
         }

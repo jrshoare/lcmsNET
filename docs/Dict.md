@@ -106,55 +106,6 @@ Creates a duplicate instance of the Dict class.
 The duplicate `Dict` that this method creates.
 
 ---
-## FromHandle(IntPtr) Method
-
-```csharp
-public static Dict FromHandle(IntPtr handle)
-```
-
-Creates an instance of the Dict class from the supplied handle.
-
-### Parameters
-
-`handle` `IntPtr`  
-A handle to an existing dictionary.
-
-### Returns
-
-`Dict`  
-The new `Dict` that this method creates.
-
-### Examples
-
-The following example adds a dictionary containing three items to a profile and uses the value of the tag read back to create a read-only copy of the dictionary.
-
-```csharp
-using (var profile = Profile.CreatePlaceholder(null))
-{
-    using (var dict = Dict.Create(null))
-    using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-    {
-        mlu.SetASCII("en", "GB", "Hello");
-
-        dict.Add("first", null, null, null);
-        dict.Add("second", "second-value", null, null);
-        dict.Add("third", "third-value", mlu, null);
-
-        profile.WriteTag(TagSignature.Meta, dict.Handle);
-    }
-
-    using (var roDict = Dict.FromHandle(profile.ReadTag(TagSignature.Meta)))
-    {
-        int count = roDict.Count(); // -> 3
-    }
-}
-```
-
-### Remarks
-
-The instance created should be considered read-only for `handle` values returned from `Profile.ReadTag(TagSignature)`.
-
----
 ## GetEnumerator() Method
 
 ```csharp

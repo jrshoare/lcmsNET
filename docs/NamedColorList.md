@@ -129,26 +129,6 @@ Duplicates a named color list.
 A new `NamedColorList` instance.
 
 ---
-## FromHandle(intPtr) Method
-
-```csharp
-public static NamedColorList FromHandle(IntPtr handle)
-```
-
-Creates a named color list from the supplied handle.
-
-### Parameters
-
-`handle` IntPtr  
-A handle to an existing named color list.
-
-### Returns
-
-`NamedColorList`  
-A new `NamedColorList` instance referencing an
-existing named color list.
-
----
 ## GetInfo(uint, out string, out string, out string, out ushort[] out ushort[]) Method
 
 ```csharp

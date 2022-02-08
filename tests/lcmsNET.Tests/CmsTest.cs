@@ -402,10 +402,10 @@ namespace lcmsNET.Tests
                 };
 
                 profile.WriteTag(TagSignature.Measurement, expected);
-                var tag = profile.ReadTag(TagSignature.Measurement);
 
                 // Act
-                var actual = ICCMeasurementConditions.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<ICCMeasurementConditions>(TagSignature.Measurement);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -426,10 +426,10 @@ namespace lcmsNET.Tests
                 };
 
                 profile.WriteTag(TagSignature.ViewingConditions, expected);
-                var tag = profile.ReadTag(TagSignature.ViewingConditions);
 
                 // Act
-                var actual = ICCViewingConditions.FromHandle(tag);
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<ICCViewingConditions>(TagSignature.ViewingConditions);
 
                 // Assert
                 Assert.AreEqual(expected, actual);

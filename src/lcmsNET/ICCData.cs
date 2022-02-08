@@ -121,7 +121,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCData"/> instance.</returns>
-        public static ICCData FromHandle(IntPtr handle)
+        internal static ICCData FromHandle(IntPtr handle)
         {
             IntPtr ptr = handle;
             uint len = (uint)Marshal.ReadInt32(ptr); // len

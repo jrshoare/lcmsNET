@@ -145,26 +145,6 @@ namespace lcmsNET.Tests
             using (var profile = Profile.CreatePlaceholder(null))
             {
                 byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-                var target = (ColorantOrder)expected;
-
-                profile.WriteTag(TagSignature.ColorantOrder, target);
-                var tag = profile.ReadTag(TagSignature.ColorantOrder);
-
-                // Act
-                byte[] actual = ColorantOrder.FromHandle(tag);
-
-                // Assert
-                CollectionAssert.AreEqual(expected, actual);
-            }
-        }
-
-        [TestMethod()]
-        public void FromHandleTest2()
-        {
-            // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
                 profile.WriteTag(TagSignature.ColorantOrder, (ColorantOrder)expected);
 

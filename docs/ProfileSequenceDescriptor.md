@@ -107,25 +107,6 @@ Duplicates a profile sequence descriptor.
 A new `ProfileSequenceDescriptor` instance.
 
 ---
-## FromHandle(IntPtr) Method
-
-```csharp
-public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
-```
-
-Creates a profile sequence descriptor from the supplied handle.
-
-### Parameters
-
-`handle` `IntPtr`  
-A handle to an existing profile sequence descriptor.
-
-### Returns
-
-`ProfileSequenceDescriptor`  
-A new `ProfileSequenceDescriptor` instance referencing an existing profile sequence descriptor.
-
----
 ## this[int] Method
 
 ```csharp

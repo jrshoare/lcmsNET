@@ -1409,7 +1409,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCMeasurementConditions"/> instance.</returns>
-        public static ICCMeasurementConditions FromHandle(IntPtr handle)
+        internal static ICCMeasurementConditions FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ICCMeasurementConditions>(handle);
         }
@@ -1440,7 +1440,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCViewingConditions"/> instance.</returns>
-        public static ICCViewingConditions FromHandle(IntPtr handle)
+        internal static ICCViewingConditions FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ICCViewingConditions>(handle);
         }
