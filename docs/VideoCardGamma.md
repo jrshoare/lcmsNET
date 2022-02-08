@@ -85,4 +85,4 @@ A handle to an existing video card gamma table.
 
 `VideoCardGamma`  
 A new `VideoCardGamma` instance referencing an
-existing vidoe card gamma table.
+existing video card gamma table.
