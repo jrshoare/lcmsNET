@@ -40,7 +40,7 @@ public Context Context { get; }
 
 ### Property Value
 
-`Context`  
+`Context` [Context](./Context.md)  
 The `Context` supplied to create this instance.
 
 ---
