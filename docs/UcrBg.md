@@ -68,7 +68,7 @@ A tone curve for black generation.
 A description of the method used for under color removal and black generation.
 
 ## Methods
-## FromHandle(intPtr) Method
+## FromHandle(IntPtr) Method
 
 ```csharp
 public static UcrBg FromHandle(IntPtr handle)
