@@ -3,7 +3,7 @@
 Namespace: lcmsNET  
 Assembly: lcmsNET.dll
 
-Represents an under color removal and black generation. This class cannot be inherited.
+Represents a video card gamma table. This class cannot be inherited.
 
 ```csharp
 public sealed class VideoCardGamma
