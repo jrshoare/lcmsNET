@@ -27,13 +27,13 @@ Gets the black generation tone curve.
 ## Desc Property
 
 ```csharp
-public MultiLocalizedUnicode Desc { get; set; }
+public MultiLocalizedUnicode Desc { get; }
 ```
 
 ### Property Value
 
 `Desc` [MultiLocalizedUnicode](./MultiLocalizedUnicode.md)  
-Gets or sets the description of the method used for under color removal and black generation.
+Gets the description of the method used for under color removal and black generation.
 
 ---
 ## Ucr Property

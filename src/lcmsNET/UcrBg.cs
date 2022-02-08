@@ -75,7 +75,7 @@ namespace lcmsNET
         /// <summary>
         /// Gets the description of the method used for under color removal and black generation.
         /// </summary>
-        public MultiLocalizedUnicode Desc { get; set; }
+        public MultiLocalizedUnicode Desc { get; private set; }
 
         internal IntPtr ToHandle()
         {
