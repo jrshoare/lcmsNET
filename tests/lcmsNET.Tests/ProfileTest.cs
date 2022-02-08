@@ -1824,7 +1824,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetPostScriptColorResource()
+        public void GetPostScriptColorResourceTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -1854,7 +1854,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetPostScriptColorSpaceArray()
+        public void GetPostScriptColorSpaceArrayTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -1884,7 +1884,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetPostScriptColorRenderingDictionary()
+        public void GetPostScriptColorRenderingDictionaryTest()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
@@ -1910,6 +1910,42 @@ namespace lcmsNET.Tests
             finally
             {
                 Directory.Delete(tempPath, true);
+            }
+        }
+
+        private static Profile CreateRGBGamma(double gamma)
+        {
+            CIExyY D65 = new CIExyY { x = 0.3127, y = 0.3290, Y = 1.0 };
+            CIExyYTRIPLE Rec709Primaries = new CIExyYTRIPLE
+            {
+                Red   = new CIExyY { x = 0.6400, y = 0.3300, Y = 1.0 },
+                Green = new CIExyY { x = 0.3000, y = 0.6000, Y = 1.0 },
+                Blue  = new CIExyY { x = 0.1500, y = 0.0600, Y = 1.0 }
+            };
+
+            using (var toneCurve = ToneCurve.BuildGamma(null, gamma))
+            {
+                return Profile.CreateRGB(D65, Rec709Primaries, new ToneCurve[] { toneCurve, toneCurve, toneCurve });
+            }
+        }
+
+        [TestMethod()]
+        public void DetectRGBGammaTest()
+        {
+            try
+            {
+                const double threshold = 0.01;
+                double expected = 1.0;
+                using (var profile = CreateRGBGamma(expected))
+                {
+                    var actual = profile.DetectRGBGamma(threshold);
+
+                    Assert.IsTrue(Math.Abs(actual - expected) <= 0.1);
+                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.13 or later.");
             }
         }
     }

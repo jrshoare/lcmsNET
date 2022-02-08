@@ -692,6 +692,26 @@ namespace lcmsNET
 
             return Interop.IsCLUT(_handle, Convert.ToUInt32(intent), Convert.ToUInt32(direction)) != 0;
         }
+
+        /// <summary>
+        /// Detects whether the profile works in linear (gamma 1.0) space.
+        /// </summary>
+        /// <param name="threshold">The standard deviation above which gamma is returned.</param>
+        /// <returns>Estimated gamma of the RGB space on success, -1 on error.</returns>
+        /// <remarks>
+        /// <para>
+        /// Only RGB profiles, and only those that can be got in both directions.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.13 or later.
+        /// </para>
+        /// </remarks>
+        public double DetectRGBGamma(double threshold)
+        {
+            EnsureNotDisposed();
+
+            return Interop.DetectRGBProfileGamma(_handle, threshold);
+        }
         #endregion
 
         #region Access tags

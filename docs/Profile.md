@@ -795,6 +795,31 @@ Reserved (unused). Set to `CmsFlags.None`.
 `true` if estimated successfully, otherwise `false`.
 
 ---
+## DetectRGBGamma(double) Method
+
+```csharp
+public double DetectRGBGamma(double threshold)
+```
+
+Detects whether the profile works in linear (gamma 1.0) space.
+
+### Parameters
+
+`threshold` double  
+The standard devistion above which gamma is returned.
+
+### Returns
+
+`double`  
+Estimated gamma of the RGB space on success, -1 on error.
+
+### Remarks
+
+Only RGB profiles, and only those that can be got in both directions.
+
+Requires Little CMS 2.13 or later.
+
+---
 ## Dispose() Method
 
 ```csharp

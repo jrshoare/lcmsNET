@@ -916,5 +916,15 @@ namespace lcmsNET
                 Marshal.FreeHGlobal(buffer);
             }
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsDetectRGBProfileGamma", CallingConvention = CallingConvention.StdCall)]
+        private static extern double DetectRGBProfileGamma_Internal(
+                IntPtr profile,
+                [MarshalAs(UnmanagedType.R8)] double threshold);
+
+        internal static double DetectRGBProfileGamma(IntPtr handle, double threshold)
+        {
+            return DetectRGBProfileGamma_Internal(handle, threshold);
+        }
     }
 }
