@@ -21,24 +21,17 @@
 using lcmsNET.Impl;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a color transform.
     /// </summary>
-    public sealed class Transform : IDisposable
+    public sealed class Transform : CmsHandle<Transform>
     {
-        private IntPtr _handle;
-
         internal Transform(IntPtr handle, Context context = null)
+            : base(handle, context, isOwner: true)
         {
-            Helper.CheckCreated<Transform>(handle);
-
-            _handle = handle;
-            Context = context;
         }
 
         /// <summary>
@@ -255,7 +248,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            Interop.DoTransform(Handle, inputBuffer, outputBuffer, pixelCount);
+            Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelCount);
         }
 
         /// <summary>
@@ -285,7 +278,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            Interop.DoTransform(Handle, inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+            Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelsPerLine, lineCount,
                     bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
         }
 
@@ -310,13 +303,8 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.ChangeBuffersFormat(_handle, inputFormat, outputFormat) != 0;
+            return Interop.ChangeBuffersFormat(handle, inputFormat, outputFormat) != 0;
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         /// <summary>
         /// Gets the input format of the transform, or 0 if the instance has been disposed.
@@ -326,7 +314,7 @@ namespace lcmsNET
         /// Requires Little CMS version 2.2 or later.
         /// </para>
         /// </remarks>
-        public uint InputFormat => Interop.GetTransformInputFormat(_handle);
+        public uint InputFormat => Interop.GetTransformInputFormat(handle);
 
         /// <summary>
         /// Gets the output format of the transform, or 0 if the instance has been disposed.
@@ -336,56 +324,20 @@ namespace lcmsNET
         /// Requires Little CMS version 2.2 or later.
         /// </para>
         /// </remarks>
-        public uint OutputFormat => Interop.GetTransformOutputFormat(_handle);
+        public uint OutputFormat => Interop.GetTransformOutputFormat(handle);
 
         /// <summary>
         /// Gets a named color list from the transform.
         /// </summary>
-        public NamedColorList NamedColorList => NamedColorList.CopyRef(Interop.GetNamedColorList(_handle));
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Profile));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
-            {
-                Interop.DeleteTransform(handle);
-                Context = null;
-            }
-        }
+        public NamedColorList NamedColorList => NamedColorList.CopyRef(Interop.GetNamedColorList(handle));
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the transform handle.
         /// </summary>
-        ~Transform()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.DeleteTransform(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
     }
 }

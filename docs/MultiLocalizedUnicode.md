@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a multi-localized Unicode string. This class cannot be inherited.
 
 ```csharp
-public sealed class MultiLocalizedUnicode : IDisposable
+public sealed class MultiLocalizedUnicode : TagBase<MultiLocalizedUnicode>
 ```
 
-Inheritance Object → MultiLocalizedUnicode
+Inheritance Object → CmsHandle\<MultiLocalizedUnicode> → TagBase\<MultiLocalizedUnicode> → MultiLocalizedUnicode
 
 Implements IDisposable
 
@@ -41,19 +41,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context` [Context](./Context.md)  
-The `Context` supplied to create this instance.
-
----
-## Handle Property
-
-```csharp
-public IntPtr Handle { get; }
-```
-
-### Property Value
-
-`Handle` IntPtr  
-Gets the handle to the multi-localized Unicode string.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ## TranslationsCount Property

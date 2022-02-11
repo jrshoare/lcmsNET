@@ -20,15 +20,13 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a multi-localized Unicode string.
     /// </summary>
-    public sealed class MultiLocalizedUnicode : IDisposable
+    public sealed class MultiLocalizedUnicode : TagBase<MultiLocalizedUnicode>
     {
         /// <summary>
         /// The language code for 'no language'.
@@ -39,15 +37,9 @@ namespace lcmsNET
         /// </summary>
         public const string NoCountry = "\0\0";
 
-        private IntPtr _handle;
-
         internal MultiLocalizedUnicode(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<MultiLocalizedUnicode>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         /// <summary>
@@ -63,12 +55,6 @@ namespace lcmsNET
         internal static MultiLocalizedUnicode CopyRef(IntPtr handle, Context context = null)
         {
             return new MultiLocalizedUnicode(handle, context, isOwner: false);
-        }
-
-        internal void Release()
-        {
-            Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            Context = null;
         }
 
         /// <summary>
@@ -102,7 +88,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new MultiLocalizedUnicode(Interop.MLUDup(_handle), Context);
+            return new MultiLocalizedUnicode(Interop.MLUDup(handle), Context);
         }
 
         /// <summary>
@@ -119,7 +105,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUSetAscii(_handle, languageCode, countryCode, value) != 0;
+            return Interop.MLUSetAscii(handle, languageCode, countryCode, value) != 0;
         }
 
         /// <summary>
@@ -136,7 +122,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUSetWide(_handle, languageCode, countryCode, value) != 0;
+            return Interop.MLUSetWide(handle, languageCode, countryCode, value) != 0;
         }
 
         /// <summary>
@@ -152,7 +138,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUGetASCII(_handle, languageCode, countryCode);
+            return Interop.MLUGetASCII(handle, languageCode, countryCode);
         }
 
         /// <summary>
@@ -168,7 +154,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUGetWide(_handle, languageCode, countryCode);
+            return Interop.MLUGetWide(handle, languageCode, countryCode);
         }
 
         /// <summary>
@@ -195,7 +181,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUGetTranslation(_handle, languageCode, countryCode, out translationLanguage, out translationCountry) != 0;
+            return Interop.MLUGetTranslation(handle, languageCode, countryCode, out translationLanguage, out translationCountry) != 0;
         }
 
         /// <summary>
@@ -216,13 +202,8 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MLUTranslationsCodes(_handle, index, out languageCode, out countryCode) != 0;
+            return Interop.MLUTranslationsCodes(handle, index, out languageCode, out countryCode) != 0;
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         /// <summary>
         /// Gets the number of translations stored in the multi-localized Unicode string.
@@ -230,56 +211,15 @@ namespace lcmsNET
         /// <remarks>
         /// Requires Little CMS version 2.5 or later.
         /// </remarks>
-        public uint TranslationsCount => Interop.MLUTranslationsCount(_handle);
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(MultiLocalizedUnicode));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.MLUFree(handle);
-                Context = null;
-            }
-        }
+        public uint TranslationsCount => Interop.MLUTranslationsCount(handle);
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the MLU handle.
         /// </summary>
-        ~MultiLocalizedUnicode()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.MLUFree(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        /// <summary>
-        /// Gets the handle to the multi-localized Unicode string.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

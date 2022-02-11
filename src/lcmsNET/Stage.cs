@@ -21,9 +21,7 @@
 using lcmsNET.Impl;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace lcmsNET
 {
@@ -72,28 +70,16 @@ namespace lcmsNET
     /// <summary>
     /// Represents a stage in a pipeline.
     /// </summary>
-    public sealed class Stage : IDisposable
+    public sealed class Stage : CmsHandle<Stage>
     {
-        private IntPtr _handle;
-
         internal Stage(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<Stage>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         internal static Stage CopyRef(IntPtr handle, Context context = null)
         {
             return new Stage(handle, context, isOwner: false);
-        }
-
-        internal void Release()
-        {
-            Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            Context = null;
         }
 
         /// <summary>
@@ -253,7 +239,7 @@ namespace lcmsNET
         /// </exception>
         public Stage Duplicate()
         {
-            return new Stage(Interop.StageDup(_handle), Context);
+            return new Stage(Interop.StageDup(handle), Context);
         }
 
         /// <summary>
@@ -270,7 +256,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.StageSampleClut16Bit(_handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
+            return Interop.StageSampleClut16Bit(handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
         }
 
         /// <summary>
@@ -287,7 +273,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.StageSampleClutFloat(_handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
+            return Interop.StageSampleClutFloat(handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
         }
 
         /// <summary>
@@ -331,71 +317,28 @@ namespace lcmsNET
         }
 
         /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
-
-        /// <summary>
         /// Gets the number of input channels in the stage.
         /// </summary>
-        public uint InputChannels => Interop.StageInputChannels(_handle);
+        public uint InputChannels => Interop.StageInputChannels(handle);
 
         /// <summary>
         /// Gets the number of output channels in the stage.
         /// </summary>
-        public uint OutputChannels => Interop.StageOutputChannels(_handle);
+        public uint OutputChannels => Interop.StageOutputChannels(handle);
 
         /// <summary>
         /// Gets the stage type.
         /// </summary>
-        public StageSignature StageType => (StageSignature)Interop.StageType(_handle);
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Stage));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.StageFree(handle);
-                Context = null;
-            }
-        }
+        public StageSignature StageType => (StageSignature)Interop.StageType(handle);
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the stage handle.
         /// </summary>
-        ~Stage()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.StageFree(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
 
         // Constants from lcms_plugin.h and lcms_internal.h
         internal const int MAX_INPUT_DIMENSIONS = 8;

@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a structure that keeps track of plug-ins and static data needed by the THR corresponding function. This class cannot be inherited.
 
 ```csharp
-public sealed class Context : IDisposable
+public sealed class Context : CmsHandle<Context>
 ```
 
-Inheritance Object → Context
+Inheritance Object → CmsHandle\<Context> → Context
 
 Implements IDisposable
 

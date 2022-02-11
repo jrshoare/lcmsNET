@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a dictionary of name-value pairs. This class cannot be inherited.
 
 ```csharp
-public sealed class Dict : IEnumerable<DictEntry>, IDisposable
+public sealed class Dict : TagBase<Dict>, IEnumerable<DictEntry>
 ```
 
-Inheritance Object → Dict
+Inheritance Object → CmsHandle\<Dict> → TagBase\<Dict> → Dict
 
 Implements IEnumerable<DictEntry>, IDisposable
 
@@ -42,7 +42,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ## Methods
 ## Add(string, string, MultiLocalizedUnicode, MultiLocalizedUnicode) Method

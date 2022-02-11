@@ -22,25 +22,18 @@ using lcmsNET.Impl;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents an International Color Consortium Profile.
     /// </summary>
-    public sealed class Profile : IDisposable
+    public sealed class Profile : CmsHandle<Profile>
     {
-        private IntPtr _handle;
-
         internal Profile(IntPtr handle, Context context = null, IOHandler iohandler = null)
+            : base(handle, context, isOwner: true)
         {
-            Helper.CheckCreated<Profile>(handle);
-
-            _handle = handle;
-            Context = context;
             IOHandler = iohandler;
         }
 
@@ -546,7 +539,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return 0 != Interop.SaveProfile(_handle, filepath);
+            return 0 != Interop.SaveProfile(handle, filepath);
         }
 
         /// <summary>
@@ -566,7 +559,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return 0 != Interop.SaveProfile(_handle, memory, out bytesNeeded);
+            return 0 != Interop.SaveProfile(handle, memory, out bytesNeeded);
         }
 
         /// <summary>
@@ -581,7 +574,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.SaveProfile(_handle, iohandler?.Handle ?? IntPtr.Zero);
+            return Interop.SaveProfile(handle, iohandler?.Handle ?? IntPtr.Zero);
         }
         #endregion
 
@@ -601,7 +594,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetProfileInfo(_handle, Convert.ToUInt32(info), languageCode, countryCode);
+            return Interop.GetProfileInfo(handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
 
         /// <summary>
@@ -619,7 +612,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetProfileInfoASCII(_handle, Convert.ToUInt32(info), languageCode, countryCode);
+            return Interop.GetProfileInfoASCII(handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
         #endregion
 
@@ -638,7 +631,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.DetectBlackPoint(_handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
+            return Interop.DetectBlackPoint(handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
 
         /// <summary>
@@ -655,7 +648,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.DetectDestinationBlackPoint(_handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
+            return Interop.DetectDestinationBlackPoint(handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
         #endregion
 
@@ -672,7 +665,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetHeaderCreationDateTime(_handle, out created) != 0;
+            return Interop.GetHeaderCreationDateTime(handle, out created) != 0;
         }
         #endregion
 
@@ -690,7 +683,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsCLUT(_handle, Convert.ToUInt32(intent), Convert.ToUInt32(direction)) != 0;
+            return Interop.IsCLUT(handle, Convert.ToUInt32(intent), Convert.ToUInt32(direction)) != 0;
         }
 
         /// <summary>
@@ -710,7 +703,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.DetectRGBProfileGamma(_handle, threshold);
+            return Interop.DetectRGBProfileGamma(handle, threshold);
         }
         #endregion
 
@@ -727,7 +720,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return (TagSignature)Interop.GetTagSignature(_handle, n);
+            return (TagSignature)Interop.GetTagSignature(handle, n);
         }
 
         /// <summary>
@@ -742,7 +735,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsTag(_handle, Convert.ToUInt32(tag)) != 0;
+            return Interop.IsTag(handle, Convert.ToUInt32(tag)) != 0;
         }
 
         /// <summary>
@@ -757,7 +750,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.ReadTag(_handle, Convert.ToUInt32(tag));
+            return Interop.ReadTag(handle, Convert.ToUInt32(tag));
         }
 
         /// <summary>
@@ -793,20 +786,20 @@ namespace lcmsNET
         }
 
         /// <summary>
-        /// Writes an object identified from the wrappered handle allocated by Little CMS
-        /// to the profile using the given tag signature.
+        /// Writes an object to the profile using the given tag signature.
         /// </summary>
         /// <param name="tag">The tag signature.</param>
-        /// <param name="handle">The handle to the object allocated by Little CMS.</param>
+        /// <param name="t">A type derived from <see cref="TagBase&lt;T&gt;"/>.</param>
         /// <returns>true if successfully written, otherwise false.</returns>
         /// <exception cref="ObjectDisposedException">
         /// The Profile has already been disposed.
         /// </exception>
-        public bool WriteTag(TagSignature tag, IntPtr handle)
+        public bool WriteTag<T>(TagSignature tag, TagBase<T> t)
+            where T: class
         {
             EnsureNotDisposed();
 
-            return Interop.WriteTag(_handle, Convert.ToUInt32(tag), handle) != 0;
+            return WriteTag(tag, t.Handle);
         }
 
         /// <summary>
@@ -903,6 +896,11 @@ namespace lcmsNET
             }
         }
 
+        private bool WriteTag(TagSignature tag, IntPtr ptr)
+        {
+            return Interop.WriteTag(handle, Convert.ToUInt32(tag), ptr) != 0;
+        }
+
         /// <summary>
         /// Creates a directory entry on tag <paramref name="tag"/> that points to the same location
         /// as tag <paramref name="dest"/> to collapse several tag entries to the same block in the
@@ -918,7 +916,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.LinkTag(_handle, Convert.ToUInt32(tag), Convert.ToUInt32(dest)) != 0;
+            return Interop.LinkTag(handle, Convert.ToUInt32(tag), Convert.ToUInt32(dest)) != 0;
         }
 
         /// <summary>
@@ -933,7 +931,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return (TagSignature)Interop.TagLinkedTo(_handle, Convert.ToUInt32(tag));
+            return (TagSignature)Interop.TagLinkedTo(handle, Convert.ToUInt32(tag));
         }
         #endregion
 
@@ -952,7 +950,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IsIntentSupported(_handle, Convert.ToUInt32(intent), Convert.ToUInt32(usedDirection)) != 0;
+            return Interop.IsIntentSupported(handle, Convert.ToUInt32(intent), Convert.ToUInt32(usedDirection)) != 0;
         }
         #endregion
 
@@ -968,7 +966,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.MD5ComputeID(_handle) != 0;
+            return Interop.MD5ComputeID(handle) != 0;
         }
         #endregion
 
@@ -989,7 +987,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetPostScriptColorResource(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(type),
+            return Interop.GetPostScriptColorResource(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(type),
                     Convert.ToUInt32(intent), Convert.ToUInt32(flags), handler?.Handle ?? IntPtr.Zero);
         }
 
@@ -1007,7 +1005,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetPostScriptCSA(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+            return Interop.GetPostScriptCSA(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
 
         /// <summary>
@@ -1024,23 +1022,18 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GetPostScriptCRD(_handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+            return Interop.GetPostScriptCRD(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
         #endregion
 
         #region Properties
         /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
-
-        /// <summary>
         /// Gets or sets the color space used by the profile.
         /// </summary>
         public ColorSpaceSignature ColorSpace
         {
-            get { return (ColorSpaceSignature)Interop.GetColorSpace(_handle); }
-            set { Interop.SetColorSpace(_handle, Convert.ToUInt32(value)); }
+            get { return (ColorSpaceSignature)Interop.GetColorSpace(handle); }
+            set { Interop.SetColorSpace(handle, Convert.ToUInt32(value)); }
         }
 
         /// <summary>
@@ -1048,8 +1041,8 @@ namespace lcmsNET
         /// </summary>
         public ColorSpaceSignature PCS
         {
-            get { return (ColorSpaceSignature)Interop.GetPCS(_handle); }
-            set { Interop.SetPCS(_handle, Convert.ToUInt32(value)); }
+            get { return (ColorSpaceSignature)Interop.GetPCS(handle); }
+            set { Interop.SetPCS(handle, Convert.ToUInt32(value)); }
         }
 
         /// <summary>
@@ -1058,15 +1051,15 @@ namespace lcmsNET
         /// <remarks>
         /// Non-output profiles yield a value of 0%.
         /// </remarks>
-        public double TotalAreaCoverage => Interop.DetectTAC(_handle);
+        public double TotalAreaCoverage => Interop.DetectTAC(handle);
 
         /// <summary>
         /// Gets or sets the device class signature in the header of the profile.
         /// </summary>
         public ProfileClassSignature DeviceClass
         {
-            get { return (ProfileClassSignature)Interop.GetDeviceClass(_handle); }
-            set { Interop.SetDeviceClass(_handle, Convert.ToUInt32(value)); }
+            get { return (ProfileClassSignature)Interop.GetDeviceClass(handle); }
+            set { Interop.SetDeviceClass(handle, Convert.ToUInt32(value)); }
         }
 
         /// <summary>
@@ -1074,8 +1067,8 @@ namespace lcmsNET
         /// </summary>
         public uint HeaderFlags
         {
-            get { return Interop.GetHeaderFlags(_handle); }
-            set { Interop.SetHeaderFlags(_handle, value); }
+            get { return Interop.GetHeaderFlags(handle); }
+            set { Interop.SetHeaderFlags(handle, value); }
         }
 
         /// <summary>
@@ -1083,8 +1076,8 @@ namespace lcmsNET
         /// </summary>
         public uint HeaderManufacturer
         {
-            get { return Interop.GetHeaderManufacturer(_handle); }
-            set { Interop.SetHeaderManufacturer(_handle, value); }
+            get { return Interop.GetHeaderManufacturer(handle); }
+            set { Interop.SetHeaderManufacturer(handle, value); }
         }
 
         /// <summary>
@@ -1092,8 +1085,8 @@ namespace lcmsNET
         /// </summary>
         public uint HeaderModel
         {
-            get { return Interop.GetHeaderModel(_handle); }
-            set { Interop.SetHeaderModel(_handle, value); }
+            get { return Interop.GetHeaderModel(handle); }
+            set { Interop.SetHeaderModel(handle, value); }
         }
 
         /// <summary>
@@ -1102,8 +1095,8 @@ namespace lcmsNET
         /// </summary>
         public DeviceAttributes HeaderAttributes
         {
-            get { return (DeviceAttributes)Interop.GetHeaderAttributes(_handle); }
-            set { Interop.SetHeaderAttributes(_handle, (ulong)value); }
+            get { return (DeviceAttributes)Interop.GetHeaderAttributes(handle); }
+            set { Interop.SetHeaderAttributes(handle, (ulong)value); }
         }
 
         /// <summary>
@@ -1111,8 +1104,8 @@ namespace lcmsNET
         /// </summary>
         public double Version
         {
-            get { return Interop.GetProfileVersion(_handle); }
-            set { Interop.SetProfileVersion(_handle, value); }
+            get { return Interop.GetProfileVersion(handle); }
+            set { Interop.SetProfileVersion(handle, value); }
         }
 
         /// <summary>
@@ -1120,27 +1113,27 @@ namespace lcmsNET
         /// </summary>
         public uint EncodedICCVersion
         {
-            get { return Interop.GetEncodedICCVersion(_handle); }
-            set { Interop.SetEncodedICCVersion(_handle, value); }
+            get { return Interop.GetEncodedICCVersion(handle); }
+            set { Interop.SetEncodedICCVersion(handle, value); }
         }
 
         /// <summary>
         /// Gets a value indicating whether a matrix shaper is present in the profile.
         /// </summary>
-        public bool IsMatrixShaper => Interop.IsMatrixShaper(_handle) != 0;
+        public bool IsMatrixShaper => Interop.IsMatrixShaper(handle) != 0;
 
         /// <summary>
         /// Gets the number of tags in the profile.
         /// </summary>
-        public int TagCount => Interop.GetTagCount(_handle);
+        public int TagCount => Interop.GetTagCount(handle);
 
         /// <summary>
         /// Gets or sets the rendering intent in the header of the profile.
         /// </summary>
         public Intent HeaderRenderingIntent
         {
-            get { return (Intent)Interop.GetHeaderRenderingIntent(_handle); }
-            set { Interop.SetHeaderRenderingIntent(_handle, Convert.ToUInt32(value)); }
+            get { return (Intent)Interop.GetHeaderRenderingIntent(handle); }
+            set { Interop.SetHeaderRenderingIntent(handle, Convert.ToUInt32(value)); }
         }
 
         /// <summary>
@@ -1160,13 +1153,13 @@ namespace lcmsNET
             get
             {
                 byte[] profileID = new byte[16];
-                Interop.GetHeaderProfileID(_handle, profileID);
+                Interop.GetHeaderProfileID(handle, profileID);
                 return profileID;
             }
             set
             {
                 if (value?.Length != 16) throw new ArgumentException($"'{nameof(value)}' array size must equal 16.");
-                Interop.SetHeaderProfileID(_handle, value);
+                Interop.SetHeaderProfileID(handle, value);
             }
         }
 
@@ -1184,63 +1177,45 @@ namespace lcmsNET
 
                 if (_iohandler is null)
                 {
-                    _iohandler = new IOHandler(Interop.GetProfileIOHandler(_handle), Context, isOwner: false);
+                    _iohandler = new IOHandler(Interop.GetProfileIOHandler(handle), Context, isOwner: false);
                 }
                 return _iohandler;
             }
             private set
             {
                 _iohandler = value;
-                if (!(_iohandler is null)) _iohandler.IsOwner = false; // take ownership to avoid double free()
             }
         }
         private IOHandler _iohandler;
         #endregion
 
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Profile));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
-            {
-                Interop.CloseProfile(handle);
-                IOHandler = null; // profile closure also closes i/o handler
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~Profile()
-        {
-            Dispose(false);
-        }
-
         /// <summary>
         /// Disposes this instance.
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing">true if disposing, otherwise false.</param>
+        protected override void Dispose(bool disposing)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
+            if (!isDisposed)
+            {
+                if (disposing)
+                {
+                    base.Dispose(disposing);
+                }
 
-        internal IntPtr Handle => _handle;
+                IOHandler = null;
+                isDisposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Frees the profile handle.
+        /// </summary>
+        protected override bool ReleaseHandle()
+        {
+            Interop.CloseProfile(handle);
+            return true;
+        }
+
+        private bool isDisposed = false;
     }
 }

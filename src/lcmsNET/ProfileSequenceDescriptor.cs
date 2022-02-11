@@ -20,27 +20,18 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a profile sequence descriptor.
     /// </summary>
-    public sealed class ProfileSequenceDescriptor : IDisposable
+    public sealed class ProfileSequenceDescriptor : TagBase<ProfileSequenceDescriptor>
     {
-        private IntPtr _handle;
-
         internal ProfileSequenceDescriptor(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<ProfileSequenceDescriptor>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
-
             CreateItems();
         }
 
@@ -92,13 +83,8 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new ProfileSequenceDescriptor(Interop.DupProfileSequenceDescription(_handle), Context);
+            return new ProfileSequenceDescriptor(Interop.DupProfileSequenceDescription(handle), Context);
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         /// <summary>
         /// Gets the number of profiles in the sequence.
@@ -120,7 +106,7 @@ namespace lcmsNET
             get
             {
                 EnsureNotDisposed();
-                return (Seq*)_handle.ToPointer();
+                return (Seq*)Handle.ToPointer();
             }
         }
 
@@ -143,48 +129,14 @@ namespace lcmsNET
 
         private ProfileSequenceItem[] Items { get; set; }
 
-        #region IDisposable Support
         /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
+        /// Frees the profile sequence descriptor.
         /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(ProfileSequenceDescriptor));
-            }
+            Interop.FreeProfileSequenceDescription(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.FreeProfileSequenceDescription(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~ProfileSequenceDescriptor()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
 
         #region Private Classes
         [StructLayout(LayoutKind.Sequential)]
@@ -195,12 +147,5 @@ namespace lcmsNET
             public IntPtr seq;          // cmsPSEQDESC* aka PSeqDesc
         }
         #endregion
-
-        /// <summary>
-        /// Gets the handle to the profile sequence descriptor.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

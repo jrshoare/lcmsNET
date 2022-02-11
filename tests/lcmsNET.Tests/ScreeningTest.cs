@@ -19,8 +19,6 @@
 // SOFTWARE.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -110,34 +108,22 @@ namespace lcmsNET.Tests
                 expectedChannels[0].ScreenAngle = 3.0;
                 expectedChannels[0].SpotShape = SpotShape.Ellipse;
 
-                // Act
                 var expected = new Screening(expectedFlag, expectedNChannels, expectedChannels);
-                int size = Marshal.SizeOf(expected);
-                IntPtr data = Marshal.AllocHGlobal(size);
-                Marshal.StructureToPtr(expected, data, false);
-                try
-                {
-                    profile.WriteTag(TagSignature.Screening, data);
+                profile.WriteTag(TagSignature.Screening, expected);
 
-                    // Act
-                    // implicit call to FromHandle
-                    var target = profile.ReadTag<Screening>(TagSignature.Screening);
-                    var actualFlag = target.Flag;
-                    var actualNChannels = target.nChannels;
-                    var actualChannels = target.Channels;
+                // Act
+                // implicit call to FromHandle
+                var target = profile.ReadTag<Screening>(TagSignature.Screening);
+                var actualFlag = target.Flag;
+                var actualNChannels = target.nChannels;
+                var actualChannels = target.Channels;
 
-                    // Assert
-                    Assert.AreEqual(expectedFlag, actualFlag);
-                    Assert.AreEqual(expectedNChannels, actualNChannels);
-                    for (int i = 0; i < 16; i++)
-                    {
-                        Assert.AreEqual(expectedChannels[i], actualChannels[i]);
-                    }
-                }
-                finally
+                // Assert
+                Assert.AreEqual(expectedFlag, actualFlag);
+                Assert.AreEqual(expectedNChannels, actualNChannels);
+                for (int i = 0; i < 16; i++)
                 {
-                    Marshal.DestroyStructure(data, typeof(Screening));
-                    Marshal.FreeHGlobal(data);
+                    Assert.AreEqual(expectedChannels[i], actualChannels[i]);
                 }
             }
         }

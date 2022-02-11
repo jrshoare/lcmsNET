@@ -20,24 +20,17 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a context.
     /// </summary>
-    public sealed class Context : IDisposable
+    public sealed class Context : CmsHandle<Context>
     {
-        private IntPtr _handle;
-
         internal Context(IntPtr handle, bool isOwner = true)
+            : base(handle, context: null, isOwner: isOwner)
         {
-            Helper.CheckCreated<Context>(handle);
-
-            _handle = handle;
-            IsOwner = isOwner;
         }
 
         internal static Context CopyRef(IntPtr handle)
@@ -89,7 +82,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new Context(Interop.DuplicateContext(_handle, userData));
+            return new Context(Interop.DuplicateContext(handle, userData));
         }
 
         /// <summary>
@@ -107,7 +100,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.RegisterContextPlugins(_handle, plugin) == 1;
+            return Interop.RegisterContextPlugins(handle, plugin) == 1;
         }
 
         /// <summary>
@@ -123,7 +116,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            Interop.UnregisterContextPlugins(_handle);
+            Interop.UnregisterContextPlugins(handle);
         }
 
         /// <summary>
@@ -143,7 +136,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            Interop.SetContextErrorHandler(_handle, handler);
+            Interop.SetContextErrorHandler(handle, handler);
         }
 
         /// <summary>
@@ -166,7 +159,7 @@ namespace lcmsNET
                 EnsureNotDisposed();
 
                 ushort[] alarmCodes = new ushort[16];
-                Interop.GetAlarmCodesTHR(_handle, alarmCodes);
+                Interop.GetAlarmCodesTHR(handle, alarmCodes);
                 return alarmCodes;
             }
             set
@@ -175,7 +168,7 @@ namespace lcmsNET
 
                 EnsureNotDisposed();
 
-                Interop.SetAlarmCodesTHR(_handle, value);
+                Interop.SetAlarmCodesTHR(handle, value);
             }
         }
 
@@ -206,13 +199,13 @@ namespace lcmsNET
             {
                 EnsureNotDisposed();
 
-                return Interop.SetAdaptationStateTHR(_handle, -1.0);
+                return Interop.SetAdaptationStateTHR(handle, -1.0);
             }
             set
             {
                 EnsureNotDisposed();
 
-                Interop.SetAdaptationStateTHR(_handle, value);
+                Interop.SetAdaptationStateTHR(handle, value);
             }
         }
 
@@ -223,57 +216,20 @@ namespace lcmsNET
         /// <remarks>
         /// Requires Little CMS version 2.6 or later.
         /// </remarks>
-        public IntPtr UserData => Interop.GetContextUserData(_handle);
+        public IntPtr UserData => Interop.GetContextUserData(handle);
 
         /// <summary>
         /// Gets the identifier of this context.
         /// </summary>
-        public IntPtr ID => _handle;
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Context));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.DeleteContext(handle);
-            }
-        }
+        public IntPtr ID => Handle;
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the context handle.
         /// </summary>
-        ~Context()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.DeleteContext(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

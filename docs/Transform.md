@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a color transform. This class cannot be inherited.
 
 ```csharp
-public sealed class Transform : IDisposable
+public sealed class Transform : CmsHandle<Transform>
 ```
 
-Inheritance Object → Transform
+Inheritance Object → CmsHandle\<Transform> → Transform
 
 Implements IDisposable
 
@@ -23,7 +23,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context` [Context](./Context.md)  
-Gets the context in which the instance was created.
+Gets the context in which the instance was created. Inherited from `CmsHandle<T>`.
 
 ---
 ## InputFormat Property

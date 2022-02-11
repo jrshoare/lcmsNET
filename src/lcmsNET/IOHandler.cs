@@ -20,25 +20,17 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents an I/O handler.
     /// </summary>
-    public sealed class IOHandler : IDisposable
+    public sealed class IOHandler : CmsHandle<IOHandler>
     {
-        private IntPtr _handle;
-
         internal IOHandler(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<IOHandler>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         #region Access functions
@@ -78,58 +70,13 @@ namespace lcmsNET
         }
         #endregion
 
-        #region Properties
         /// <summary>
-        /// Gets the context in which the instance was created.
+        /// Frees the i/o handler handle.
         /// </summary>
-        public Context Context { get; private set; }
-        #endregion
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Profile));
-            }
+            Interop.CloseIOHandler(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.CloseIOHandler(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~IOHandler()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
-        // visibility must be 'internal' to allow ownership to be taken when used with Profile.Open(Context, IOHandler...)
-        internal bool IsOwner { get; set; }
     }
 }

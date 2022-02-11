@@ -20,25 +20,17 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a named color list.
     /// </summary>
-    public sealed class NamedColorList : IDisposable
+    public sealed class NamedColorList : TagBase<NamedColorList>
     {
-        private IntPtr _handle;
-
         internal NamedColorList(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<NamedColorList>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         /// <summary>
@@ -92,7 +84,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new NamedColorList(Interop.DupNamedColorList(_handle), Context);
+            return new NamedColorList(Interop.DupNamedColorList(handle), Context);
         }
 
         /// <summary>
@@ -112,7 +104,7 @@ namespace lcmsNET
 
             EnsureNotDisposed();
 
-            return Interop.AppendNamedColor(_handle, name, pcs, colorant) != 0;
+            return Interop.AppendNamedColor(handle, name, pcs, colorant) != 0;
         }
 
         /// <summary>
@@ -131,7 +123,7 @@ namespace lcmsNET
             pcs = new ushort[3];
             colorant = new ushort[16];
 
-            return Interop.NamedColorInfo(_handle, nColor, out name, out prefix, out suffix, pcs, colorant) != 0;
+            return Interop.NamedColorInfo(handle, nColor, out name, out prefix, out suffix, pcs, colorant) != 0;
         }
 
         /// <summary>
@@ -139,66 +131,20 @@ namespace lcmsNET
         /// </summary>
         /// <param name="name">The name of the spot color.</param>
         /// <returns>The zero-based index of the spot color, or -1 if not found.</returns>
-        public int this[string name] => Interop.NamedColorIndex(_handle, name);
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
+        public int this[string name] => Interop.NamedColorIndex(handle, name);
 
         /// <summary>
         /// Gets the number of spot colors in the named color list.
         /// </summary>
-        public uint Count => Interop.NamedColorCount(_handle);
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(NamedColorList));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.FreeNamedColorList(handle);
-                Context = null;
-            }
-        }
+        public uint Count => Interop.NamedColorCount(handle);
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the named color list handle.
         /// </summary>
-        ~NamedColorList()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.FreeNamedColorList(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        /// <summary>
-        /// Gets the handle to the named color list.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

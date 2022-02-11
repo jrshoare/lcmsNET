@@ -7,10 +7,10 @@ Defines methods and properties for reading and writing ANSI
 CGATS.17 text files. This class cannot be inherited.
 
 ```csharp
-public sealed class IT8 : IDisposable
+public sealed class IT8 : CmsHandle<IT8>
 ```
 
-Inheritance Object → IOHandler
+Inheritance Object → CmsHandle\<IT8> → IOHandler
 
 Implements IDisposable
 
@@ -24,7 +24,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ### DoubleFormat Property

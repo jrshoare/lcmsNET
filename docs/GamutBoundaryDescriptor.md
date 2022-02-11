@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a gamut boundary description. This class cannot be inherited.
 
 ```csharp
-public sealed class GamutBoundaryDescriptor : IDisposable
+public sealed class GamutBoundaryDescriptor : CmsHandle<GamutBoundaryDescriptor>
 ```
 
-Inheritance Object → GamutBoundaryDescriptor
+Inheritance Object → CmsHandle\<GamutBoundaryDescriptor> → GamutBoundaryDescriptor
 
 Implements IDisposable
 
@@ -60,7 +60,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ## Methods
 ## AddPoint(CIELab) Method

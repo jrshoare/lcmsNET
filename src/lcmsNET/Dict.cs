@@ -22,9 +22,7 @@ using lcmsNET.Impl;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace lcmsNET
 {
@@ -43,17 +41,11 @@ namespace lcmsNET
     /// <summary>
     /// Represents a dictionary of <see cref="DictEntry"/> items.
     /// </summary>
-    public sealed class Dict : IEnumerable<DictEntry>, IDisposable
+    public sealed class Dict : TagBase<Dict>, IEnumerable<DictEntry>
     {
-        private IntPtr _handle;
-
         internal Dict(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<Dict>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         /// <summary>
@@ -109,7 +101,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new Dict(Interop.DictDup(_handle), Context);
+            return new Dict(Interop.DictDup(handle), Context);
         }
 
         /// <summary>
@@ -135,7 +127,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.DictAddEntry(_handle, name, value,
+            return Interop.DictAddEntry(handle, name, value,
                     displayName?.Handle ?? IntPtr.Zero,
                     displayValue?.Handle ?? IntPtr.Zero) != 0;
         }
@@ -149,7 +141,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new DictEntryEnumerator(_handle);
+            return new DictEntryEnumerator(handle);
         }
 
         /// <summary>
@@ -160,11 +152,6 @@ namespace lcmsNET
         {
             return GetEnumerator();
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         private class DictEntryEnumerator : IEnumerator<DictEntry>
         {
@@ -253,54 +240,13 @@ namespace lcmsNET
         }
         #endregion
 
-        #region IDisposable Support
         /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
+        /// Frees the dictionary handle.
         /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Dict));
-            }
+            Interop.DictFree(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.DictFree(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~Dict()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        /// <summary>
-        /// Gets the handle to the dictionary.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

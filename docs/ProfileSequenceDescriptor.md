@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a profile sequence descriptor. This class cannot be inherited.
 
 ```csharp
-public sealed class ProfileSequenceDescriptor : IDisposable
+public sealed class ProfileSequenceDescriptor : TagBase<ProfileSequenceDescriptor>
 ```
 
-Inheritance Object → ProfileSequenceDescriptor
+Inheritance Object → CmsHandle\<ProfileSequenceDescriptor> → TagBase\<ProfileSequenceDescriptor> → ProfileSequenceDescriptor
 
 Implements IDisposable
 
@@ -23,19 +23,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
-
----
-## Handle Property
-
-```csharp
-public IntPtr Handle { get; }
-```
-
-### Property Value
-
-`Handle`  
-Gets the handle to the profile sequence descriptor.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ## IsDisposed Property

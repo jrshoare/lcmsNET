@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents an abstraction used to deal with files or streams. This class cannot be inherited.
 
 ```csharp
-public sealed class IOHandler : IDisposable
+public sealed class IOHandler : CmsHandle<IOHandler>
 ```
 
-Inheritance Object → IOHandler
+Inheritance Object → CmsHandle\<IOHandler> → IOHandler
 
 Implements IDisposable
 
@@ -43,7 +43,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ## Methods
 ## Open(Context) Method

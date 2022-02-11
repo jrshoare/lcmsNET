@@ -20,9 +20,7 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace lcmsNET
 {
@@ -66,17 +64,11 @@ namespace lcmsNET
     /// <summary>
     /// Represents a tone curve.
     /// </summary>
-    public sealed class ToneCurve : IDisposable
+    public sealed class ToneCurve : TagBase<ToneCurve>
     {
-        private IntPtr _handle;
-
         internal ToneCurve(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<ToneCurve>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         /// <summary>
@@ -197,7 +189,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new ToneCurve(Interop.DuplicateToneCurve(_handle), Context);
+            return new ToneCurve(Interop.DuplicateToneCurve(handle), Context);
         }
 
         /// <summary>
@@ -214,7 +206,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new ToneCurve(Interop.ReverseToneCurve(_handle), Context);
+            return new ToneCurve(Interop.ReverseToneCurve(handle), Context);
         }
 
         /// <summary>
@@ -235,7 +227,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new ToneCurve(Interop.ReverseToneCurve(_handle, nResultSamples), Context);
+            return new ToneCurve(Interop.ReverseToneCurve(handle, nResultSamples), Context);
         }
 
         /// <summary>
@@ -260,7 +252,7 @@ namespace lcmsNET
             if (other is null) throw new ArgumentNullException(nameof(other));
             other.EnsureNotDisposed();
 
-            return new ToneCurve(Interop.JoinToneCurve(context?.Handle ?? IntPtr.Zero, _handle, other.Handle, nPoints));
+            return new ToneCurve(Interop.JoinToneCurve(context?.Handle ?? IntPtr.Zero, Handle, other.Handle, nPoints));
         }
 
         /// <summary>
@@ -275,7 +267,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.SmoothToneCurve(_handle, lambda) != 0;
+            return Interop.SmoothToneCurve(handle, lambda) != 0;
         }
 
         /// <summary>
@@ -290,7 +282,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.EvaluateToneCurve(_handle, v);
+            return Interop.EvaluateToneCurve(handle, v);
         }
 
         /// <summary>
@@ -305,7 +297,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.EvaluateToneCurve(_handle, v);
+            return Interop.EvaluateToneCurve(handle, v);
         }
 
         /// <summary>
@@ -330,18 +322,13 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.EstimateGamma(_handle, precision);
+            return Interop.EstimateGamma(handle, precision);
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the tone curve contains more than one segment.
         /// </summary>
-        public bool IsMultisegment => Interop.IsMultiSegmentToneCurve(_handle) != 0;
+        public bool IsMultisegment => Interop.IsMultiSegmentToneCurve(handle) != 0;
 
         /// <summary>
         /// Gets a value indicating whether the tone curve is linear.
@@ -350,7 +337,7 @@ namespace lcmsNET
         /// This is just a coarse approximation with no mathematical validity that does not
         /// take unbounded parts into account.
         /// </remarks>
-        public bool IsLinear => Interop.IsLinearToneCurve(_handle) != 0;
+        public bool IsLinear => Interop.IsLinearToneCurve(handle) != 0;
 
         /// <summary>
         /// Gets a value indicating whether the tone curve is monotonic.
@@ -359,7 +346,7 @@ namespace lcmsNET
         /// This is just a coarse approximation with no mathematical validity that does not
         /// take unbounded parts into account.
         /// </remarks>
-        public bool IsMonotonic => Interop.IsMonotonicToneCurve(_handle) != 0;
+        public bool IsMonotonic => Interop.IsMonotonicToneCurve(handle) != 0;
 
         /// <summary>
         /// Returns true if (0) > ƒ(1), otherwise false.
@@ -367,7 +354,7 @@ namespace lcmsNET
         /// <remarks>
         /// Does not take unbounded parts into account.
         /// </remarks>
-        public bool IsDescending => Interop.IsDescendingToneCurve(_handle) != 0;
+        public bool IsDescending => Interop.IsDescendingToneCurve(handle) != 0;
 
         /// <summary>
         /// Gets the number of entries in the maintained shadow low-resolution tabulated
@@ -376,7 +363,7 @@ namespace lcmsNET
         /// <remarks>
         /// Requires Little CMS version 2.4 or later.
         /// </remarks>
-        public uint EstimatedTableEntries => Interop.GetEstimatedTableEntries(_handle);
+        public uint EstimatedTableEntries => Interop.GetEstimatedTableEntries(handle);
 
         /// <summary>
         /// Gets a pointer to the maintained shadow low-resolution tabulated
@@ -385,56 +372,15 @@ namespace lcmsNET
         /// <remarks>
         /// Requires Little CMS version 2.4 or later.
         /// </remarks>
-        public IntPtr EstimatedTable => Interop.GetEstimatedTable(_handle);
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
-        {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(ToneCurve));
-            }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.FreeToneCurve(handle);
-                Context = null;
-            }
-        }
+        public IntPtr EstimatedTable => Interop.GetEstimatedTable(handle);
 
         /// <summary>
-        /// Finalizer.
+        /// Frees the tone curve.
         /// </summary>
-        ~ToneCurve()
+        protected override bool ReleaseHandle()
         {
-            Dispose(false);
+            Interop.FreeToneCurve(handle);
+            return true;
         }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        /// <summary>
-        /// Gets the handle to the tone curve.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

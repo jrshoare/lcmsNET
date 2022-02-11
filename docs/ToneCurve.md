@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a tone curve. This class cannot be inherited.
 
 ```csharp
-public sealed class ToneCurve : IDisposable
+public sealed class ToneCurve : TagBase<ToneCurve>
 ```
 
-Inheritance Object → ToneCurve
+Inheritance Object → CmsHandle\<ToneCurve> → TagBase\<ToneCurve> → ToneCurve
 
 Implements IDisposable
 
@@ -23,7 +23,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context` [Context](./Context.md)  
-Gets the context in which the instance was created.
+Gets the context in which the instance was created. Inherited from `CmsHandle<T>`.
 
 ---
 ## EstimatedTable Property
@@ -48,18 +48,6 @@ public uint EstimatedTableEntries { get; }
 
 `EstimatedTableEntries` uint  
 Gets the number of entries in the maintained shadow low-resolution tabulated representation of the tone curve.
-
----
-## Handle Property
-
-```csharp
-public IntPtr Handle { get; }
-```
-
-### Property Value
-
-`Handle` IntPtr  
-Gets the handle to the tone curve.
 
 ---
 ## IsDescending Property

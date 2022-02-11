@@ -167,7 +167,7 @@ namespace lcmsNET.Tests
                 item.Model = Create("Hello 2", "Hola 2");
 
                 // Act
-                bool written = profile.WriteTag(TagSignature.ProfileSequenceDesc, psd.Handle);
+                bool written = profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
 
                 // Assert
                 Assert.IsTrue(written);
@@ -189,7 +189,7 @@ namespace lcmsNET.Tests
                     item.Manufacturer = Create("Hello 0", "Hola 0");
                     item.Model = Create("Hello 0", "Hola 0");
 
-                    profile.WriteTag(TagSignature.ProfileSequenceDesc, psd.Handle);
+                    profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
                 }
 
                 // Act

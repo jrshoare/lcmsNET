@@ -20,24 +20,17 @@
 
 using lcmsNET.Impl;
 using System;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
     /// <summary>
     /// Represents a gamut boundary descriptor.
     /// </summary>
-    public sealed class GamutBoundaryDescriptor : IDisposable
+    public sealed class GamutBoundaryDescriptor : CmsHandle<GamutBoundaryDescriptor>
     {
-        private IntPtr _handle;
-
         internal GamutBoundaryDescriptor(IntPtr handle, Context context = null)
+            : base(handle, context, isOwner: true)
         {
-            Helper.CheckCreated<GamutBoundaryDescriptor>(handle);
-
-            _handle = handle;
-            Context = context;
         }
 
         /// <summary>
@@ -72,7 +65,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GBDAddPoint(_handle, lab) != 0;
+            return Interop.GBDAddPoint(handle, lab) != 0;
         }
 
         /// <summary>
@@ -92,7 +85,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GBDCompute(_handle, flags) != 0;
+            return Interop.GBDCompute(handle, flags) != 0;
         }
 
         /// <summary>
@@ -111,57 +104,16 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.GBDCheckPoint(_handle, lab) != 0;
+            return Interop.GBDCheckPoint(handle, lab) != 0;
         }
 
         /// <summary>
-        /// Gets the context in which the instance was created.
+        /// Frees the gamut boundary descriptor handle.
         /// </summary>
-        public Context Context { get; private set; }
-
-        #region IDisposable Support
-        /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(GamutBoundaryDescriptor));
-            }
+            Interop.GBDFree(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
-            {
-                Interop.GBDFree(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~GamutBoundaryDescriptor()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
     }
 }

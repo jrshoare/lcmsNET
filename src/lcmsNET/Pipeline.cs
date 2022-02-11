@@ -22,8 +22,6 @@ using lcmsNET.Impl;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace lcmsNET
 {
@@ -47,17 +45,11 @@ namespace lcmsNET
     /// stage performs a single operation on image data. The output of a first stage
     /// provides the input to the next and so on through the pipeline.
     /// </summary>
-    public sealed class Pipeline : IEnumerable<Stage>, IDisposable
+    public sealed class Pipeline : TagBase<Pipeline>, IEnumerable<Stage>
     {
-        private IntPtr _handle;
-
         internal Pipeline(IntPtr handle, Context context = null, bool isOwner = true)
+            : base(handle, context, isOwner)
         {
-            Helper.CheckCreated<Pipeline>(handle);
-
-            _handle = handle;
-            Context = context;
-            IsOwner = isOwner;
         }
 
         /// <summary>
@@ -105,7 +97,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new Pipeline(Interop.PipelineDup(_handle), Context);
+            return new Pipeline(Interop.PipelineDup(handle), Context);
         }
 
         /// <summary>
@@ -120,7 +112,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.PipelineCat(_handle, other.Handle) != 0;
+            return Interop.PipelineCat(handle, other.handle) != 0;
         }
 
         /// <summary>
@@ -138,7 +130,7 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             float[] result = new float[values.Length];
-            Interop.PipelineEvalFloat(_handle, values, result);
+            Interop.PipelineEvalFloat(handle, values, result);
             return result;
         }
 
@@ -159,7 +151,7 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             float[] result = new float[values.Length];
-            success = Interop.PipelineEvalReverseFloat(_handle, values, result, hint) != 0;
+            success = Interop.PipelineEvalReverseFloat(handle, values, result, hint) != 0;
             return result;
         }
 
@@ -178,7 +170,7 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             ushort[] result = new ushort[values.Length];
-            Interop.PipelineEval16(_handle, values, result);
+            Interop.PipelineEval16(handle, values, result);
             return result;
         }
 
@@ -199,7 +191,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            bool inserted = Interop.PipelineInsertStage(_handle, stage.Handle, Convert.ToInt32(location)) != 0;
+            bool inserted = Interop.PipelineInsertStage(handle, stage.Handle, Convert.ToInt32(location)) != 0;
             if (inserted) stage.Release();
             return inserted;
         }
@@ -220,7 +212,7 @@ namespace lcmsNET
             EnsureNotDisposed();
 
             IntPtr ptr = IntPtr.Zero;
-            Interop.PipelineUnlinkStage(_handle, Convert.ToInt32(location), ref ptr);
+            Interop.PipelineUnlinkStage(handle, Convert.ToInt32(location), ref ptr);
 
             if (ptr != IntPtr.Zero)
             {
@@ -243,7 +235,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            Interop.PipelineUnlinkStage(_handle, Convert.ToInt32(location));
+            Interop.PipelineUnlinkStage(handle, Convert.ToInt32(location));
         }
 
         /// <summary>
@@ -262,28 +254,23 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.PipelineSetSaveAs8BitsFlag(_handle, on ? 1 : 0) != 0;
+            return Interop.PipelineSetSaveAs8BitsFlag(handle, on ? 1 : 0) != 0;
         }
-
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
 
         /// <summary>
         /// Gets the number of input channels for the pipeline.
         /// </summary>
-        public uint InputChannels => Interop.PipelineInputChannels(_handle);
+        public uint InputChannels => Interop.PipelineInputChannels(handle);
 
         /// <summary>
         /// Gets the number of output channels for the pipeline.
         /// </summary>
-        public uint OutputChannels => Interop.PipelineOutputChannels(_handle);
+        public uint OutputChannels => Interop.PipelineOutputChannels(handle);
 
         /// <summary>
         /// Gets the number of stages in the pipeline.
         /// </summary>
-        public uint StageCount => Interop.PipelineStageCount(_handle);
+        public uint StageCount => Interop.PipelineStageCount(handle);
 
         #region IEnumerable<Stage> Support
         /// <summary>
@@ -294,7 +281,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return new StageEnumerator(_handle);
+            return new StageEnumerator(handle);
         }
 
         /// <summary>
@@ -400,54 +387,13 @@ namespace lcmsNET
         }
         #endregion
 
-        #region IDisposable Support
         /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
+        /// Frees the pipeline handle.
         /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(Pipeline));
-            }
+            Interop.PipelineFree(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (IsOwner && handle != IntPtr.Zero) // only dispose undisposed objects that we own
-            {
-                Interop.PipelineFree(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~Pipeline()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        /// <summary>
-        /// Gets the handle to the pipeline.
-        /// </summary>
-        public IntPtr Handle => _handle;
-
-        private bool IsOwner { get; set; }
     }
 }

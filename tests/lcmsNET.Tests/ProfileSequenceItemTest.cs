@@ -321,7 +321,7 @@ namespace lcmsNET.Tests
                 item.Manufacturer = mlu;
 
                 // Assert
-                Assert.AreEqual(IntPtr.Zero, mlu.Handle);
+                Assert.IsTrue(mlu.IsClosed);
                 string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
                 Assert.AreEqual(expected, actual);
             }
@@ -370,7 +370,7 @@ namespace lcmsNET.Tests
                 item.Model = mlu;
 
                 // Assert
-                Assert.AreEqual(IntPtr.Zero, mlu.Handle);
+                Assert.IsTrue(mlu.IsClosed);
                 string actual = item.Model.GetASCII(languageCode, countryCode);
                 Assert.AreEqual(expected, actual);
             }
@@ -419,7 +419,7 @@ namespace lcmsNET.Tests
                 item.Description = mlu;
 
                 // Assert
-                Assert.AreEqual(IntPtr.Zero, mlu.Handle);
+                Assert.IsTrue(mlu.IsClosed);
                 string actual = item.Description.GetASCII(languageCode, countryCode);
                 Assert.AreEqual(expected, actual);
             }

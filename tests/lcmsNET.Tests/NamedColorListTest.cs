@@ -282,7 +282,7 @@ namespace lcmsNET.Tests
                         bool added = ncl.Add($"#{i}", pcs, colorant);
                     }
 
-                    profile.WriteTag(TagSignature.NamedColor2, ncl.Handle);
+                    profile.WriteTag(TagSignature.NamedColor2, ncl);
                 }
 
                 // Act

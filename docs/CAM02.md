@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents the CIE CAM02 color appearance model. This class cannot be inherited.
 
 ```csharp
-public sealed class CAM02 : IDisposable
+public sealed class CAM02 : CmsHandle<CAM02>
 ```
 
-Inheritance Object → CAM02
+Inheritance Object → CmsHandle\<CAM02> → CAM02
 
 Implements IDisposable
 
@@ -51,7 +51,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ## Methods
 ## Create(Context, ViewingConditions) Method

@@ -9,10 +9,10 @@ image data. The output of a first stage provides the input
 to the next and so on through the pipeline. This class cannot be inherited.
 
 ```csharp
-public sealed class Pipeline : IEnumerable<Stage>, IDisposable
+public sealed class Pipeline : TagBase<Pipeline>, IEnumerable<Stage>
 ```
 
-Inheritance Object → Pipeline
+Inheritance Object → CmsHandle<Pipeline> → TagBase\<Pipeline> → Pipeline
 
 Implements IEnumerable\<Stage> and IDisposable
 
@@ -26,19 +26,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
-
----
-## Handle Property
-
-```csharp
-public IntPtr Handle { get; }
-```
-
-### Property Value
-
-`Handle` IntPtr  
-Gets the handle to the piepline.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ## InputChannels Property

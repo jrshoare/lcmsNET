@@ -29,16 +29,11 @@ namespace lcmsNET
     /// <summary>
     /// Defines methods and properties for reading and writing ANSI CGATS.17 text files.
     /// </summary>
-    public sealed class IT8 : IDisposable
+    public sealed class IT8 : CmsHandle<IT8>
     {
-        private IntPtr _handle;
-
         internal IT8(IntPtr handle, Context context = null)
+            : base(handle, context, isOwner: true)
         {
-            Helper.CheckCreated<IT8>(handle);
-
-            _handle = handle;
-            Context = context;
         }
 
         /// <summary>
@@ -57,13 +52,6 @@ namespace lcmsNET
             return new IT8(Interop.IT8Alloc(context?.Handle ?? IntPtr.Zero), context);
         }
 
-        #region Properties
-        /// <summary>
-        /// Gets the context in which the instance was created.
-        /// </summary>
-        public Context Context { get; private set; }
-        #endregion
-
         #region Tables
         /// <summary>
         /// Gets the number of tables in this instance.
@@ -72,7 +60,7 @@ namespace lcmsNET
         /// An <see cref="IT8"/> instance created with <see cref="Create(Context)"/> initially
         /// has one table allocated.
         /// </remarks>
-        public uint TableCount => Interop.IT8TableCount(_handle);
+        public uint TableCount => Interop.IT8TableCount(handle);
 
         /// <summary>
         /// Sets the current table.
@@ -89,7 +77,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IT8SetTable(_handle, nTable);
+            return Interop.IT8SetTable(handle, nTable);
         }
         #endregion
 
@@ -142,7 +130,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return 0 != Interop.IT8SaveToFile(_handle, filepath);
+            return 0 != Interop.IT8SaveToFile(handle, filepath);
         }
 
         /// <summary>
@@ -162,7 +150,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return 0 != Interop.IT8SaveToMem(_handle, it8, out bytesNeeded);
+            return 0 != Interop.IT8SaveToMem(handle, it8, out bytesNeeded);
         }
         #endregion
 
@@ -178,11 +166,11 @@ namespace lcmsNET
         /// </exception>
         public string SheetType
         {
-            get { return Interop.IT8GetSheetType(_handle); }
+            get { return Interop.IT8GetSheetType(handle); }
             set
             {
                 EnsureNotDisposed();
-                if (0 == Interop.IT8SetSheetType(_handle, value))
+                if (0 == Interop.IT8SetSheetType(handle, value))
                 {
                     throw new LcmsNETException($"Failed to set sheet type: '{value}'.");
                 }
@@ -203,7 +191,7 @@ namespace lcmsNET
         public bool AddComment(string comment)
         {
             EnsureNotDisposed();
-            return Interop.IT8SetComment(_handle, comment) != 0;
+            return Interop.IT8SetComment(handle, comment) != 0;
         }
         #endregion
 
@@ -215,7 +203,7 @@ namespace lcmsNET
         /// <returns>The literal string value of the property, or null on error.</returns>
         public string GetProperty(string name)
         {
-            return Interop.IT8GetProperty(_handle, name);
+            return Interop.IT8GetProperty(handle, name);
         }
 
         /// <summary>
@@ -225,7 +213,7 @@ namespace lcmsNET
         /// <returns>The floating point value of the property, or 0 on error.</returns>
         public double GetDoubleProperty(string name)
         {
-            return Interop.IT8GetPropertyDouble(_handle, name);
+            return Interop.IT8GetPropertyDouble(handle, name);
         }
 
         /// <summary>
@@ -248,7 +236,7 @@ namespace lcmsNET
         /// </remarks>
         public bool SetProperty(string name, string value)
         {
-            return Interop.IT8SetProperty(_handle, name, value) != 0;
+            return Interop.IT8SetProperty(handle, name, value) != 0;
         }
 
         /// <summary>
@@ -259,7 +247,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetProperty(string name, double value)
         {
-            return Interop.IT8SetPropertyDouble(_handle, name, value) != 0;
+            return Interop.IT8SetPropertyDouble(handle, name, value) != 0;
         }
 
         /// <summary>
@@ -270,7 +258,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetProperty(string name, uint hex)
         {
-            return Interop.IT8SetPropertyHex(_handle, name, hex) != 0;
+            return Interop.IT8SetPropertyHex(handle, name, hex) != 0;
         }
 
         /// <summary>
@@ -294,7 +282,7 @@ namespace lcmsNET
         /// </remarks>
         public bool SetUncookedProperty(string name, string value)
         {
-            return Interop.IT8SetPropertyUncooked(_handle, name, value) != 0;
+            return Interop.IT8SetPropertyUncooked(handle, name, value) != 0;
         }
 
         /// <summary>
@@ -306,13 +294,13 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetProperty(string key, string subkey, string value)
         {
-            return Interop.IT8SetProperty(_handle, key, subkey, value) != 0;
+            return Interop.IT8SetProperty(handle, key, subkey, value) != 0;
         }
 
         /// <summary>
         /// Gets an object that can be used to enumerate all properties in the current table.
         /// </summary>
-        public IEnumerable<string> Properties => Interop.IT8EnumProperties(_handle);
+        public IEnumerable<string> Properties => Interop.IT8EnumProperties(handle);
 
         /// <summary>
         /// Gets an object that can be used to enumerate all sub-property names for a
@@ -327,7 +315,7 @@ namespace lcmsNET
         {
             EnsureNotDisposed();
 
-            return Interop.IT8EnumPropertyMulti(_handle, name);
+            return Interop.IT8EnumPropertyMulti(handle, name);
         }
         #endregion
 
@@ -340,7 +328,7 @@ namespace lcmsNET
         /// <returns>The literal string value of the cell, or null on error.</returns>
         public string GetData(int row, int column)
         {
-            return Interop.IT8GetDataRowCol(_handle, row, column);
+            return Interop.IT8GetDataRowCol(handle, row, column);
         }
 
         /// <summary>
@@ -351,7 +339,7 @@ namespace lcmsNET
         /// <returns>The literal string value of the cell, or null on error.</returns>
         public string GetData(string patch, string sample)
         {
-            return Interop.IT8GetData(_handle, patch, sample);
+            return Interop.IT8GetData(handle, patch, sample);
         }
 
         /// <summary>
@@ -362,7 +350,7 @@ namespace lcmsNET
         /// <returns>The floating point value of the cell, or 0 on error.</returns>
         public double GetDoubleData(int row, int column)
         {
-            return Interop.IT8GetDataRowColDouble(_handle, row, column);
+            return Interop.IT8GetDataRowColDouble(handle, row, column);
         }
 
         /// <summary>
@@ -373,7 +361,7 @@ namespace lcmsNET
         /// <returns>The floating point value of the cell, or 0 on error.</returns>
         public double GetDoubleData(string patch, string sample)
         {
-            return Interop.IT8GetDataDbl(_handle, patch, sample);
+            return Interop.IT8GetDataDbl(handle, patch, sample);
         }
 
         /// <summary>
@@ -385,7 +373,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetData(int row, int column, string value)
         {
-            return Interop.IT8SetDataRowCol(_handle, row, column, value) != 0;
+            return Interop.IT8SetDataRowCol(handle, row, column, value) != 0;
         }
 
         /// <summary>
@@ -397,7 +385,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetData(string patch, string sample, string value)
         {
-            return Interop.IT8SetData(_handle, patch, sample, value) != 0;
+            return Interop.IT8SetData(handle, patch, sample, value) != 0;
         }
 
         /// <summary>
@@ -409,7 +397,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetData(int row, int column, double value)
         {
-            return Interop.IT8SetDataRowColDbl(_handle, row, column, value) != 0;
+            return Interop.IT8SetDataRowColDbl(handle, row, column, value) != 0;
         }
 
         /// <summary>
@@ -421,7 +409,7 @@ namespace lcmsNET
         /// <returns>true if successful, otherwise false.</returns>
         public bool SetData(string patch, string sample, double value)
         {
-            return Interop.IT8SetDataDbl(_handle, patch, sample, value) != 0;
+            return Interop.IT8SetDataDbl(handle, patch, sample, value) != 0;
         }
 
         /// <summary>
@@ -431,7 +419,7 @@ namespace lcmsNET
         /// <returns>The column number, or -1 if not found.</returns>
         public int FindDataFormat(string sample)
         {
-            return Interop.IT8FindDataFormat(_handle, sample);
+            return Interop.IT8FindDataFormat(handle, sample);
         }
 
         /// <summary>
@@ -449,14 +437,14 @@ namespace lcmsNET
         /// </remarks>
         public bool SetDataFormat(int column, string sample)
         {
-            return Interop.IT8SetDataFormat(_handle, column, sample) != 0;
+            return Interop.IT8SetDataFormat(handle, column, sample) != 0;
         }
 
         /// <summary>
         /// Gets an object that can be used to enumerate the sample names for the columns
         /// in the current table.
         /// </summary>
-        public IEnumerable<string> SampleNames => Interop.IT8EnumDataFormat(_handle);
+        public IEnumerable<string> SampleNames => Interop.IT8EnumDataFormat(handle);
 
         /// <summary>
         /// Gets the value of the first column (patch name) for the given set number.
@@ -465,7 +453,7 @@ namespace lcmsNET
         /// <returns>The patch name, or null on error.</returns>
         public string GetPatchName(int nPatch)
         {
-            return Interop.IT8GetPatchName(_handle, nPatch);
+            return Interop.IT8GetPatchName(handle, nPatch);
         }
 
         /// <summary>
@@ -476,53 +464,17 @@ namespace lcmsNET
         /// </remarks>
         public string DoubleFormat
         {
-            set => Interop.IT8DefineDblFormat(_handle, value);
+            set => Interop.IT8DefineDblFormat(handle, value);
         }
         #endregion
 
-        #region IDisposable Support
         /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
+        /// Frees the IT8 handle.
         /// </summary>
-        public bool IsDisposed => _handle == IntPtr.Zero;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EnsureNotDisposed()
+        protected override bool ReleaseHandle()
         {
-            if (_handle == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException(nameof(IT8));
-            }
+            Interop.IT8Free(handle);
+            return true;
         }
-
-        private void Dispose(bool disposing)
-        {
-            var handle = Interlocked.Exchange(ref _handle, IntPtr.Zero);
-            if (handle != IntPtr.Zero)
-            {
-                Interop.IT8Free(handle);
-                Context = null;
-            }
-        }
-
-        /// <summary>
-        /// Finalizer.
-        /// </summary>
-        ~IT8()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
-
-        internal IntPtr Handle => _handle;
     }
 }

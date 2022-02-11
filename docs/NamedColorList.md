@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a named color list. This class cannot be inherited.
 
 ```csharp
-public sealed class NamedColorList : IDisposable
+public sealed class NamedColorList : TagBase<NamedColorList>
 ```
 
-Inheritance Object → NamedColorList
+Inheritance Object → CmsHandle\<NamedColorList> → TagBase\<NamedColorList> → NamedColorList
 
 Implements IDisposable
 
@@ -23,7 +23,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ## Count Property
@@ -36,18 +36,6 @@ public uint Count { get; }
 
 `Count`  
 Gets the number of spot colors in the named color list.
-
----
-## Handle Property
-
-```csharp
-public IntPtr Handle { get; }
-```
-
-### Property Value
-
-`Handle` IntPtr  
-Gets the handle to the named color list.
 
 ## Methods
 ## Add(string, ushort[] ushort[]) Method

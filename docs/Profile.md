@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents an International Color Consortium Profile. This class cannot be inherited.
 
 ```csharp
-public sealed class Profile : IDisposable
+public sealed class Profile : CmsHandle<Profile>
 ```
 
-Inheritance Object → Profile
+Inheritance Object → CmsHandle\<Profile> → Profile
 
 Implements IDisposable
 
@@ -35,7 +35,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context` [Context](./Context.md)  
-Gets the context in which the instance was created.
+Gets the context in which the instance was created. Inherited from `CmsHandle<T>`.
 
 ---
 ## DeviceClass Property
@@ -1418,21 +1418,26 @@ The video card gamma table instance.
 `true` if written successfully, otherwise `false`.
 
 ---
-## WriteTag(TagSignature, IntPtr) Method
+## WriteTag\<T>(TagSignature, TagBase\<T>) Method
 
 ```csharp
-public bool WriteTag(TagSignature tag, IntPtr handle)
+public bool WriteTag(TagSignature tag, TagBase<T> t)
 ```
 
-Writes an object identified from the wrappered handle allocated by Little CMS to the profile using the given tag signature.
+Writes an object to the profile using the given tag signature.
+
+### Type Parameters
+
+`T`  
+The tag type to be written.
 
 ### Parameters
 
 `tag` [TagSignature](./TagSignature.md)  
 The tag signature.
 
-`handle` IntPtr  
-The handle to the object allocated by Little CMS.
+`t` TagBase\<T>  
+A type derived from `TagBase<T>`.
 
 ### Returns
 
@@ -1440,7 +1445,7 @@ The handle to the object allocated by Little CMS.
 `true` if written successfully, otherwise `false`.
 
 ---
-## WriteTag<T>(TagSignature, T) Method
+## WriteTag\<T>(TagSignature, T) Method
 
 ```csharp
 public bool WriteTag<T>(TagSignature tag, T data) where T: struct

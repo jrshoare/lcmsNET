@@ -1556,10 +1556,10 @@ namespace lcmsNET.Tests
 
                 using (var profile = Profile.Open(srgbpath, "r"))
                 {
-                    IntPtr data = profile.ReadTag(TagSignature.MediaWhitePoint);
+                    var whitePoint = profile.ReadTag<CIEXYZ>(TagSignature.MediaWhitePoint);
 
                     // Act
-                    bool written = profile.WriteTag(TagSignature.MediaWhitePoint, data);
+                    bool written = profile.WriteTag(TagSignature.MediaWhitePoint, whitePoint);
 
                     // Assert
                     Assert.IsTrue(written);

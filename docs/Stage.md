@@ -6,10 +6,10 @@ Assembly: lcmsNET.dll
 Represents a stage in a pipeline. This class cannot be inherited.
 
 ```csharp
-public sealed class Stage : IDisposable
+public sealed class Stage : CmsHandle<Stage>
 ```
 
-Inheritance Object → Stage
+Inheritance Object → CmsHandle<Stage> → Stage
 
 Implements IDisposable
 
@@ -23,7 +23,7 @@ public Context Context { get; }
 ### Property Value
 
 `Context`  
-The `Context` supplied to create this instance.
+The `Context` supplied to create this instance. Inherited from `CmsHandle<T>`.
 
 ---
 ## InputChannels Property

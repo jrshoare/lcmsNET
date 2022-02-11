@@ -162,7 +162,7 @@ namespace lcmsNET.Tests
                     dict.Add("second", "second-value", null, null);
                     dict.Add("third", "third-value", mlu, null);
 
-                    profile.WriteTag(TagSignature.Meta, dict.Handle);
+                    profile.WriteTag(TagSignature.Meta, dict);
                 }
 
                 // Act
@@ -193,7 +193,7 @@ namespace lcmsNET.Tests
                     dict.Add("second", "second-value", null, null);
                     dict.Add("third", "third-value", mlu, null);
 
-                    profile.WriteTag(TagSignature.Meta, dict.Handle);
+                    profile.WriteTag(TagSignature.Meta, dict);
                 }
 
                 // Act

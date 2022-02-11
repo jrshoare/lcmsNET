@@ -302,7 +302,7 @@ namespace lcmsNET.Tests
 
                 // Assert
                 Assert.IsTrue(inserted);
-                Assert.IsTrue(stage.IsDisposed);    // stage is not usable after insertion
+                Assert.IsTrue(stage.IsClosed);    // stage is not usable after insertion
             }
         }
 
