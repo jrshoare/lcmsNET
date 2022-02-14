@@ -13,9 +13,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Update package lists
-    - run: sudo apt-get update
+      run: sudo apt-get update
     - name: Install liblcms2-2
-    - run: sudo apt-get install -y liblcms2-2
+      run: sudo apt-get install -y liblcms2-2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
