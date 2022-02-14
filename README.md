@@ -1,6 +1,6 @@
 # lcmsNET
 [![GitHub license](https://img.shields.io/static/v1?label=license&message=MIT&color=green)](https://github.com/jrshoare/lcmsNET/blob/master/LICENSE)
-![Build status](https://github.com/jrshoare/lcmsNET/actions/workflows/dotnet.yml/badge.svg)
+![Build status](https://github.com/jrshoare/lcmsNET/actions/workflows/build.yml/badge.svg)
 [![lcmsNET on fuget.org](https://www.fuget.org/packages/lcmsNET/badge.svg)](https://www.fuget.org/packages/lcmsNET)
 
 .NET bindings for Little CMS (http://www.littlecms.com/)
