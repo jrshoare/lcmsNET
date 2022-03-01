@@ -727,6 +727,10 @@ namespace lcmsNET.Tests
                     // transform creation may add or remove flags so do not assert equality with values passed to create method
                 }
             }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.12 or later.");
+            }
             finally
             {
                 Directory.Delete(tempPath, true);
