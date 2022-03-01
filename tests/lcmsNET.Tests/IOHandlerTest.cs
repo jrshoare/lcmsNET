@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -151,6 +152,28 @@ namespace lcmsNET.Tests
             }
         }
 
+        [TestMethod]
+        public void OpenTest3()
+        {
+            // Arrange
+            uint memorySize = 100;
+            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
+
+            try
+            {
+                // Act
+                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
+                {
+                    // Assert
+                    Assert.IsNotNull(iohandler);
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(hglobal);
+            }
+        }
+
         [TestMethod()]
         public void ReadByteTest()
         {
@@ -218,16 +241,31 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void ReadFloatTest()
         {
-            // Arrange
-            using (var iohandler = IOHandler.Open(null))
+            uint memorySize = 100;
+            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
+            float expectedf = 1.0f;
+            bool expected = true;
+
+            try
             {
-                bool expected = true;
+                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "w"))
+                {
+                    iohandler.Write(expectedf);
+                }
 
-                // Act
-                bool actual = iohandler.Read(out float f);
+                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
+                {
+                    // Act
+                    bool actual = iohandler.Read(out float actualf);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                    Assert.AreEqual(expectedf, actualf);
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(hglobal);
             }
         }
 

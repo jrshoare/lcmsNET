@@ -40,6 +40,18 @@ namespace lcmsNET
             return OpenIOhandlerFromFile_Internal(contextID, filepath, access);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromMem", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr OpenIOhandlerFromMem_Internal(
+                IntPtr contextID,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint size,
+                [MarshalAs(UnmanagedType.LPStr)] string access);
+
+        internal static IntPtr OpenIOHandler(IntPtr contextID, IntPtr buffer, uint bufferSize, string access)
+        {
+            return OpenIOhandlerFromMem_Internal(contextID, buffer, bufferSize, access);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromNULL", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr OpenIOhandlerFromNull_Internal(
                 IntPtr contextID);

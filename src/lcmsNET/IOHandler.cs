@@ -68,6 +68,25 @@ namespace lcmsNET
         {
             return new IOHandler(Interop.OpenIOHandler(context?.Handle ?? IntPtr.Zero, filepath, access), context);
         }
+
+        /// <summary>
+        /// Creates a <see cref="IOHandler"/> from a memory block.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <param name="memorySize">The size of the block of memory in bytes.</param>
+        /// <param name="access">"r" for read access, or "w" for write access.</param>
+        /// <returns>A new <see cref="IOHandler"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </remarks>
+        public static IOHandler Open(Context context, IntPtr handle, uint memorySize, string access)
+        {
+            return new IOHandler(Interop.OpenIOHandler(context?.Handle ?? IntPtr.Zero, handle, memorySize, access), context);
+        }
         #endregion
 
         #region Read functions
