@@ -238,5 +238,14 @@ namespace lcmsNET
         {
             SetTransformUserData_Internal(transform, userData, fn);
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsGetTransformFlags", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetTransformFlags_Internal(
+                IntPtr transform);
+
+        internal static uint GetTransformFlags(IntPtr transform)
+        {
+            return GetTransformFlags_Internal(transform);
+        }
     }
 }

@@ -362,6 +362,16 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Gets the original flags used when creating the transform.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.12 or later.
+        /// </para>
+        /// </remarks>
+        public CmsFlags Flags => (CmsFlags)Interop.GetTransformFlags(handle);
+
+        /// <summary>
         /// Frees the transform handle.
         /// </summary>
         protected override bool ReleaseHandle()

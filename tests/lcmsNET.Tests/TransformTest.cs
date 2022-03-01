@@ -700,5 +700,37 @@ namespace lcmsNET.Tests
                 Marshal.FreeHGlobal(userData);
             }
         }
+
+        [TestMethod()]
+        public void FlagsTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var srgbpath = Path.Combine(tempPath, "srgb.icc");
+                Save(".Resources.sRGB.icc", srgbpath);
+                var labpath = Path.Combine(tempPath, "lab.icc");
+                Save(".Resources.Lab.icc", labpath);
+
+                using (var srgb = Profile.Open(srgbpath, "r"))
+                using (var lab = Profile.Open(labpath, "r"))
+                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.NoOptimize | CmsFlags.BlackPointCompensation))
+                {
+                    // Act
+                    CmsFlags actual = transform.Flags;
+
+                    // Assert
+                    // transform creation may add or remove flags so do not assert equality with values passed to create method
+                }
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
     }
 }
