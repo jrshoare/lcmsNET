@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
 {
@@ -665,6 +666,39 @@ namespace lcmsNET.Tests
             // TODO:
             // Need to understand how to create a transform where the cmsStage type
             // is cmsSigNamedColorElemType. See 'cmsGetNamedColorList' in cmsnamed.c.
+        }
+
+        [TestMethod()]
+        public void UserDataTest()
+        {
+            // Arrange
+            IntPtr expected = Marshal.AllocHGlobal(99);
+
+            try
+            {
+                using (var context = Context.Create(plugin: IntPtr.Zero, userData: expected))
+                using (var profile = Profile.Create_sRGB(context))
+                using (var transform = Transform.Create(context, profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None))
+                {
+                    profile.Dispose();
+                    transform.SetUserData(expected, FreeUserData);
+
+                    // Act
+                    var actual = transform.UserData;
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.4 or later.");
+            }
+
+            void FreeUserData(IntPtr contextID, IntPtr userData)
+            {
+                Marshal.FreeHGlobal(userData);
+            }
         }
     }
 }

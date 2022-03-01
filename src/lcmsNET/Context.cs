@@ -20,9 +20,18 @@
 
 using lcmsNET.Impl;
 using System;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Defines a delegate that can be used to free user data.
+    /// </summary>
+    /// <param name="contextID">The handle to the <see cref="Context"/> with which the user data is associated.</param>
+    /// <param name="userData">The pointer to the user data to be freed.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void FreeUserData(IntPtr contextID, IntPtr userData);
+
     /// <summary>
     /// Represents a context.
     /// </summary>

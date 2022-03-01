@@ -218,5 +218,25 @@ namespace lcmsNET
         {
             return ChangeBuffersFormat_Internal(transform, inputFormat, outputFormat);
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsGetTransformUserData", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr GetTransformUserData_Internal(
+                IntPtr transform);
+
+        internal static IntPtr GetTransformUserData(IntPtr transform)
+        {
+            return GetTransformUserData_Internal(transform);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsSetTransformUserData", CallingConvention = CallingConvention.StdCall)]
+        private static extern void SetTransformUserData_Internal(
+                IntPtr transform,
+                IntPtr userData,
+                FreeUserData fn);
+
+        internal static void SetTransformUserData(IntPtr transform, IntPtr userData, FreeUserData fn)
+        {
+            SetTransformUserData_Internal(transform, userData, fn);
+        }
     }
 }

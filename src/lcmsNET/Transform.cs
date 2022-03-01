@@ -332,6 +332,36 @@ namespace lcmsNET
         public NamedColorList NamedColorList => NamedColorList.CopyRef(Interop.GetNamedColorList(handle));
 
         /// <summary>
+        /// Gets the pointer to the user data associated with the transform.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.4 or later.
+        /// </para>
+        /// </remarks>
+        public IntPtr UserData => Interop.GetTransformUserData(handle);
+
+        /// <summary>
+        /// Sets the user data associated with the transform.
+        /// </summary>
+        /// <param name="userData">The pointer to user data to be associated with the transform.</param>
+        /// <param name="fn">The delegate that can be used to free the user data.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Transform has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.4 or later.
+        /// </para>
+        /// </remarks>
+        public void SetUserData(IntPtr userData, FreeUserData fn)
+        {
+            EnsureNotDisposed();
+
+            Interop.SetTransformUserData(handle, userData, fn);
+        }
+
+        /// <summary>
         /// Frees the transform handle.
         /// </summary>
         protected override bool ReleaseHandle()
