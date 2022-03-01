@@ -70,6 +70,171 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Read functions
+        /// <summary>
+        /// Reads an 8-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">Returns the 8-bit unsigned integer.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out byte n)
+        {
+            return Interop.ReadUint8(handle, out n);
+        }
+
+        /// <summary>
+        /// Reads a 16-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">Returns the 16-bit unsigned integer.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out ushort n)
+        {
+            return Interop.ReadUint16(handle, out n);
+        }
+
+        /// <summary>
+        /// Reads a 32-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">Returns the 32-bit unsigned integer.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out uint n)
+        {
+            return Interop.ReadUint32(handle, out n);
+        }
+
+        /// <summary>
+        /// Reads a 64-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">Returns the 64-bit unsigned integer.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out ulong n)
+        {
+            return Interop.ReadUint64(handle, out n);
+        }
+
+        /// <summary>
+        /// Reads a 32-bit floating point number.
+        /// </summary>
+        /// <param name="f">Returns the 32-bit floating point number.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out float f)
+        {
+            return Interop.ReadFloat(handle, out f);
+        }
+
+        /// <summary>
+        /// Reads a double precision floating point point number.
+        /// </summary>
+        /// <param name="d">Returns the double precision floating point number.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out double d)
+        {
+            return Interop.Read15Fixed16(handle, out d);
+        }
+
+        /// <summary>
+        /// Reads an XYZ tristimulus value.
+        /// </summary>
+        /// <param name="xyz">Returns the XYZ tristimulus value.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out CIEXYZ xyz)
+        {
+            return Interop.ReadXYZ(handle, out xyz);
+        }
+
+        /// <summary>
+        /// Reads an n-element array of 16-bit unsigned integers.
+        /// </summary>
+        /// <param name="n">The number of elements to be read into the array.</param>
+        /// <param name="array">Returns the array of 16-bit unsigned integers.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(uint n, out ushort[] array)
+        {
+            return Interop.ReadUint16Array(handle, n, out array);
+        }
+        #endregion
+
+        #region Write functions
+        /// <summary>
+        /// Writes an 8-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">The 8-bit unsigned integer to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(byte n)
+        {
+            return Interop.WriteUint8(handle, n);
+        }
+
+        /// <summary>
+        /// Writes a 16-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">The 16-bit unsigned integer to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(ushort n)
+        {
+            return Interop.WriteUint16(handle, n);
+        }
+
+        /// <summary>
+        /// Writes a 32-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">The 32-bit unsigned integer to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(uint n)
+        {
+            return Interop.WriteUint32(handle, n);
+        }
+
+        /// <summary>
+        /// Writes a 64-bit unsigned integer.
+        /// </summary>
+        /// <param name="n">The 64-bit unsigned integer to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(ulong n)
+        {
+            return Interop.WriteUint64(handle, n);
+        }
+
+        /// <summary>
+        /// Writes a 32-bit floating point number.
+        /// </summary>
+        /// <param name="f">The 32-bit floating point number to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(float f)
+        {
+            return Interop.WriteFloat(handle, f);
+        }
+
+        /// <summary>
+        /// Writes a double precision floating point point number.
+        /// </summary>
+        /// <param name="d">The double precision floating point number to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(double d)
+        {
+            return Interop.Write15Fixed16(handle, d);
+        }
+
+        /// <summary>
+        /// Writes an XYZ tristimulus value.
+        /// </summary>
+        /// <param name="xyz">The XYZ tristimulus value to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(CIEXYZ xyz)
+        {
+            return Interop.WriteXYZ(handle, xyz);
+        }
+
+        /// <summary>
+        /// Writes an array of 16-bit unsigned integers.
+        /// </summary>
+        /// <param name="array">The array of 16-bit unsigned integers.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(ushort[] array)
+        {
+            return Interop.WriteUint16Array(handle, array);
+        }
+        #endregion
+
         /// <summary>
         /// Frees the i/o handler handle.
         /// </summary>
