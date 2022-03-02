@@ -27,13 +27,13 @@ namespace lcmsNET.Plugin
     /// Represents a 3x3 matrix formed from 3 <see cref="VEC3"/> vectors.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct MAT3
+    public readonly struct MAT3
     {
         /// <summary>
         /// The vector components of the matrix.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
-        private VEC3[] v;
+        private readonly VEC3[] v;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="MAT3"/> class.
@@ -51,15 +51,13 @@ namespace lcmsNET.Plugin
         /// <returns>A new zeroes matrix.</returns>
         public static MAT3 Zeroes()
         {
-            return new MAT3
-            {
-                v = new VEC3[3]
+            return new MAT3(
+                new VEC3[3]
                 {
                     new VEC3(0, 0, 0),
                     new VEC3(0, 0, 0),
                     new VEC3(0, 0, 0)
-                }
-            };
+                });
         }
 
         /// <summary>

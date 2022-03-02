@@ -20,7 +20,6 @@
 
 using lcmsNET.Plugin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace lcmsNET.Tests.Plugin
 {
