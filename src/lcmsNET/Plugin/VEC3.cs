@@ -26,13 +26,13 @@ namespace lcmsNET.Plugin
     /// Represents a 3-component vector defined as using double precision floating point numbers.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VEC3
+    public readonly struct VEC3
     {
         /// <summary>
         /// The components of the vector.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 3)]
-        private double[] n;
+        private readonly double[] n;
 
         /// <summary>
         /// Initialises the vector.
@@ -68,7 +68,7 @@ namespace lcmsNET.Plugin
         /// </returns>
         public static VEC3 operator -(in VEC3 v1, in VEC3 v2)
         {
-            VEC3 result = new VEC3() { n = new double[3] };
+            VEC3 result = new VEC3(0, 0, 0);
             Interop.VEC3minus(ref result, in v1, in v2);
             return result;
         }
@@ -83,7 +83,7 @@ namespace lcmsNET.Plugin
         /// </returns>
         public static VEC3 Cross(in VEC3 v1, in VEC3 v2)
         {
-            VEC3 result = new VEC3() { n = new double[3] };
+            VEC3 result = new VEC3(0, 0, 0);
             Interop.VEC3cross(ref result, in v1, in v2);
             return result;
         }
