@@ -20,6 +20,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Buffers.Binary;
 
 namespace lcmsNET.Tests
 {
@@ -120,6 +121,59 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void ConstructorTest2()
+        {
+            // Arrange
+            ushort year = 2021;
+            ushort month = 1;
+            ushort day = 8;
+            ushort hour = 10;
+            ushort minute = 4;
+            ushort second = 32;
+            DateTimeNumber date = new DateTimeNumber()
+            {
+                year = BinaryPrimitives.ReverseEndianness(year),
+                month = BinaryPrimitives.ReverseEndianness(month),
+                day = BinaryPrimitives.ReverseEndianness(day),
+                hours = BinaryPrimitives.ReverseEndianness(hour),
+                minutes = BinaryPrimitives.ReverseEndianness(minute),
+                seconds = BinaryPrimitives.ReverseEndianness(second)
+            };
+
+            var target = new Tm(date);
+            var expectedYear = year - 1900;
+            var expectedMon = month - 1;
+            var expectedMday = day;
+            var expectedHour = hour;
+            var expectedMin = minute;
+            var expectedSec = second;
+            var expectedWday = -1;
+            var expectedYday = -1;
+            var expectedIsDst = 0;
+
+            // Assert
+            var actualYear = target.year;
+            var actualMon = target.mon;
+            var actualMday = target.mday;
+            var actualHour = target.hour;
+            var actualMin = target.min;
+            var actualSec = target.sec;
+            var actualWday = target.wday;
+            var actualYday = target.yday;
+            var actualIsDst = target.isdst;
+
+            Assert.AreEqual(expectedYear, actualYear);
+            Assert.AreEqual(expectedMon, actualMon);
+            Assert.AreEqual(expectedMday, actualMday);
+            Assert.AreEqual(expectedHour, actualHour);
+            Assert.AreEqual(expectedMin, actualMin);
+            Assert.AreEqual(expectedSec, actualSec);
+            Assert.AreEqual(expectedWday, actualWday);
+            Assert.AreEqual(expectedYday, actualYday);
+            Assert.AreEqual(expectedIsDst, actualIsDst);
+        }
+
+        [TestMethod()]
         public void OperatorDateTimeTest()
         {
             // Arrange
@@ -153,6 +207,25 @@ namespace lcmsNET.Tests
                 // Assert
                 Assert.AreEqual(expected, actual);
             }
+        }
+
+        [TestMethod()]
+        public void OperatorDateTimeNumberTest()
+        {
+            // Arrange
+            var expected = new DateTime(2022, 08, 03, 11, 49, 53);
+            var target = new Tm(expected);
+
+            // Act
+            DateTimeNumber actual = target;
+
+            // Assert
+            Assert.AreEqual(expected.Year, BinaryPrimitives.ReverseEndianness(actual.year));
+            Assert.AreEqual(expected.Month, BinaryPrimitives.ReverseEndianness(actual.month));
+            Assert.AreEqual(expected.Day, BinaryPrimitives.ReverseEndianness(actual.day));
+            Assert.AreEqual(expected.Hour, BinaryPrimitives.ReverseEndianness(actual.hours));
+            Assert.AreEqual(expected.Minute, BinaryPrimitives.ReverseEndianness(actual.minutes));
+            Assert.AreEqual(expected.Second, BinaryPrimitives.ReverseEndianness(actual.seconds));
         }
     }
 }

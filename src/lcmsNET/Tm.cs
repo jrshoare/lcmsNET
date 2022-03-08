@@ -104,6 +104,17 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Implicitly converts a <see cref="Tm"/> to a <see cref="DateTimeNumber"/>.
+        /// </summary>
+        /// <param name="tm"></param>
+        public static implicit operator DateTimeNumber(in Tm tm)
+        {
+            DateTimeNumber d = new DateTimeNumber();
+            Interop.EncodeDateTimeNumber(ref d, in tm);
+            return d;
+        }
+
+        /// <summary>
         /// Creates a new instance of the <see cref="Tm"/> structure.
         /// </summary>
         /// <param name="date">A <see cref="DateTime"/> instance.</param>
@@ -119,6 +130,17 @@ namespace lcmsNET
             yday = date.DayOfYear - 1;
             isdst = -1;
             fill = new byte[FILL_SIZE];
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Tm"/> structure.
+        /// </summary>
+        /// <param name="date">A <see cref="DateTimeNumber"/> instance.</param>
+        public Tm(DateTimeNumber date)
+        {
+            Tm tm = new Tm();
+            Interop.DecodeDateTimeNumber(in date, ref tm);
+            this = tm;
         }
 
         private const int FILL_SIZE = 16;
