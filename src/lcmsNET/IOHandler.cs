@@ -274,6 +274,30 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Type base helper functions
+        /// <summary>
+        /// Reads a <see cref="TagTypeSignature"/> from the I/O handler.
+        /// </summary>
+        /// <param name="sig">Returns the <see cref="TagTypeSignature"/>.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Read(out TagTypeSignature sig)
+        {
+            uint s = Interop.ReadTypeBase(handle);
+            sig = (TagTypeSignature)s;
+            return s != 0;
+        }
+
+        /// <summary>
+        /// Writes a <see cref="TagTypeSignature"/> to the I/O handler.
+        /// </summary>
+        /// <param name="sig">The <see cref="TagTypeSignature"/> to be written.</param>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool Write(TagTypeSignature sig)
+        {
+            return Interop.WriteTypeBase(handle, (uint)sig);
+        }
+        #endregion
+
         /// <summary>
         /// Frees the i/o handler handle.
         /// </summary>

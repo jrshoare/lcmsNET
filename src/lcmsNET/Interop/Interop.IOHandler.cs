@@ -268,5 +268,24 @@ namespace lcmsNET
         {
             return WriteAlignment_Internal(handle) != 0;
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsReadTypeBase", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint ReadTypeBase_Internal(
+                IntPtr handle);
+
+        internal static uint ReadTypeBase(IntPtr handle)
+        {
+            return ReadTypeBase_Internal(handle);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsWriteTypeBase", CallingConvention = CallingConvention.StdCall)]
+        private static extern int WriteTypeBase_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint sig);
+
+        internal static bool WriteTypeBase(IntPtr handle, uint sig)
+        {
+            return WriteTypeBase_Internal(handle, sig) != 0;
+        }
     }
 }

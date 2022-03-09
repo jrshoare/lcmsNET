@@ -486,5 +486,39 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod()]
+        public void ReadTagTypeSignatureTest()
+        {
+            // Arrange
+            using (var iohandler = IOHandler.Open(null))
+            {
+                bool expected = true;
+
+                // Act
+                bool actual = iohandler.Read(out TagTypeSignature sig);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+
+        [TestMethod()]
+        public void WriteTagTypeSignatureTest()
+        {
+            // Arrange
+            using (var iohandler = IOHandler.Open(null))
+            {
+                TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
+                bool expected = true;
+
+                // Act
+                bool actual = iohandler.Write(sig);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
     }
 }
