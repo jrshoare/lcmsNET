@@ -254,6 +254,26 @@ namespace lcmsNET
         }
         #endregion
 
+        #region Alignment functions
+        /// <summary>
+        /// Skips bytes on the I/O handler until a 32-bit aligned position.
+        /// </summary>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool ReadAlignment()
+        {
+            return Interop.ReadAlignment(handle);
+        }
+
+        /// <summary>
+        /// Writes zeroes on theI/O handler until a 32-bit aligned position.
+        /// </summary>
+        /// <returns>true if successful, otherwise false.</returns>
+        public bool WriteAlignment()
+        {
+            return Interop.WriteAlignment(handle);
+        }
+        #endregion
+
         /// <summary>
         /// Frees the i/o handler handle.
         /// </summary>

@@ -453,5 +453,38 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod()]
+        public void ReadAlignmentTest()
+        {
+            using (var iohandler = IOHandler.Open(null))
+            {
+                bool expected = true;
+                iohandler.Read(out byte b);
+
+                // Act
+                bool actual = iohandler.ReadAlignment();
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
+
+        [TestMethod()]
+        public void WriteAlignmentTest()
+        {
+            using (var iohandler = IOHandler.Open(null))
+            {
+                byte n = 0x37;
+                bool expected = true;
+                iohandler.Write(n);
+
+                // Act
+                bool actual = iohandler.WriteAlignment();
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+        }
     }
 }

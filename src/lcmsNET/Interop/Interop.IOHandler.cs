@@ -250,5 +250,23 @@ namespace lcmsNET
                 return WriteUint16Array_Internal(handle, n, ptr) != 0;
             }
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsReadAlignment", CallingConvention = CallingConvention.StdCall)]
+        private static extern int ReadAlignment_Internal(
+                IntPtr handle);
+
+        internal static bool ReadAlignment(IntPtr handle)
+        {
+            return ReadAlignment_Internal(handle) != 0;
+        }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsWriteAlignment", CallingConvention = CallingConvention.StdCall)]
+        private static extern int WriteAlignment_Internal(
+                IntPtr handle);
+
+        internal static bool WriteAlignment(IntPtr handle)
+        {
+            return WriteAlignment_Internal(handle) != 0;
+        }
     }
 }
