@@ -99,7 +99,7 @@ namespace lcmsNET
         /// </remarks>
         public Dict Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new Dict(Interop.DictDup(handle), Context);
         }
@@ -125,7 +125,7 @@ namespace lcmsNET
         /// </remarks>
         public bool Add(string name, string value, MultiLocalizedUnicode displayName, MultiLocalizedUnicode displayValue)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.DictAddEntry(handle, name, value,
                     displayName?.Handle ?? IntPtr.Zero,
@@ -139,7 +139,7 @@ namespace lcmsNET
         /// <returns>An enumerator that can be used to iterate through the dictionary.</returns>
         public IEnumerator<DictEntry> GetEnumerator()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new DictEntryEnumerator(handle);
         }

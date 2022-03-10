@@ -81,7 +81,7 @@ namespace lcmsNET
         /// </exception>
         public ProfileSequenceDescriptor Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new ProfileSequenceDescriptor(Interop.DupProfileSequenceDescription(handle), Context);
         }
@@ -105,7 +105,7 @@ namespace lcmsNET
         {
             get
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
                 return (Seq*)Handle.ToPointer();
             }
         }

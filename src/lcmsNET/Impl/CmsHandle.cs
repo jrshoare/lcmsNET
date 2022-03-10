@@ -51,48 +51,23 @@ namespace lcmsNET.Impl
         public Context Context { get; private set; }
 
         /// <summary>
-        /// Releases the handle and sets the context to null.
+        /// Releases the handle.
         /// </summary>
         internal protected void Release()
         {
-            base.SetHandleAsInvalid();
-            Context = null;
+            SetHandleAsInvalid();
         }
 
         #region IDisposable Support
         /// <summary>
-        /// Gets a value indicating whether the instance has been disposed.
-        /// </summary>
-        public bool IsDisposed => isDisposed;
-        private bool isDisposed = false;
-
-        /// <summary>
-        /// Throws an <see cref="ObjectDisposedException"/> if the instance has been disposed.
+        /// Throws an <see cref="ObjectDisposedException"/> if the instance has been closed.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void EnsureNotDisposed()
+        protected void EnsureNotClosed()
         {
-            if (isDisposed)
+            if (IsClosed)
             {
                 throw new ObjectDisposedException(nameof(T));
-            }
-        }
-
-        /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        /// <param name="disposing">true if disposing, otherwise false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (!isDisposed)
-            {
-                if (disposing)
-                {
-                    base.Dispose(disposing);
-                }
-
-                Context = null;
-                isDisposed = true;
             }
         }
         #endregion

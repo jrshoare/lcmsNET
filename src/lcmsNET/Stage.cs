@@ -254,7 +254,7 @@ namespace lcmsNET
         /// </exception>
         public bool SampleCLUT(Sampler16 sampler, IntPtr cargo, StageSamplingFlags flags)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.StageSampleClut16Bit(handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
         }
@@ -271,7 +271,7 @@ namespace lcmsNET
         /// </exception>
         public bool SampleCLUT(SamplerFloat sampler, IntPtr cargo, StageSamplingFlags flags)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.StageSampleClutFloat(handle, sampler, cargo, Convert.ToUInt32(flags)) != 0;
         }

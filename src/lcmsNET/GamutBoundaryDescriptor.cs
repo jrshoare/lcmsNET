@@ -63,7 +63,7 @@ namespace lcmsNET
         /// </remarks>
         public bool AddPoint(in CIELab lab)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GBDAddPoint(handle, lab) != 0;
         }
@@ -83,7 +83,7 @@ namespace lcmsNET
         /// </remarks>
         public bool Compute(uint flags = 0)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GBDCompute(handle, flags) != 0;
         }
@@ -102,7 +102,7 @@ namespace lcmsNET
         /// </remarks>
         public bool CheckPoint(in CIELab lab)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GBDCheckPoint(handle, lab) != 0;
         }

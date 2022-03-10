@@ -89,7 +89,7 @@ namespace lcmsNET
         /// </remarks>
         public Context Duplicate(IntPtr userData)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new Context(Interop.DuplicateContext(handle, userData));
         }
@@ -107,7 +107,7 @@ namespace lcmsNET
         /// </remarks>
         public bool RegisterPlugins(IntPtr plugin)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.RegisterContextPlugins(handle, plugin) == 1;
         }
@@ -123,7 +123,7 @@ namespace lcmsNET
         /// </remarks>
         public void UnregisterPlugins()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.UnregisterContextPlugins(handle);
         }
@@ -143,7 +143,7 @@ namespace lcmsNET
         /// </remarks>
         public void SetErrorHandler(ErrorHandler handler)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.SetContextErrorHandler(handle, handler);
         }
@@ -165,7 +165,7 @@ namespace lcmsNET
         {
             get
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
 
                 ushort[] alarmCodes = new ushort[16];
                 Interop.GetAlarmCodesTHR(handle, alarmCodes);
@@ -175,7 +175,7 @@ namespace lcmsNET
             {
                 if (value?.Length != 16) throw new ArgumentException($"'{nameof(value)}' array size must equal 16.");
 
-                EnsureNotDisposed();
+                EnsureNotClosed();
 
                 Interop.SetAlarmCodesTHR(handle, value);
             }
@@ -206,13 +206,13 @@ namespace lcmsNET
         {
             get
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
 
                 return Interop.SetAdaptationStateTHR(handle, -1.0);
             }
             set
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
 
                 Interop.SetAdaptationStateTHR(handle, value);
             }

@@ -119,7 +119,7 @@ namespace lcmsNET
         /// </exception>
         public void Forward(in CIEXYZ xyz, out JCh jch)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.CIECAM02Forward(handle, xyz, out jch);
         }
@@ -134,7 +134,7 @@ namespace lcmsNET
         /// </exception>
         public void Reverse(in JCh jch, out CIEXYZ xyz)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.CIECAM02Reverse(handle, jch, out xyz);
         }

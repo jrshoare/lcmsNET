@@ -163,7 +163,7 @@ namespace lcmsNET
         {
             get
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
                 PSeqDesc* pSeqDesc = (PSeqDesc*)Ptr.ToPointer();
                 return pSeqDesc;
             }
@@ -218,9 +218,9 @@ namespace lcmsNET
             SeqDesc->Description = value?.Handle ?? IntPtr.Zero;
         }
 
-        private void EnsureNotDisposed()
+        private void EnsureNotClosed()
         {
-            if (Parent.IsDisposed)
+            if (Parent.IsClosed)
             {
                 throw new ObjectDisposedException(nameof(ProfileSequenceItem));
             }

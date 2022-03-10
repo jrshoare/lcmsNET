@@ -67,7 +67,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public void Add(byte[] memory)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.MD5Add(handle, memory);
         }

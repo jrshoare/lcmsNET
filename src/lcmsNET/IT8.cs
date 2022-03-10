@@ -75,7 +75,7 @@ namespace lcmsNET
         /// </remarks>
         public int SetTable(uint nTable)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.IT8SetTable(handle, nTable);
         }
@@ -128,7 +128,7 @@ namespace lcmsNET
         /// </exception>
         public bool Save(string filepath)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return 0 != Interop.IT8SaveToFile(handle, filepath);
         }
@@ -148,7 +148,7 @@ namespace lcmsNET
         /// </exception>
         public bool Save(byte[] it8, out uint bytesNeeded)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return 0 != Interop.IT8SaveToMem(handle, it8, out bytesNeeded);
         }
@@ -169,7 +169,7 @@ namespace lcmsNET
             get { return Interop.IT8GetSheetType(handle); }
             set
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
                 if (0 == Interop.IT8SetSheetType(handle, value))
                 {
                     throw new LcmsNETException($"Failed to set sheet type: '{value}'.");
@@ -190,7 +190,7 @@ namespace lcmsNET
         /// </remarks>
         public bool AddComment(string comment)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
             return Interop.IT8SetComment(handle, comment) != 0;
         }
         #endregion
@@ -313,7 +313,7 @@ namespace lcmsNET
         /// </exception>
         public IEnumerable<string> GetProperties(string name)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.IT8EnumPropertyMulti(handle, name);
         }

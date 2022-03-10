@@ -246,7 +246,7 @@ namespace lcmsNET
         /// </exception>
         public void DoTransform(byte[] inputBuffer, byte[] outputBuffer, int pixelCount)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelCount);
         }
@@ -276,7 +276,7 @@ namespace lcmsNET
         public void DoTransform(byte[] inputBuffer, byte[] outputBuffer, int pixelsPerLine, int lineCount,
                 int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelsPerLine, lineCount,
                     bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
@@ -301,7 +301,7 @@ namespace lcmsNET
         /// </remarks>
         public bool ChangeBuffersFormat(uint inputFormat, uint outputFormat)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.ChangeBuffersFormat(handle, inputFormat, outputFormat) != 0;
         }
@@ -356,7 +356,7 @@ namespace lcmsNET
         /// </remarks>
         public void SetUserData(IntPtr userData, FreeUserData fn)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.SetTransformUserData(handle, userData, fn);
         }

@@ -82,7 +82,7 @@ namespace lcmsNET
         /// </exception>
         public NamedColorList Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new NamedColorList(Interop.DupNamedColorList(handle), Context);
         }
@@ -102,7 +102,7 @@ namespace lcmsNET
             if (pcs?.Length != 3) throw new ArgumentException($"'{nameof(pcs)}' array size must equal 3.");
             if (colorant?.Length != 16) throw new ArgumentException($"'{nameof(colorant)}' array size must equal 16.");
 
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.AppendNamedColor(handle, name, pcs, colorant) != 0;
         }

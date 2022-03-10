@@ -633,7 +633,8 @@ namespace lcmsNET.Tests
 
                 // Act
                 using (var context = Context.Create(plugin, userData))
-                using (var profile = Profile.Open(context, IOHandler.Open(context, srgbpath, "r")))
+                using (var iohandler = IOHandler.Open(context, srgbpath, "r"))
+                using (var profile = Profile.Open(context, iohandler))
                 {
                     // Assert
                     Assert.IsNotNull(profile);
@@ -654,7 +655,8 @@ namespace lcmsNET.Tests
 
             // Act
             using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.Open(context, IOHandler.Open(context), true))
+            using (var iohandler = IOHandler.Open(context))
+            using (var profile = Profile.Open(context, iohandler, true))
             {
                 // Assert
                 Assert.IsNotNull(profile);

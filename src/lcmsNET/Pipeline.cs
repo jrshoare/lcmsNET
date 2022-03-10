@@ -95,7 +95,7 @@ namespace lcmsNET
         /// </exception>
         public Pipeline Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new Pipeline(Interop.PipelineDup(handle), Context);
         }
@@ -110,7 +110,7 @@ namespace lcmsNET
         /// </exception>
         public bool Append(Pipeline other)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.PipelineCat(handle, other.handle) != 0;
         }
@@ -127,7 +127,7 @@ namespace lcmsNET
         {
             if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
 
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             float[] result = new float[values.Length];
             Interop.PipelineEvalFloat(handle, values, result);
@@ -148,7 +148,7 @@ namespace lcmsNET
         {
             if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
 
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             float[] result = new float[values.Length];
             success = Interop.PipelineEvalReverseFloat(handle, values, result, hint) != 0;
@@ -167,7 +167,7 @@ namespace lcmsNET
         {
             if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
 
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             ushort[] result = new ushort[values.Length];
             Interop.PipelineEval16(handle, values, result);
@@ -189,7 +189,7 @@ namespace lcmsNET
         /// </remarks>
         public bool Insert(Stage stage, StageLoc location)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             bool inserted = Interop.PipelineInsertStage(handle, stage.Handle, Convert.ToInt32(location)) != 0;
             if (inserted) stage.Release();
@@ -209,7 +209,7 @@ namespace lcmsNET
         /// </remarks>
         public Stage Unlink(StageLoc location)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             IntPtr ptr = IntPtr.Zero;
             Interop.PipelineUnlinkStage(handle, Convert.ToInt32(location), ref ptr);
@@ -233,7 +233,7 @@ namespace lcmsNET
         /// </exception>
         public void UnlinkAndDispose(StageLoc location)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             Interop.PipelineUnlinkStage(handle, Convert.ToInt32(location));
         }
@@ -252,7 +252,7 @@ namespace lcmsNET
         /// </remarks>
         public bool SetAs8BitsFlag(bool on)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.PipelineSetSaveAs8BitsFlag(handle, on ? 1 : 0) != 0;
         }
@@ -279,7 +279,7 @@ namespace lcmsNET
         /// <returns>An enumerator that can be used to iterate through the stages in the pipeline.</returns>
         public IEnumerator<Stage> GetEnumerator()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new StageEnumerator(handle);
         }

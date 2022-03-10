@@ -86,7 +86,7 @@ namespace lcmsNET
         /// </exception>
         public MultiLocalizedUnicode Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new MultiLocalizedUnicode(Interop.MLUDup(handle), Context);
         }
@@ -103,7 +103,7 @@ namespace lcmsNET
         /// </exception>
         public bool SetASCII(string languageCode, string countryCode, string value)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUSetAscii(handle, languageCode, countryCode, value) != 0;
         }
@@ -120,7 +120,7 @@ namespace lcmsNET
         /// </exception>
         public bool SetWide(string languageCode, string countryCode, string value)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUSetWide(handle, languageCode, countryCode, value) != 0;
         }
@@ -136,7 +136,7 @@ namespace lcmsNET
         /// </exception>
         public string GetASCII(string languageCode, string countryCode)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUGetASCII(handle, languageCode, countryCode);
         }
@@ -152,7 +152,7 @@ namespace lcmsNET
         /// </exception>
         public string GetWide(string languageCode, string countryCode)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUGetWide(handle, languageCode, countryCode);
         }
@@ -179,7 +179,7 @@ namespace lcmsNET
         /// </remarks>
         public bool GetTranslation(string languageCode, string countryCode, out string translationLanguage, out string translationCountry)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUGetTranslation(handle, languageCode, countryCode, out translationLanguage, out translationCountry) != 0;
         }
@@ -200,7 +200,7 @@ namespace lcmsNET
         /// </exception>
         public bool TranslationsCodes(uint index, out string languageCode, out string countryCode)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MLUTranslationsCodes(handle, index, out languageCode, out countryCode) != 0;
         }

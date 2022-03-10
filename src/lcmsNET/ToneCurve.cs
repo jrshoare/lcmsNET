@@ -187,7 +187,7 @@ namespace lcmsNET
         /// </exception>
         public ToneCurve Duplicate()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new ToneCurve(Interop.DuplicateToneCurve(handle), Context);
         }
@@ -204,7 +204,7 @@ namespace lcmsNET
         /// </exception>
         public ToneCurve Reverse()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new ToneCurve(Interop.ReverseToneCurve(handle), Context);
         }
@@ -225,7 +225,7 @@ namespace lcmsNET
         /// </exception>
         public ToneCurve Reverse(int nResultSamples)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return new ToneCurve(Interop.ReverseToneCurve(handle, nResultSamples), Context);
         }
@@ -248,9 +248,9 @@ namespace lcmsNET
         /// </exception>
         public ToneCurve Join(Context context, ToneCurve other, int nPoints)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
             if (other is null) throw new ArgumentNullException(nameof(other));
-            other.EnsureNotDisposed();
+            other.EnsureNotClosed();
 
             return new ToneCurve(Interop.JoinToneCurve(context?.Handle ?? IntPtr.Zero, Handle, other.Handle, nPoints));
         }
@@ -265,7 +265,7 @@ namespace lcmsNET
         /// </exception>
         public bool Smooth(double lambda)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.SmoothToneCurve(handle, lambda) != 0;
         }
@@ -280,7 +280,7 @@ namespace lcmsNET
         /// </exception>
         public float Evaluate(float v)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.EvaluateToneCurve(handle, v);
         }
@@ -295,7 +295,7 @@ namespace lcmsNET
         /// </exception>
         public ushort Evaluate(ushort v)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.EvaluateToneCurve(handle, v);
         }
@@ -320,7 +320,7 @@ namespace lcmsNET
         /// </remarks>
         public double EstimateGamma(double precision)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.EstimateGamma(handle, precision);
         }

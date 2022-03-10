@@ -505,7 +505,9 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, IOHandler iohandler)
         {
-            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero), context, iohandler);
+            var profile = new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero), context, iohandler);
+            iohandler?.Release();   // object is now owned by the profile
+            return profile;
         }
 
         /// <summary>
@@ -524,7 +526,9 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, IOHandler iohandler, bool writeable)
         {
-            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero, writeable ? 1 : 0), context, iohandler);
+            var profile = new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero, writeable ? 1 : 0), context, iohandler);
+            iohandler?.Release();   // object is now owned by the profile
+            return profile;
         }
 
         /// <summary>
@@ -537,7 +541,7 @@ namespace lcmsNET
         /// </exception>
         public bool Save(string filepath)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return 0 != Interop.SaveProfile(handle, filepath);
         }
@@ -557,7 +561,7 @@ namespace lcmsNET
         /// </remarks>
         public bool Save(byte[] memory, out uint bytesNeeded)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return 0 != Interop.SaveProfile(handle, memory, out bytesNeeded);
         }
@@ -572,7 +576,7 @@ namespace lcmsNET
         /// </exception>
         public uint Save(IOHandler iohandler)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.SaveProfile(handle, iohandler?.Handle ?? IntPtr.Zero);
         }
@@ -592,7 +596,7 @@ namespace lcmsNET
         /// </exception>
         public string GetProfileInfo(InfoType info, string languageCode, string countryCode)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetProfileInfo(handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
@@ -610,7 +614,7 @@ namespace lcmsNET
         /// </exception>
         public string GetProfileInfoASCII(InfoType info, string languageCode, string countryCode)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetProfileInfoASCII(handle, Convert.ToUInt32(info), languageCode, countryCode);
         }
@@ -629,7 +633,7 @@ namespace lcmsNET
         /// </exception>
         public bool DetectBlackPoint(out CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.DetectBlackPoint(handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
@@ -646,7 +650,7 @@ namespace lcmsNET
         /// </exception>
         public bool DetectDestinationBlackPoint(out CIEXYZ blackPoint, Intent intent, CmsFlags flags = CmsFlags.None)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.DetectDestinationBlackPoint(handle, out blackPoint, Convert.ToUInt32(intent), Convert.ToUInt32(flags)) != 0;
         }
@@ -663,7 +667,7 @@ namespace lcmsNET
         /// </exception>
         public bool GetHeaderCreationDateTime(out DateTime created)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetHeaderCreationDateTime(handle, out created) != 0;
         }
@@ -681,7 +685,7 @@ namespace lcmsNET
         /// </exception>
         public bool IsCLUT(Intent intent, UsedDirection direction)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.IsCLUT(handle, Convert.ToUInt32(intent), Convert.ToUInt32(direction)) != 0;
         }
@@ -701,7 +705,7 @@ namespace lcmsNET
         /// </remarks>
         public double DetectRGBGamma(double threshold)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.DetectRGBProfileGamma(handle, threshold);
         }
@@ -718,7 +722,7 @@ namespace lcmsNET
         /// </exception>
         public TagSignature GetTag(uint n)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return (TagSignature)Interop.GetTagSignature(handle, n);
         }
@@ -733,7 +737,7 @@ namespace lcmsNET
         /// </exception>
         public bool HasTag(TagSignature tag)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.IsTag(handle, Convert.ToUInt32(tag)) != 0;
         }
@@ -748,7 +752,7 @@ namespace lcmsNET
         /// </exception>
         public IntPtr ReadTag(TagSignature tag)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.ReadTag(handle, Convert.ToUInt32(tag));
         }
@@ -772,7 +776,7 @@ namespace lcmsNET
         /// </exception>
         public T ReadTag<T>(TagSignature tag)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             IntPtr ptr = ReadTag(tag);
             Helper.CheckCreated<T>(ptr);
@@ -797,7 +801,7 @@ namespace lcmsNET
         public bool WriteTag<T>(TagSignature tag, TagBase<T> t)
             where T: class
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return WriteTag(tag, t.Handle);
         }
@@ -818,7 +822,7 @@ namespace lcmsNET
         public bool WriteTag<T>(TagSignature tag, in T data)
             where T: struct
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             int size = Marshal.SizeOf<T>();
             IntPtr ptr = Marshal.AllocHGlobal(size);
@@ -879,7 +883,7 @@ namespace lcmsNET
         private bool WriteTag<T>(TagSignature tag, T t)
             where T: class
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             MethodInfo method = typeof(T).GetMethod("ToHandle", BindingFlags.NonPublic | BindingFlags.Instance,
                     null, new Type[] { }, null);
@@ -914,7 +918,7 @@ namespace lcmsNET
         /// </exception>
         public bool LinkTag(TagSignature tag, TagSignature dest)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.LinkTag(handle, Convert.ToUInt32(tag), Convert.ToUInt32(dest)) != 0;
         }
@@ -929,7 +933,7 @@ namespace lcmsNET
         /// </exception>
         public TagSignature TagLinkedTo(TagSignature tag)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return (TagSignature)Interop.TagLinkedTo(handle, Convert.ToUInt32(tag));
         }
@@ -948,7 +952,7 @@ namespace lcmsNET
         /// </exception>
         public bool IsIntentSupported(Intent intent, UsedDirection usedDirection)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.IsIntentSupported(handle, Convert.ToUInt32(intent), Convert.ToUInt32(usedDirection)) != 0;
         }
@@ -964,7 +968,7 @@ namespace lcmsNET
         /// </exception>
         public bool ComputeMD5()
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.MD5ComputeID(handle) != 0;
         }
@@ -985,7 +989,7 @@ namespace lcmsNET
         /// </exception>
         public uint GetPostScriptColorResource(Context context, PostScriptResourceType type, Intent intent, CmsFlags flags, IOHandler handler)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetPostScriptColorResource(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(type),
                     Convert.ToUInt32(intent), Convert.ToUInt32(flags), handler?.Handle ?? IntPtr.Zero);
@@ -1003,7 +1007,7 @@ namespace lcmsNET
         /// </exception>
         public byte[] GetPostScriptColorSpaceArray(Context context, Intent intent, CmsFlags flags)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetPostScriptCSA(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
@@ -1020,7 +1024,7 @@ namespace lcmsNET
         /// </exception>
         public byte[] GetPostScriptColorRenderingDictionary(Context context, Intent intent, CmsFlags flags)
         {
-            EnsureNotDisposed();
+            EnsureNotClosed();
 
             return Interop.GetPostScriptCRD(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
@@ -1173,7 +1177,7 @@ namespace lcmsNET
         {
             get
             {
-                EnsureNotDisposed();
+                EnsureNotClosed();
 
                 if (_iohandler is null)
                 {
@@ -1190,24 +1194,6 @@ namespace lcmsNET
         #endregion
 
         /// <summary>
-        /// Disposes this instance.
-        /// </summary>
-        /// <param name="disposing">true if disposing, otherwise false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (!isDisposed)
-            {
-                if (disposing)
-                {
-                    base.Dispose(disposing);
-                }
-
-                IOHandler = null;
-                isDisposed = true;
-            }
-        }
-
-        /// <summary>
         /// Frees the profile handle.
         /// </summary>
         protected override bool ReleaseHandle()
@@ -1215,7 +1201,5 @@ namespace lcmsNET
             Interop.CloseProfile(handle);
             return true;
         }
-
-        private bool isDisposed = false;
     }
 }
