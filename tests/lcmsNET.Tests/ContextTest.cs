@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Plugin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
@@ -73,49 +74,6 @@ namespace lcmsNET.Tests
         //{
         //}
         //
-        #endregion
-
-        #region From the as yet unwritten plugin package
-        private const int PluginMagicNumber = 0x61637070;   // 'acpp'
-        private const int PluginTagSig      = 0x74616748;   // 'tagH'
-
-        private const int MAX_TYPES_IN_LCMS_PLUGIN = 20;
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate TagTypeSignature DecideType([MarshalAs(UnmanagedType.R8)] double iccVersion, IntPtr userData);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct TagDescriptor
-        {
-            [MarshalAs(UnmanagedType.U4)]
-            public int ElemCount;
-            [MarshalAs(UnmanagedType.U4)]
-            public int nSupportedTypes;
-            [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = MAX_TYPES_IN_LCMS_PLUGIN)]
-            public TagTypeSignature[] SupportedTypes;
-            public DecideType Decider;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct PluginBase
-        {
-            [MarshalAs(UnmanagedType.U4)]
-            public int Magic;
-            [MarshalAs(UnmanagedType.U4)]
-            public int ExpectedVersion;
-            [MarshalAs(UnmanagedType.U4)]
-            public int Type;
-            public IntPtr Next;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct PluginTag
-        {
-            public PluginBase Base;
-            [MarshalAs(UnmanagedType.U4)]
-            public TagSignature Signature;
-            public TagDescriptor Descriptor;
-        }
         #endregion
 
         [TestMethod()]
@@ -259,9 +217,9 @@ namespace lcmsNET.Tests
                     {
                         Base = new PluginBase
                         {
-                            Magic = PluginMagicNumber,
-                            ExpectedVersion = Cms.EncodedCMMVersion,    // >= 2.8
-                            Type = PluginTagSig,
+                            Magic = Cms.PluginMagicNumber,
+                            ExpectedVersion = (uint)Cms.EncodedCMMVersion,    // >= 2.8
+                            Type = PluginType.Tag,
                             Next = IntPtr.Zero
                         },
                         Signature = (TagSignature)0x696e6b63,   // 'inkc'
@@ -269,10 +227,11 @@ namespace lcmsNET.Tests
                         {
                             ElemCount = 1,
                             nSupportedTypes = 1,
-                            SupportedTypes = new TagTypeSignature[MAX_TYPES_IN_LCMS_PLUGIN],
+                            SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
                             Decider = null
                         }
                     };
+                    tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;
 
                     int rawsize = Marshal.SizeOf(tag);
                     IntPtr buffer = Marshal.AllocHGlobal(rawsize);

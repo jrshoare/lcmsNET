@@ -2380,6 +2380,11 @@ namespace lcmsNET
                 = FLOAT_SH(1)|COLORSPACE_SH(PixelType.RGB)|EXTRA_SH(1)|CHANNELS_SH(3)|BYTES_SH(2)|DOSWAP_SH(1);
         #endregion
 
+        /// <summary>
+        /// Identifies a structure as a Little CMS 2 plug-in.
+        /// </summary>
+        public static readonly uint PluginMagicNumber = 0x61637070;
+
         private static uint FLOAT_SH(uint s) { return s << 22; }
         private static uint OPTIMIZED_SH(uint s) { return s << 21; }
         private static uint COLORSPACE_SH(PixelType s) { return Convert.ToUInt32(s) << 16; }
