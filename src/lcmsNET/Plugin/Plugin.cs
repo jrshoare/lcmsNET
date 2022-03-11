@@ -1,4 +1,4 @@
-﻿// Copyright(c) 2019-2021 John Stevenson-Hoare
+﻿// Copyright(c) 2019-2022 John Stevenson-Hoare
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,7 @@ namespace lcmsNET.Plugin
         Transform = 0x7A666D48
     }
 
+    #region Base structure
     /// <summary>
     /// Base structure for all plug-ins.
     /// </summary>
@@ -108,7 +109,9 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public IntPtr Next;
     }
+    #endregion
 
+    #region Tag plug-in
     /// <summary>
     /// Defines a delegate to select tag type based on the version of the ICC profile.
     /// </summary>
@@ -170,4 +173,105 @@ namespace lcmsNET.Plugin
         /// </summary>
         public TagDescriptor Descriptor;
     }
+    #endregion
+
+    #region Tag type plug-in
+    /// <summary>
+    /// Defines a delegate to allocate and reads items.
+    /// </summary>
+    /// <param name="self">The tag type handler.</param>
+    /// <param name="io">A pointer to the I/O handler to be used to perform the read.</param>
+    /// <param name="nItems">Returns the number of items allocated.</param>
+    /// <param name="tagSize">The size of the tag.</param>
+    /// <returns>A pointer to the unmanaged memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr TagTypeRead(TagTypeHandler self,
+            IntPtr io,
+            [MarshalAs(UnmanagedType.U4)] out uint nItems,
+            [MarshalAs(UnmanagedType.U4)] uint tagSize);
+
+    /// <summary>
+    /// Defines a delegate to write n items.
+    /// </summary>
+    /// <param name="self">The tag type handler.</param>
+    /// <param name="io">A pointer to an I/O handler to be used to perform the write.</param>
+    /// <param name="ptr">A pointer to the data to be written.</param>
+    /// <param name="nItems">The number of items.</param>
+    /// <returns>Non-zero on success, otherwise zero.</returns>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int TagTypeWrite(TagTypeHandler self,
+            IntPtr io,
+            IntPtr ptr,
+            [MarshalAs(UnmanagedType.U4)] uint nItems);
+
+    /// <summary>
+    /// Defines a delegate to duplicate an item or array of items.
+    /// </summary>
+    /// <param name="self">The tag type handler.</param>
+    /// <param name="ptr">A pointer to the unmanaged memory to be duplicated.</param>
+    /// <param name="n">The number of items.</param>
+    /// <returns>A pointer to the unmanaged memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr TagTypeDuplicate(TagTypeHandler self,
+            IntPtr ptr,
+            [MarshalAs(UnmanagedType.U4)] uint n);
+
+    /// <summary>
+    /// Defines a delegate to free all resources.
+    /// </summary>
+    /// <param name="self">The tag type handler.</param>
+    /// <param name="ptr">A pointer to the unmanaged memory to be freed.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void TagTypeFree(TagTypeHandler self,
+            IntPtr ptr);
+
+    /// <summary>
+    /// Defines the tag type handler.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct TagTypeHandler
+    {
+        /// <summary>
+        /// Identifies the tag type signature.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public TagTypeSignature Signature;
+        /// <summary>
+        /// Delegate to allocate and read items.
+        /// </summary>
+        public TagTypeRead Read;
+        /// <summary>
+        /// Delegate to write n items.
+        /// </summary>
+        public TagTypeWrite Write;
+        /// <summary>
+        /// Delegate to duplicate an item or array of items.
+        /// </summary>
+        public TagTypeDuplicate Duplicate;
+        /// <summary>
+        /// Delegate to free all resources.
+        /// </summary>
+        public TagTypeFree Free;
+        /// <summary>
+        /// The calling thread context.
+        /// </summary>
+        public readonly IntPtr ContextID;
+    }
+
+    /// <summary>
+    /// Defines the tag type plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginTagType
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+        /// <summary>
+        /// The tag type handler.
+        /// </summary>
+        public TagTypeHandler Handler;
+    }
+    #endregion
 }

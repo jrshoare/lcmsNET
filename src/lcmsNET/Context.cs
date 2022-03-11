@@ -48,6 +48,19 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Creates a new instance of the <see cref="Context"/> class from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing context.</param>
+        /// <returns>A new <see cref="Context"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        public static Context FromHandle(IntPtr handle)
+        {
+            return new Context(handle, isOwner: false);
+        }
+
+        /// <summary>
         /// Creates a new instance of the <see cref="Context"/> class.
         /// </summary>
         /// <param name="plugin">

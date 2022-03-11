@@ -33,6 +33,19 @@ namespace lcmsNET
         {
         }
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="IOHandler"/> class from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing I/O handler.</param>
+        /// <returns>A new <see cref="IOHandler"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        public static IOHandler FromHandle(IntPtr handle)
+        {
+            return new IOHandler(handle, isOwner: false);
+        }
+
         #region Access functions
         /// <summary>
         /// Creates a void <see cref="IOHandler"/>. All read operations return 0 bytes and
@@ -95,9 +108,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="n">Returns the 8-bit unsigned integer.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out byte n)
+        public bool Read(ref byte n)
         {
-            return Interop.ReadUint8(handle, out n);
+            return Interop.ReadUint8(handle, ref n);
         }
 
         /// <summary>
@@ -105,9 +118,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="n">Returns the 16-bit unsigned integer.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out ushort n)
+        public bool Read(ref ushort n)
         {
-            return Interop.ReadUint16(handle, out n);
+            return Interop.ReadUint16(handle, ref n);
         }
 
         /// <summary>
@@ -115,9 +128,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="n">Returns the 32-bit unsigned integer.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out uint n)
+        public bool Read(ref uint n)
         {
-            return Interop.ReadUint32(handle, out n);
+            return Interop.ReadUint32(handle, ref n);
         }
 
         /// <summary>
@@ -125,9 +138,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="n">Returns the 64-bit unsigned integer.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out ulong n)
+        public bool Read(ref ulong n)
         {
-            return Interop.ReadUint64(handle, out n);
+            return Interop.ReadUint64(handle, ref n);
         }
 
         /// <summary>
@@ -135,9 +148,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="f">Returns the 32-bit floating point number.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out float f)
+        public bool Read(ref float f)
         {
-            return Interop.ReadFloat(handle, out f);
+            return Interop.ReadFloat(handle, ref f);
         }
 
         /// <summary>
@@ -145,9 +158,9 @@ namespace lcmsNET
         /// </summary>
         /// <param name="d">Returns the double precision floating point number.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out double d)
+        public bool Read(ref double d)
         {
-            return Interop.Read15Fixed16(handle, out d);
+            return Interop.Read15Fixed16(handle, ref d);
         }
 
         /// <summary>
@@ -155,20 +168,19 @@ namespace lcmsNET
         /// </summary>
         /// <param name="xyz">Returns the XYZ tristimulus value.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(out CIEXYZ xyz)
+        public bool Read(ref CIEXYZ xyz)
         {
-            return Interop.ReadXYZ(handle, out xyz);
+            return Interop.ReadXYZ(handle, ref xyz);
         }
 
         /// <summary>
-        /// Reads an n-element array of 16-bit unsigned integers.
+        /// Reads an array of 16-bit unsigned integers.
         /// </summary>
-        /// <param name="n">The number of elements to be read into the array.</param>
-        /// <param name="array">Returns the array of 16-bit unsigned integers.</param>
+        /// <param name="array">The array of 16-bit unsigned integers.</param>
         /// <returns>true if successful, otherwise false.</returns>
-        public bool Read(uint n, out ushort[] array)
+        public bool Read(ushort[] array)
         {
-            return Interop.ReadUint16Array(handle, n, out array);
+            return Interop.ReadUint16Array(handle, array);
         }
         #endregion
 

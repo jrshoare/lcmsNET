@@ -80,71 +80,71 @@ namespace lcmsNET
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt8Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint8Number_Internal(
                 IntPtr handle,
-                out byte n);
+                ref byte n);
 
-        internal static bool ReadUint8(IntPtr handle, out byte n)
+        internal static bool ReadUint8(IntPtr handle, ref byte n)
         {
-            return ReadUint8Number_Internal(handle, out n) != 0;
+            return ReadUint8Number_Internal(handle, ref n) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint16Number_Internal(
                 IntPtr handle,
-                out ushort n);
+                ref ushort n);
 
-        internal static bool ReadUint16(IntPtr handle, out ushort n)
+        internal static bool ReadUint16(IntPtr handle, ref ushort n)
         {
-            return ReadUint16Number_Internal(handle, out n) != 0;
+            return ReadUint16Number_Internal(handle, ref n) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint32Number_Internal(
                 IntPtr handle,
-                out uint n);
+                ref uint n);
 
-        internal static bool ReadUint32(IntPtr handle, out uint n)
+        internal static bool ReadUint32(IntPtr handle, ref uint n)
         {
-            return ReadUint32Number_Internal(handle, out n) != 0;
+            return ReadUint32Number_Internal(handle, ref n) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt64Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint64Number_Internal(
                 IntPtr handle,
-                out ulong n);
+                ref ulong n);
 
-        internal static bool ReadUint64(IntPtr handle, out ulong n)
+        internal static bool ReadUint64(IntPtr handle, ref ulong n)
         {
-            return ReadUint64Number_Internal(handle, out n) != 0;
+            return ReadUint64Number_Internal(handle, ref n) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadFloat32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadFloat32Number_Internal(
                 IntPtr handle,
-                out float f);
+                ref float f);
 
-        internal static bool ReadFloat(IntPtr handle, out float f)
+        internal static bool ReadFloat(IntPtr handle, ref float f)
         {
-            return ReadFloat32Number_Internal(handle, out f) != 0;
+            return ReadFloat32Number_Internal(handle, ref f) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsRead15Fixed16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int Read15Fixed16Number_Internal(
                 IntPtr handle,
-                out double d);
+                ref double d);
 
-        internal static bool Read15Fixed16(IntPtr handle, out double d)
+        internal static bool Read15Fixed16(IntPtr handle, ref double d)
         {
-            return Read15Fixed16Number_Internal(handle, out d) != 0;
+            return Read15Fixed16Number_Internal(handle, ref d) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadXYZNumber", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadXYZNumber_Internal(
                 IntPtr handle,
-                out CIEXYZ xyz);
+                ref CIEXYZ xyz);
 
-        internal static bool ReadXYZ(IntPtr handle, out CIEXYZ xyz)
+        internal static bool ReadXYZ(IntPtr handle, ref CIEXYZ xyz)
         {
-            return ReadXYZNumber_Internal(handle, out xyz) != 0;
+            return ReadXYZNumber_Internal(handle, ref xyz) != 0;
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt16Array", CallingConvention = CallingConvention.StdCall)]
@@ -153,9 +153,9 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.U4)] uint n,
                 void* array);
 
-        internal unsafe static bool ReadUint16Array(IntPtr handle, uint n, out ushort[] array)
+        internal unsafe static bool ReadUint16Array(IntPtr handle, ushort[] array)
         {
-            array = new ushort[n];
+            uint n = (uint)array.Length;
             fixed (void *ptr = &array[0])
             {
                 return ReadUint16Array_Internal(handle, n, ptr) != 0;

@@ -183,7 +183,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out byte n);
+                byte b = 0;
+                bool actual = iohandler.Read(ref b);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -199,7 +200,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out ushort n);
+                ushort us = 0;
+                bool actual = iohandler.Read(ref us);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -215,7 +217,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out uint n);
+                uint n = 0;
+                bool actual = iohandler.Read(ref n);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -231,7 +234,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out ulong n);
+                ulong ul = 0;
+                bool actual = iohandler.Read(ref ul);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -256,7 +260,8 @@ namespace lcmsNET.Tests
                 using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
                 {
                     // Act
-                    bool actual = iohandler.Read(out float actualf);
+                    float actualf = 0.0f;
+                    bool actual = iohandler.Read(ref actualf);
 
                     // Assert
                     Assert.AreEqual(expected, actual);
@@ -278,7 +283,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out double d);
+                double d = 0.0;
+                bool actual = iohandler.Read(ref d);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -294,7 +300,8 @@ namespace lcmsNET.Tests
                 bool expected = true;
 
                 // Act
-                bool actual = iohandler.Read(out CIEXYZ xyz);
+                CIEXYZ xyz = new CIEXYZ();
+                bool actual = iohandler.Read(ref xyz);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -308,10 +315,10 @@ namespace lcmsNET.Tests
             using (var iohandler = IOHandler.Open(null))
             {
                 bool expected = true;
-                uint n = 17;
 
                 // Act
-                bool actual = iohandler.Read(n, out ushort[] array);
+                ushort[] us = new ushort[17];
+                bool actual = iohandler.Read(us);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -460,7 +467,8 @@ namespace lcmsNET.Tests
             using (var iohandler = IOHandler.Open(null))
             {
                 bool expected = true;
-                iohandler.Read(out byte b);
+                byte b = 0;
+                iohandler.Read(ref b);
 
                 // Act
                 bool actual = iohandler.ReadAlignment();

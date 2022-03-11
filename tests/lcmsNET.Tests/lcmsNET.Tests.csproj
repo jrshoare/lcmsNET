@@ -8,6 +8,8 @@
     <SignAssembly>true</SignAssembly>
 
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
+
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
