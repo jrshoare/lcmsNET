@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -36,11 +37,12 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandler", CallingConvention = CallingConvention.StdCall)]
         private static extern int SetLogErrorHandler_Internal(
-            ErrorHandler handler);
+                IntPtr fn);
 
         internal static void SetErrorHandler(ErrorHandler handler)
         {
-            SetLogErrorHandler_Internal(handler);
+            IntPtr fn = (handler is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(handler);
+            SetLogErrorHandler_Internal(fn);
         }
 
         [DllImport(Liblcms, EntryPoint = "_cmsLCMScolorSpace", CallingConvention = CallingConvention.StdCall)]

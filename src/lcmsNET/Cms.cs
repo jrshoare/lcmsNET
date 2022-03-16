@@ -33,7 +33,6 @@ namespace lcmsNET
     /// <remarks>
     /// A <see cref="Context"/> value of <see cref="IntPtr.Zero"/> identifies the global context.
     /// </remarks>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void ErrorHandler(IntPtr contextID, [MarshalAs(UnmanagedType.U4)] int errorCode, [MarshalAs(UnmanagedType.LPStr)] string errorText);
 
     /// <summary>

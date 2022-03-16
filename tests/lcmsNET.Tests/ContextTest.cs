@@ -228,7 +228,7 @@ namespace lcmsNET.Tests
                             ElemCount = 1,
                             nSupportedTypes = 1,
                             SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                            Decider = null
+                            Decider = IntPtr.Zero
                         }
                     };
                     tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;

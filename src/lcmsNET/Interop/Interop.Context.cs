@@ -84,12 +84,13 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern int SetLogErrorHandlerTHR_Internal(
-            IntPtr handle,
-            ErrorHandler handler);
+                IntPtr handle,
+                IntPtr fn);
 
         internal static void SetContextErrorHandler(IntPtr handle, ErrorHandler handler)
         {
-            SetLogErrorHandlerTHR_Internal(handle, handler);
+            IntPtr fn = (handler is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(handler);
+            SetLogErrorHandlerTHR_Internal(handle, fn);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsGetAlarmCodesTHR", CallingConvention = CallingConvention.StdCall)]

@@ -118,7 +118,6 @@ namespace lcmsNET.Plugin
     /// <param name="iccVersion">The ICC profile version.</param>
     /// <param name="data">Pointer to tag contents.</param>
     /// <returns>The <see cref="TagTypeSignature"/> of the tag.</returns>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate TagTypeSignature DecideType([MarshalAs(UnmanagedType.R8)] double iccVersion, IntPtr data);
 
     /// <summary>
@@ -143,9 +142,14 @@ namespace lcmsNET.Plugin
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = MAX_TYPES_IN_LCMS_PLUGIN)]
         public TagTypeSignature[] SupportedTypes;
         /// <summary>
-        /// Delegate to select the tag type based on the version of the ICC profile.
+        /// Pointer to delegate of type <see cref="DecideType"/> to select the tag type
+        /// based on the version of the ICC profile.
         /// </summary>
-        public DecideType Decider;
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Decider;
 
         /// <summary>
         /// Defines size of array to be allocated for <see cref="SupportedTypes"/>.
@@ -184,8 +188,7 @@ namespace lcmsNET.Plugin
     /// <param name="nItems">Returns the number of items allocated.</param>
     /// <param name="tagSize">The size of the tag.</param>
     /// <returns>A pointer to the unmanaged memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate IntPtr TagTypeRead(TagTypeHandler self,
+    public delegate IntPtr TagTypeRead(in TagTypeHandler self,
             IntPtr io,
             [MarshalAs(UnmanagedType.U4)] out uint nItems,
             [MarshalAs(UnmanagedType.U4)] uint tagSize);
@@ -198,8 +201,7 @@ namespace lcmsNET.Plugin
     /// <param name="ptr">A pointer to the data to be written.</param>
     /// <param name="nItems">The number of items.</param>
     /// <returns>Non-zero on success, otherwise zero.</returns>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int TagTypeWrite(TagTypeHandler self,
+    public delegate int TagTypeWrite(in TagTypeHandler self,
             IntPtr io,
             IntPtr ptr,
             [MarshalAs(UnmanagedType.U4)] uint nItems);
@@ -211,8 +213,7 @@ namespace lcmsNET.Plugin
     /// <param name="ptr">A pointer to the unmanaged memory to be duplicated.</param>
     /// <param name="n">The number of items.</param>
     /// <returns>A pointer to the unmanaged memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate IntPtr TagTypeDuplicate(TagTypeHandler self,
+    public delegate IntPtr TagTypeDuplicate(in TagTypeHandler self,
             IntPtr ptr,
             [MarshalAs(UnmanagedType.U4)] uint n);
 
@@ -221,8 +222,7 @@ namespace lcmsNET.Plugin
     /// </summary>
     /// <param name="self">The tag type handler.</param>
     /// <param name="ptr">A pointer to the unmanaged memory to be freed.</param>
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void TagTypeFree(TagTypeHandler self,
+    public delegate void TagTypeFree(in TagTypeHandler self,
             IntPtr ptr);
 
     /// <summary>
@@ -237,21 +237,38 @@ namespace lcmsNET.Plugin
         [MarshalAs(UnmanagedType.U4)]
         public TagTypeSignature Signature;
         /// <summary>
-        /// Delegate to allocate and read items.
+        /// Pointer to delegate of type <see cref="TagTypeRead"/> to allocate and read items.
         /// </summary>
-        public TagTypeRead Read;
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Read;
         /// <summary>
-        /// Delegate to write n items.
+        /// Pointer to delegate of type <see cref="TagTypeWrite"/> to write n items.
         /// </summary>
-        public TagTypeWrite Write;
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Write;
         /// <summary>
-        /// Delegate to duplicate an item or array of items.
+        /// Pointer to delegate of type <see cref="TagTypeDuplicate"/> to duplicate an item
+        /// or array of items.
         /// </summary>
-        public TagTypeDuplicate Duplicate;
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Duplicate;
         /// <summary>
-        /// Delegate to free all resources.
+        /// Pointer to delegate of type <see cref="TagTypeFree"/> to free all resources.
         /// </summary>
-        public TagTypeFree Free;
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Free;
         /// <summary>
         /// The calling thread context.
         /// </summary>

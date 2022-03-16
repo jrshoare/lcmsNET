@@ -97,7 +97,7 @@ namespace lcmsNET.Tests.Plugin
                     ElemCount = 1,
                     nSupportedTypes = 1,
                     SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                    Decider = null
+                    Decider = IntPtr.Zero
                 }
             };
             tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Text;
@@ -142,6 +142,9 @@ namespace lcmsNET.Tests.Plugin
             // Arrange
             const TagSignature SignaturelNET = (TagSignature)0x6C4E4554;  // 'lNET'
 
+            // ensure delegates are not garbage collected from managed code
+            var decide = new DecideType(Decide);
+
             PluginTag tag = new PluginTag
             {
                 Base = new PluginBase
@@ -157,7 +160,7 @@ namespace lcmsNET.Tests.Plugin
                     ElemCount = 1,
                     nSupportedTypes = 1,
                     SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                    Decider = Decide
+                    Decider = Marshal.GetFunctionPointerForDelegate(decide)
                 }
             };
             tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Text;
@@ -209,8 +212,7 @@ namespace lcmsNET.Tests.Plugin
             }
         }
 
-        // Temporarily disable to allow automated build to succeed, see issue #3
-        //[TestMethod()]
+        [TestMethod()]
         public void PluginTagTypeTest()
         {
             // Arrange
@@ -232,7 +234,7 @@ namespace lcmsNET.Tests.Plugin
                     ElemCount = 1,
                     nSupportedTypes = 1,
                     SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                    Decider = null
+                    Decider = IntPtr.Zero
                 }
             };
             tag.Descriptor.SupportedTypes[0] = SigIntType;
@@ -240,6 +242,12 @@ namespace lcmsNET.Tests.Plugin
             int rawsize = Marshal.SizeOf(tag);
             IntPtr tagPlugin = Marshal.AllocHGlobal(rawsize);
             Marshal.StructureToPtr(tag, tagPlugin, false);
+
+            // ensure delegates are not garbage collected from managed code
+            var read = new TagTypeRead(Read);
+            var write = new TagTypeWrite(Write);
+            var duplicate = new TagTypeDuplicate(Duplicate);
+            var free = new TagTypeFree(Free);
 
             PluginTagType tagType = new PluginTagType
             {
@@ -253,10 +261,10 @@ namespace lcmsNET.Tests.Plugin
                 Handler = new TagTypeHandler
                 {
                     Signature = SigIntType,
-                    Read = Read,
-                    Write = Write,
-                    Duplicate = Duplicate,
-                    Free = Free
+                    Read = Marshal.GetFunctionPointerForDelegate(read),
+                    Write = Marshal.GetFunctionPointerForDelegate(write),
+                    Duplicate = Marshal.GetFunctionPointerForDelegate(duplicate),
+                    Free = Marshal.GetFunctionPointerForDelegate(free)
                 }
             };
 
@@ -270,8 +278,12 @@ namespace lcmsNET.Tests.Plugin
                 using (var context = Context.Create(tagTypePlugin, IntPtr.Zero))
                 using (var profile = Profile.CreatePlaceholder(context))
                 {
+                    var errorHandler = new ErrorHandler(HandleError);
+                    context.SetErrorHandler(errorHandler);
+
                     uint expected = 1234;
-                    profile.WriteTag(SigInt, expected);
+                    bool written = profile.WriteTag(SigInt, expected);
+                    Assert.IsTrue(written);
 
                     profile.Save(null, out uint bytesNeeded);
                     Assert.AreNotEqual(0, bytesNeeded);
@@ -305,8 +317,10 @@ namespace lcmsNET.Tests.Plugin
             }
 
             // allocates unmanaged memory for a single 'uint' and reads from i/o handler into it
-            IntPtr Read(TagTypeHandler self, IntPtr io, out uint nItems, uint tagSize)
+            IntPtr Read(in TagTypeHandler self, IntPtr io, out uint nItems, uint tagSize)
             {
+                TestContext.WriteLine($"Read(self: {self}, io: 0x{io:X}, out nItems, tagSize: {tagSize})");
+
                 using (var context = Context.FromHandle(self.ContextID))
                 using (var iohandler = IOHandler.FromHandle(io))
                 {
@@ -332,8 +346,10 @@ namespace lcmsNET.Tests.Plugin
             }
 
             // uses the i/o handler to write a single 'uint' read from unmanaged memory 'ptr'
-            int Write(TagTypeHandler self, IntPtr io, IntPtr ptr, uint nItems)
+            int Write(in TagTypeHandler self, IntPtr io, IntPtr ptr, uint nItems)
             {
+                TestContext.WriteLine($"Write(self: {self}, io: 0x{io:X}, ptr: 0x{ptr:X}, nItems: {nItems})");
+
                 using (var iohandler = IOHandler.FromHandle(io))
                 {
                     // unsafe, but faster...
@@ -352,8 +368,10 @@ namespace lcmsNET.Tests.Plugin
             }
 
             // duplicates the unmanaged memory 'ptr' into a new block of size 'n x sizeof(uint)'
-            IntPtr Duplicate(TagTypeHandler self, IntPtr ptr, uint n)
+            IntPtr Duplicate(in TagTypeHandler self, IntPtr ptr, uint n)
             {
+                TestContext.WriteLine($"Duplicate(self: {self}, ptr: 0x{ptr:X}, n: {n})");
+
                 using (var context = Context.FromHandle(self.ContextID))
                 {
                     return Memory.Duplicate(context, ptr, n * sizeof(uint));
@@ -361,13 +379,21 @@ namespace lcmsNET.Tests.Plugin
             }
 
             // frees the unmanaged memory 'ptr'
-            void Free(TagTypeHandler self, IntPtr ptr)
+            void Free(in TagTypeHandler self, IntPtr ptr)
             {
+                TestContext.WriteLine($"Free(self: {self}, ptr: 0x{ptr:X})");
+
                 using (var context = Context.FromHandle(self.ContextID))
                 {
                     Memory.Free(context, ptr);
                 }
             }
+
+            void HandleError(IntPtr contextID, int errorCode, string errorText)
+            {
+                TestContext.WriteLine($"Error!!! contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
+            }
+
         }
     }
 }
