@@ -85,6 +85,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         [MarshalAs(UnmanagedType.U4)]
         public uint Magic;
+
         /// <summary>
         /// The expected Little CMS version.
         /// </summary>
@@ -96,11 +97,13 @@ namespace lcmsNET.Plugin
         /// </remarks>
         [MarshalAs(UnmanagedType.U4)]
         public uint ExpectedVersion;
+
         /// <summary>
         /// Identifies the type of plug-in.
         /// </summary>
         [MarshalAs(UnmanagedType.U4)]
         public PluginType Type;
+
         /// <summary>
         /// Points to the next plug-in header in multi plug-in packages.
         /// </summary>
@@ -131,16 +134,19 @@ namespace lcmsNET.Plugin
         /// </summary>
         [MarshalAs(UnmanagedType.U4)]
         public int ElemCount;
+
         /// <summary>
         /// Number of elements in <see cref="SupportedTypes"/> array, minimum 1.
         /// </summary>
         [MarshalAs(UnmanagedType.U4)]
         public int nSupportedTypes;
+
         /// <summary>
         /// Types supported for the tag.
         /// </summary>
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = MAX_TYPES_IN_LCMS_PLUGIN)]
         public TagTypeSignature[] SupportedTypes;
+
         /// <summary>
         /// Pointer to delegate of type <see cref="DecideType"/> to select the tag type
         /// based on the version of the ICC profile.
@@ -236,6 +242,7 @@ namespace lcmsNET.Plugin
         /// </summary>
         [MarshalAs(UnmanagedType.U4)]
         public TagTypeSignature Signature;
+
         /// <summary>
         /// Pointer to delegate of type <see cref="TagTypeRead"/> to allocate and read items.
         /// </summary>
@@ -244,6 +251,7 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr Read;
+
         /// <summary>
         /// Pointer to delegate of type <see cref="TagTypeWrite"/> to write n items.
         /// </summary>
@@ -252,6 +260,7 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr Write;
+
         /// <summary>
         /// Pointer to delegate of type <see cref="TagTypeDuplicate"/> to duplicate an item
         /// or array of items.
@@ -261,6 +270,7 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr Duplicate;
+
         /// <summary>
         /// Pointer to delegate of type <see cref="TagTypeFree"/> to free all resources.
         /// </summary>
@@ -269,6 +279,7 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr Free;
+
         /// <summary>
         /// The calling thread context.
         /// </summary>
@@ -285,10 +296,177 @@ namespace lcmsNET.Plugin
         /// Inherited <see cref="PluginBase"/> structure.
         /// </summary>
         public PluginBase Base;
+
         /// <summary>
         /// The tag type handler.
         /// </summary>
         public TagTypeHandler Handler;
+    }
+    #endregion
+
+    #region Memory handler plug-in
+    /// <summary>
+    /// Defines a delegate to allocate memory.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="size">The size of memory to be allocated in bytes.</param>
+    /// <returns>A pointer to the memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryMalloc(IntPtr contextID, uint size);
+
+    /// <summary>
+    /// Defines a delegate to free memory.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="ptr">A pointer to the memory to be freed.</param>
+    public delegate void MemoryFree(IntPtr contextID, IntPtr ptr);
+
+    /// <summary>
+    /// Defines a delegate to re-allocate memory.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="ptr">A pointer to the existing memory.</param>
+    /// <param name="newSize">The size of memory to be allocated in bytes.</param>
+    /// <returns>A pointer to the memory re-allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryRealloc(IntPtr contextID, IntPtr ptr, uint newSize);
+
+    /// <summary>
+    /// Defines a delegate to allocate memory filled with zeroes.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="size">The size of memory to be allocated in bytes.</param>
+    /// <returns>A pointer to the memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryMallocZero(IntPtr contextID, uint size);
+
+    /// <summary>
+    /// Defines a delegate to allocate a block of memory for an array of elements filled with zeroes.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="count">The number of elements to allocate.</param>
+    /// <param name="size">The size of each element to be allocated in bytes.</param>
+    /// <returns>A pointer to the memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryCalloc(IntPtr contextID, uint count, uint size);
+
+    /// <summary>
+    /// Defines a delegate to duplicate memory into a newly allocated block of memory.
+    /// </summary>
+    /// <param name="contextID">The calling thread context. Can be <see cref="IntPtr.Zero"/>.</param>
+    /// <param name="ptr">A pointer to the memory to be duplicated.</param>
+    /// <param name="size">The size of the memory to be duplicated in bytes.</param>
+    /// <returns>A pointer to the memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryDuplicate(IntPtr contextID, IntPtr ptr, uint size);
+
+    /// <summary>
+    /// Defines a delegate to allocate memory to create contexts.
+    /// </summary>
+    /// <param name="userData">A pointer to user-defined data.</param>
+    /// <param name="size">The size of memory to be allocated in bytes.</param>
+    /// <returns>A pointer to the memory allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
+    public delegate IntPtr MemoryNonContextualMalloc(IntPtr userData, uint size);
+
+    /// <summary>
+    /// Defines a delegate to free memory used to create contexts.
+    /// </summary>
+    /// <param name="userData">A pointer to user-defined data.</param>
+    /// <param name="ptr">A pointer to the memory to be freed.</param>
+    public delegate void MemoryNonContextualFree(IntPtr userData, IntPtr ptr);
+
+    /// <summary>
+    /// Defines the memory handler plug-in structure.
+    /// </summary>
+    public struct PluginMemoryHandler
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryMalloc"/> to allocate memory.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Malloc;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryFree"/> to free memory.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Free;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryRealloc"/> to re-allocate memory.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Realloc;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryMallocZero"/> to allocate zeroed memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Optional. Can be set to <see cref="IntPtr.Zero"/>.
+        /// </para>
+        /// <para>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </para>
+        /// </remarks>
+        public IntPtr MallocZero;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryCalloc"/> to allocate a block of memory
+        /// for an array of elements.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Optional. Can be set to <see cref="IntPtr.Zero"/>.
+        /// </para>
+        /// <para>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </para>
+        /// </remarks>
+        public IntPtr Calloc;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryDuplicate"/> to duplicate memory.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Optional. Can be set to <see cref="IntPtr.Zero"/>.
+        /// </para>
+        /// <para>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </para>
+        /// </remarks>
+        public IntPtr Duplicate;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryNonContextualMalloc"/> to allocate memory.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr NonContextualMalloc;
+
+        /// <summary>
+        /// Pointer to delegate of type <see cref="MemoryNonContextualFree"/> to free memory.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr NonContextualFree;
     }
     #endregion
 }

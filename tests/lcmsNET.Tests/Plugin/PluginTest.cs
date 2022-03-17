@@ -395,5 +395,116 @@ namespace lcmsNET.Tests.Plugin
             }
 
         }
+
+        [TestMethod()]
+        public void PluginMemoryHandlerTest()
+        {
+            // Arrange
+            // ensure delegates are not garbage collected from managed code
+            var malloc = new MemoryMalloc(Malloc);
+            var free = new MemoryFree(Free);
+            var realloc = new MemoryRealloc(Realloc);
+            var nonContextualMalloc = new MemoryNonContextualMalloc(NonContextualMalloc);
+            var nonContextualFree = new MemoryNonContextualFree(NonContextualFree);
+
+            PluginMemoryHandler memoryHandler = new PluginMemoryHandler
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)Cms.EncodedCMMVersion,  // >= 2.8
+                    Type = PluginType.MemoryHandler,
+                    Next = IntPtr.Zero
+                },
+                Malloc = Marshal.GetFunctionPointerForDelegate(malloc),
+                Free = Marshal.GetFunctionPointerForDelegate(free),
+                Realloc = Marshal.GetFunctionPointerForDelegate(realloc),
+                MallocZero = IntPtr.Zero,   // optional
+                Calloc = IntPtr.Zero,       // optional
+                Duplicate = IntPtr.Zero,    // optional
+                NonContextualMalloc = Marshal.GetFunctionPointerForDelegate(nonContextualMalloc),
+                NonContextualFree = Marshal.GetFunctionPointerForDelegate(nonContextualFree)
+            };
+
+            int rawsize = Marshal.SizeOf(memoryHandler);
+            IntPtr memoryHandlerPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(memoryHandler, memoryHandlerPlugin, false);
+
+            // Act
+            try
+            {
+                using (var context = Context.Create(memoryHandlerPlugin, IntPtr.Zero))
+                {
+                    // Assert
+                    IntPtr mallocPtr = Memory.Malloc(context, 0x200);
+                    Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
+
+                    IntPtr reallocPtr = Memory.Realloc(context, mallocPtr, 0x300);
+                    Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
+                    Memory.Free(context, reallocPtr);
+                }
+            }
+            finally
+            {
+                Marshal.DestroyStructure(memoryHandlerPlugin, typeof(PluginMemoryHandler));
+                Marshal.FreeHGlobal(memoryHandlerPlugin);
+            }
+
+            // allocates memory
+            IntPtr Malloc(IntPtr contextID, uint size)
+            {
+                TestContext.WriteLine($"Malloc(contextId: {contextID}, size: {size})");
+                try
+                {
+                    return Marshal.AllocHGlobal((int)size);
+                }
+                catch (Exception)
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            // frees memory
+            void Free(IntPtr contextID, IntPtr ptr)
+            {
+                TestContext.WriteLine($"Free(contextId: {contextID}, ptr: 0x{ptr:X})");
+                Marshal.FreeHGlobal(ptr);
+            }
+
+            // reallocates memory
+            IntPtr Realloc(IntPtr contextID, IntPtr ptr, uint newSize)
+            {
+                TestContext.WriteLine($"Realloc(contextId: {contextID}, ptr: 0x{ptr:X}, newSize: {newSize})");
+                try
+                {
+                    return Marshal.ReAllocHGlobal(ptr, (IntPtr)newSize);
+                }
+                catch (Exception)
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            // allocates non-contextual memory
+            IntPtr NonContextualMalloc(IntPtr userData, uint size)
+            {
+                TestContext.WriteLine($"NonContextualMalloc(userData: {userData}, size: {size})");
+                try
+                {
+                    return Marshal.AllocHGlobal((int)size);
+                }
+                catch (Exception)
+                {
+                    return IntPtr.Zero;
+                }
+            }
+
+            // frees non-contextual memory
+            void NonContextualFree(IntPtr userData, IntPtr ptr)
+            {
+                TestContext.WriteLine($"NonContextualFree(userData: {userData}, ptr: 0x{ptr:X})");
+                Marshal.FreeHGlobal(ptr);
+            }
+        }
     }
 }
