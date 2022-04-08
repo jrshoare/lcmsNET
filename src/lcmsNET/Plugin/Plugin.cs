@@ -373,6 +373,7 @@ namespace lcmsNET.Plugin
     /// <summary>
     /// Defines the memory handler plug-in structure.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     public struct PluginMemoryHandler
     {
         /// <summary>
@@ -467,6 +468,206 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr NonContextualFree;
+    }
+    #endregion
+
+    #region Interpolation plug-in
+    /// <summary>
+    /// Defines flags that are passed to the interpolators factory.
+    /// </summary>
+    [Flags]
+    public enum LerpFlags : uint
+    {
+        /// <summary>
+        /// Defines the base type as 16 bit.
+        /// </summary>
+        SixteenBits = 0x0000,
+        /// <summary>
+        /// Defines the base type as floating-point.
+        /// </summary>
+        FloatingPoint = 0x0001,
+        /// <summary>
+        /// Hint to use tri-linear interpolation.
+        /// </summary>
+        Trilinear = 0x0100
+    }
+
+    /// <summary>
+    /// Defines pre-computed parameters for use by interpolators.
+    /// </summary>
+    /// <remarks>
+    /// Use this variant of interpolation parameters for Little CMS 2.11 and before.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InterpolationParamsV1
+    {
+        /// <summary>
+        /// The calling thread context. Can be <see cref="IntPtr.Zero"/>.
+        /// </summary>
+        public IntPtr ContextID;
+        /// <summary>
+        /// A copy of the flags specified when requesting the interpolation.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public LerpFlags dwFlags;
+        /// <summary>
+        /// The number of input channels.
+        /// </summary>
+        public uint nInputs;
+        /// <summary>
+        /// The number of output channels.
+        /// </summary>
+        public uint nOutputs;
+        /// <summary>
+        /// The number of grid points in each input dimension.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 8)]
+        public uint[] nSamples;
+        /// <summary>
+        /// The number of grid points minus one in each input dimension.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 8)]
+        public uint[] Domain;
+        /// <summary>
+        /// The result of multiplying Domin[n]*Opta[n-1] (offset in the table in base type).
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 8)]
+        public uint[] opta;
+        /// <summary>
+        /// Pointer to a block of unmanaged memory holding the table of gridpoints.
+        /// </summary>
+        public IntPtr Table;
+        /// <summary>
+        /// Pointer to the interpolator itself.
+        /// </summary>
+        public IntPtr Interpolation;
+    }
+
+    /// <summary>
+    /// Defines pre-computed parameters for use by interpolators.
+    /// </summary>
+    /// <remarks>
+    /// Use this variant of interpolation parameters for Little CMS 2.12 and later.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InterpolationParamsV2
+    {
+        /// <summary>
+        /// The calling thread context. Can be <see cref="IntPtr.Zero"/>.
+        /// </summary>
+        public IntPtr ContextID;
+        /// <summary>
+        /// A copy of the flags specified when requesting the interpolation.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public LerpFlags dwFlags;
+        /// <summary>
+        /// The number of input channels.
+        /// </summary>
+        public uint nInputs;
+        /// <summary>
+        /// The number of output channels.
+        /// </summary>
+        public uint nOutputs;
+        /// <summary>
+        /// The number of grid points in each input dimension.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 15)]
+        public uint[] nSamples;
+        /// <summary>
+        /// The number of grid points minus one in each input dimension.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 15)]
+        public uint[] Domain;
+        /// <summary>
+        /// The result of multiplying Domin[n]*Opta[n-1] (offset in the table in base type).
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = 15)]
+        public uint[] opta;
+        /// <summary>
+        /// Pointer to a block of unmanaged memory holding the table of gridpoints.
+        /// </summary>
+        public IntPtr Table;
+        /// <summary>
+        /// Pointer to the interpolator itself.
+        /// </summary>
+        public IntPtr Interpolation;
+    }
+
+    /// <summary>
+    /// Defines a delegate to perform 16 bits interpolation.
+    /// </summary>
+    /// <param name="input">The inputs.</param>
+    /// <param name="output">The outputs.</param>
+    /// <param name="p">
+    /// A pointer to the pre-computed parameters of type <see cref="InterpolationParamsV1"/> or <see cref="InterpolationParamsV2"/>.
+    /// </param>
+    public delegate void InterpFn16(
+        IntPtr input,   // 'const' ushort[]
+        IntPtr output,  // ushort[]
+        IntPtr p);
+
+    /// <summary>
+    /// Defines a delegate to perform floating point interpolation.
+    /// </summary>
+    /// <param name="input">The inputs.</param>
+    /// <param name="output">The outputs.</param>
+    /// <param name="p">
+    /// A pointer to the pre-computed parameters of type <see cref="InterpolationParamsV1"/> or <see cref="InterpolationParamsV2"/>.
+    /// </param>
+    public delegate void InterpFnFloat(
+        IntPtr input,   // 'const' float[]
+        IntPtr output,  // float[]
+        IntPtr p);
+
+    /// <summary>
+    /// Defines a structure that provides the interpolator delegate returned by the interpolators factory.
+    /// </summary>
+    /// <remarks>
+    /// In Little CMS this is a union of pointers that in the end behaves a single pointer, see cmsInterpFunction.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct InterpolationFunction
+    {
+        /// <summary>
+        /// Pointer to the interpolator delegate,
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Interpolator;
+    }
+
+    /// <summary>
+    /// Defines a delegate to define the interpolators factory.
+    /// </summary>
+    /// <param name="nInputChannels">The number of input channels.</param>
+    /// <param name="nOutputChannels">The number of output channels.</param>
+    /// <param name="flags">Flags defining base-type and any hints.</param>
+    /// <returns>A structure of type <see cref="InterpolationFunction"/>.</returns>
+    public delegate InterpolationFunction InterpolatorsFactory(
+        uint nInputChannels, uint nOutputChannels, [MarshalAs(UnmanagedType.U4)] LerpFlags flags);
+
+    /// <summary>
+    /// Defines the interpolation plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginInterpolation
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="InterpolatorsFactory"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Factory;
     }
     #endregion
 }

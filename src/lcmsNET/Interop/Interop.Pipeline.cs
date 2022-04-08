@@ -65,8 +65,8 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEvalFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineEvalFloat_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
                 IntPtr handle);
 
         internal static void PipelineEvalFloat(IntPtr handle, float[] vIn, float[] vOut)
@@ -76,9 +76,9 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEvalReverseFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern int PipelineEvalReverseFloat_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] hint,
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] hint,
                 IntPtr handle);
 
         internal static int PipelineEvalReverseFloat(IntPtr handle, float[] vIn, float[] vOut, float[] hint)
@@ -88,8 +88,8 @@ namespace lcmsNET
 
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEval16", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineEval16_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vIn,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vOut,
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vOut,
                 IntPtr handle);
 
         internal static void PipelineEval16(IntPtr handle, ushort[] vIn, ushort[] vOut)

@@ -506,5 +506,292 @@ namespace lcmsNET.Tests.Plugin
                 Marshal.FreeHGlobal(ptr);
             }
         }
+
+        [TestMethod()]
+        public void PluginInterpolationTest1D()
+        {
+            // Arrange
+            // ensure delegates are not garbage collected from managed code
+            var fake1Dfloat = new InterpFnFloat(Fake1DFloat);
+            IntPtr fake1DfloatPtr = Marshal.GetFunctionPointerForDelegate(fake1Dfloat);
+            var fake3D16 = new InterpFn16(Fake3D16);
+            IntPtr fake3D16Ptr = Marshal.GetFunctionPointerForDelegate(fake3D16);
+            var factory = new InterpolatorsFactory(Factory);
+
+            PluginInterpolation interpolation = new PluginInterpolation
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)Cms.EncodedCMMVersion,  // >= 2.8
+                    Type = PluginType.Interpolation,
+                    Next = IntPtr.Zero
+                },
+                Factory = Marshal.GetFunctionPointerForDelegate(factory)
+            };
+
+            int rawsize = Marshal.SizeOf(interpolation);
+            IntPtr interpolationPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(interpolation, interpolationPlugin, false);
+
+            // Act
+            try
+            {
+                using (var context = Context.Create(interpolationPlugin, IntPtr.Zero))
+                {
+                    // a straight line
+                    float[] tabulated = new float[]
+                    {
+                        0.0f, 0.10f, 0.20f, 0.30f, 0.40f, 0.50f, 0.60f, 0.70f, 0.80f, 0.90f, 1.00f
+                    };
+
+                    using (var toneCurve = ToneCurve.BuildTabulated(context, tabulated))
+                    {
+                        // Assert
+                        // do some interpolations with the plug-in
+                        var actual = toneCurve.Evaluate(0.1f);
+                        Assert.AreEqual(0.10f, actual, float.Epsilon);
+                        actual = toneCurve.Evaluate(0.13f);
+                        Assert.AreEqual(0.10f, actual, float.Epsilon);
+                        actual = toneCurve.Evaluate(0.55f);
+                        Assert.AreEqual(0.50f, actual, float.Epsilon);
+                        actual = toneCurve.Evaluate(0.9999f);
+                        Assert.AreEqual(0.90f, actual, float.Epsilon);
+                    }
+                }
+            }
+            finally
+            {
+                Marshal.DestroyStructure(interpolationPlugin, typeof(PluginInterpolation));
+                Marshal.FreeHGlobal(interpolationPlugin);
+            }
+
+            // this fake interpolation always takes the closest lower node in the interpolation table for 1D
+            void Fake1DFloat(IntPtr input, IntPtr output, IntPtr p)
+            {
+                int encodedVersion = 2070;
+                // next call throws if less than 2.8
+                try { encodedVersion = Cms.EncodedCMMVersion; } catch {}
+
+                unsafe
+                {
+                    float* LutTable = null;
+                    uint[] Domain = null;
+
+                    if (encodedVersion >= 2120)
+                    {
+                        var interpParams = Marshal.PtrToStructure<InterpolationParamsV2>(p);
+                        LutTable = (float*)interpParams.Table.ToPointer();
+                        Domain = interpParams.Domain;
+                    }
+                    else
+                    {
+                        var interpParams = Marshal.PtrToStructure<InterpolationParamsV1>(p);
+                        LutTable = (float*)interpParams.Table.ToPointer();
+                        Domain = interpParams.Domain;
+                    }
+
+
+                    float* pInput = (float*)input.ToPointer();
+                    float* pOutput = (float*)output.ToPointer();
+
+                    if (pInput[0] >= 1.0)
+                    {
+                        pOutput[0] = LutTable[Domain[0]];
+                        return;
+                    }
+
+                    float val = Domain[0] * pInput[0];
+                    int cell = (int)Math.Floor(val);
+                    pOutput[0] = LutTable[cell];
+                }
+            }
+
+            // this fake interpolation just uses scrambled negated indexes for output
+            void Fake3D16(IntPtr input, IntPtr output, IntPtr p)
+            {
+                const ushort _ = 0xFFFF;
+                unsafe
+                {
+                    ushort* pInput = (ushort*)input.ToPointer();
+                    ushort* pOutput = (ushort*)output.ToPointer();
+
+                    pOutput[0] = (ushort)(_ - pInput[2]);
+                    pOutput[1] = (ushort)(_ - pInput[1]);
+                    pOutput[2] = (ushort)(_ - pInput[0]);
+                }
+            }
+
+            InterpolationFunction Factory(uint nInputChannels, uint nOutputChannels, LerpFlags flags)
+            {
+                InterpolationFunction interpFn = new InterpolationFunction
+                {
+                    Interpolator = IntPtr.Zero
+                };
+
+                bool isFloat = (flags & LerpFlags.FloatingPoint) != 0;
+
+                if (nInputChannels == 1 && nOutputChannels == 1 && isFloat)
+                {
+                    interpFn.Interpolator = fake1DfloatPtr;
+                }
+                else if (nInputChannels == 3 && nOutputChannels == 3 && !isFloat)
+                {
+                    interpFn.Interpolator = fake3D16Ptr;
+                }
+
+                return interpFn;
+            }
+        }
+
+        [TestMethod()]
+        public void PluginInterpolationTest3D()
+        {
+            // Arrange
+            // ensure delegates are not garbage collected from managed code
+            var fake1Dfloat = new InterpFnFloat(Fake1DFloat);
+            IntPtr fake1DfloatPtr = Marshal.GetFunctionPointerForDelegate(fake1Dfloat);
+            var fake3D16 = new InterpFn16(Fake3D16);
+            IntPtr fake3D16Ptr = Marshal.GetFunctionPointerForDelegate(fake3D16);
+            var factory = new InterpolatorsFactory(Factory);
+
+            PluginInterpolation interpolation = new PluginInterpolation
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)Cms.EncodedCMMVersion,  // >= 2.8
+                    Type = PluginType.Interpolation,
+                    Next = IntPtr.Zero
+                },
+                Factory = Marshal.GetFunctionPointerForDelegate(factory)
+            };
+
+            int rawsize = Marshal.SizeOf(interpolation);
+            IntPtr interpolationPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(interpolation, interpolationPlugin, false);
+
+            // Act
+            try
+            {
+                using (var context = Context.Create(interpolationPlugin, IntPtr.Zero))
+                using (var pipeline = Pipeline.Create(context, 3, 3))
+                {
+                    ushort[] identity =
+                    {
+                       0,       0,       0,
+                       0,       0,       0xffff,
+                       0,       0xffff,  0,
+                       0,       0xffff,  0xffff,
+                       0xffff,  0,       0,
+                       0xffff,  0,       0xffff,
+                       0xffff,  0xffff,  0,
+                       0xffff,  0xffff,  0xffff
+                    };
+
+                    using (var clut = Stage.Create(context, 2, 3, 3, identity))
+                    {
+                        pipeline.Insert(clut, StageLoc.At_Begin);
+
+                        // do some interpolations with the plugin
+                        ushort[] input = new ushort[] { 0, 0, 0 };
+                        ushort[] output = pipeline.Evaluate(input);
+
+                        // Assert
+                        Assert.AreEqual((ushort)(0xFFFF - 0), output[0]);
+                        Assert.AreEqual((ushort)(0xFFFF - 0), output[1]);
+                        Assert.AreEqual((ushort)(0xFFFF - 0), output[2]);
+
+                        input[0] = 0x1234; input[1] = 0x5678; input[2] = 0x9ABC;
+                        output = pipeline.Evaluate(input);
+
+                        Assert.AreEqual((ushort)(0xFFFF - 0x9ABC), output[0]);
+                        Assert.AreEqual((ushort)(0xFFFF - 0x5678), output[1]);
+                        Assert.AreEqual((ushort)(0xFFFF - 0x1234), output[2]);
+                    }
+                }
+            }
+            finally
+            {
+                Marshal.DestroyStructure(interpolationPlugin, typeof(PluginInterpolation));
+                Marshal.FreeHGlobal(interpolationPlugin);
+            }
+
+            // this fake interpolation always takes the closest lower node in the interpolation table for 1D
+            void Fake1DFloat(IntPtr input, IntPtr output, IntPtr p)
+            {
+                int encodedVersion = 2070;
+                // next call throws if less than 2.8
+                try { encodedVersion = Cms.EncodedCMMVersion; } catch { }
+
+                unsafe
+                {
+                    float* LutTable = null;
+                    uint[] Domain = null;
+
+                    if (encodedVersion >= 2120)
+                    {
+                        var interpParams = Marshal.PtrToStructure<InterpolationParamsV2>(p);
+                        LutTable = (float*)interpParams.Table.ToPointer();
+                        Domain = interpParams.Domain;
+                    }
+                    else
+                    {
+                        var interpParams = Marshal.PtrToStructure<InterpolationParamsV1>(p);
+                        LutTable = (float*)interpParams.Table.ToPointer();
+                        Domain = interpParams.Domain;
+                    }
+
+                    float *pInput = (float *)input.ToPointer();
+                    float *pOutput = (float *)output.ToPointer();
+
+                    if (pInput[0] >= 1.0)
+                    {
+                        pOutput[0] = LutTable[Domain[0]];
+                        return;
+                    }
+
+                    float val = Domain[0] * pInput[0];
+                    int cell = (int)Math.Floor(val);
+                    pOutput[0] = LutTable[cell];
+                }
+            }
+
+            // this fake interpolation just uses scrambled negated indexes for output
+            void Fake3D16(IntPtr input, IntPtr output, IntPtr p)
+            {
+                const ushort _ = 0xFFFF;
+                unsafe
+                {
+                    ushort* pInput = (ushort*)input.ToPointer();
+                    ushort* pOutput = (ushort*)output.ToPointer();
+
+                    pOutput[0] = (ushort)(_ - pInput[2]);
+                    pOutput[1] = (ushort)(_ - pInput[1]);
+                    pOutput[2] = (ushort)(_ - pInput[0]);
+                }
+            }
+
+            InterpolationFunction Factory(uint nInputChannels, uint nOutputChannels, LerpFlags flags)
+            {
+                InterpolationFunction interpFn = new InterpolationFunction
+                {
+                    Interpolator = IntPtr.Zero
+                };
+
+                bool isFloat = (flags & LerpFlags.FloatingPoint) != 0;
+
+                if (nInputChannels == 1 && nOutputChannels == 1 && isFloat)
+                {
+                    interpFn.Interpolator = fake1DfloatPtr;
+                }
+                else if (nInputChannels == 3 && nOutputChannels == 3 && !isFloat)
+                {
+                    interpFn.Interpolator = fake3D16Ptr;
+                }
+
+                return interpFn;
+            }
+        }
     }
 }
