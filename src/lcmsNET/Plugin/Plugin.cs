@@ -670,4 +670,76 @@ namespace lcmsNET.Plugin
         public IntPtr Factory;
     }
     #endregion
+
+    #region Parametric curves plug-in
+    /// <summary>
+    /// Defines a delegate for user-supplied parametric curves.
+    /// </summary>
+    /// <param name="Type">The curve type.</param>
+    /// <param name="Params">The parameters for the curve type.</param>
+    /// <param name="R"></param>
+    /// <returns>The result of applying the curve.</returns>
+    /// <remarks>
+    /// <para>
+    /// Each parametric curve plug-in may implement an arbitrary number of upto 20 curve types.
+    /// </para>
+    /// <para>
+    /// A negative type means the same function but analytically inverted.
+    /// </para>
+    /// <para>
+    /// The domain of R is effectively from minus infinity to plus infinity. However, the normal,
+    /// in-range domain is 0..1, so you have to normalize your function to get values of
+    /// R = [0..1.0] and deal with remaining cases if you want your function to be able to work
+    /// in unbounded mode.
+    /// </para>
+    /// </remarks>
+    public delegate double ParametricCurveEvaluator(
+        [MarshalAs(UnmanagedType.I4)] int Type,
+        [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R8, SizeConst = 10)] double[] Params,
+        [MarshalAs(UnmanagedType.R8)] double R);
+
+    /// <summary>
+    /// Defines the parametric curves plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginParametricCurves
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// The number of functions.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint nFunctions;
+
+        /// <summary>
+        /// Id's for each parametric curve described by the plug-in.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = MAX_TYPES_IN_LCMS_PLUGIN)]
+        public uint[] FunctionTypes;
+
+        /// <summary>
+        /// Number of parameters for each parametric curve described by the plug-in.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U4, SizeConst = MAX_TYPES_IN_LCMS_PLUGIN)]
+        public uint[] ParameterCount;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="ParametricCurveEvaluator"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Evaluator;
+
+        /// <summary>
+        /// Defines size of array to be allocated for <see cref="FunctionTypes"/> and <see cref="ParameterCount"/>.
+        /// </summary>
+        public const int MAX_TYPES_IN_LCMS_PLUGIN = 20;
+    }
+    #endregion
 }

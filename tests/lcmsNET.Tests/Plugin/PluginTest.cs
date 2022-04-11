@@ -793,5 +793,184 @@ namespace lcmsNET.Tests.Plugin
                 return interpFn;
             }
         }
+
+        [TestMethod]
+        public void PluginParametricCurveTest()
+        {
+            // Arrange
+            const int TYPE_SIN = 1000;
+            const int TYPE_COS = 1010;
+            const int TYPE_TAN = 1020;
+            const int TYPE_709 = 709;
+
+            var rec709Math = new ParametricCurveEvaluator(Rec709Math);
+            PluginParametricCurves rec709 = new PluginParametricCurves
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.ParametricCurve,
+                    Next = IntPtr.Zero
+                },
+                nFunctions = 1,
+                FunctionTypes = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                ParameterCount = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                Evaluator = Marshal.GetFunctionPointerForDelegate(rec709Math)
+            };
+            rec709.FunctionTypes[0] = TYPE_709;
+            rec709.ParameterCount[0] = 5;
+
+            int rawsize = Marshal.SizeOf(rec709);
+            IntPtr rec709Plugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(rec709Plugin, rec709Plugin, false);
+
+            var myFns = new ParametricCurveEvaluator(MyFns);
+            PluginParametricCurves curveSample = new PluginParametricCurves
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.ParametricCurve,
+                    Next = IntPtr.Zero
+                },
+                nFunctions = 2,
+                FunctionTypes = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                ParameterCount = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                Evaluator = Marshal.GetFunctionPointerForDelegate(myFns)
+            };
+            curveSample.FunctionTypes[0] = TYPE_SIN; curveSample.FunctionTypes[1] = TYPE_COS;
+            curveSample.ParameterCount[0] = 1; curveSample.ParameterCount[1] = 1;
+
+            rawsize = Marshal.SizeOf(curveSample);
+            IntPtr curveSamplePlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(curveSample, curveSamplePlugin, false);
+
+            var myFns2 = new ParametricCurveEvaluator(MyFns2);
+            PluginParametricCurves curveSample2 = new PluginParametricCurves
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.ParametricCurve,
+                    Next = IntPtr.Zero
+                },
+                nFunctions = 1,
+                FunctionTypes = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                ParameterCount = new uint[PluginParametricCurves.MAX_TYPES_IN_LCMS_PLUGIN],
+                Evaluator = Marshal.GetFunctionPointerForDelegate(myFns2)
+            };
+            curveSample2.FunctionTypes[0] = TYPE_TAN;
+            curveSample2.ParameterCount[0] = 1;
+
+            rawsize = Marshal.SizeOf(curveSample2);
+            IntPtr curveSample2Plugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(curveSample2, curveSample2Plugin, false);
+
+            using (var ctx = Context.Create(curveSamplePlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                cpy.RegisterPlugins(curveSample2Plugin);
+                cpy2.RegisterPlugins(rec709Plugin);
+
+                double[] scale = { 1.0 };
+
+                // Act
+                using (var sinus = ToneCurve.BuildParametric(cpy, TYPE_SIN, scale))
+                using (var cosinus = ToneCurve.BuildParametric(cpy, TYPE_COS, scale))
+                using (var tangent = ToneCurve.BuildParametric(cpy, TYPE_TAN, scale))
+                using (var reverse_sinus = sinus.Reverse())
+                using (var reverse_cosinus = cosinus.Reverse())
+                {
+                    // Assert
+                    var actual = sinus.Evaluate(0.1f);
+                    Assert.AreEqual(Math.Sin(0.1 * Math.PI), actual, 0.001);
+                    actual = sinus.Evaluate(0.6f);
+                    Assert.AreEqual(Math.Sin(0.6 * Math.PI), actual, 0.001);
+                    actual = sinus.Evaluate(0.9f);
+                    Assert.AreEqual(Math.Sin(0.9 * Math.PI), actual, 0.001);
+
+                    actual = cosinus.Evaluate(0.1f);
+                    Assert.AreEqual(Math.Cos(0.1 * Math.PI), actual, 0.001);
+                    actual = cosinus.Evaluate(0.6f);
+                    Assert.AreEqual(Math.Cos(0.6 * Math.PI), actual, 0.001);
+                    actual = cosinus.Evaluate(0.9f);
+                    Assert.AreEqual(Math.Cos(0.9 * Math.PI), actual, 0.001);
+
+                    actual = tangent.Evaluate(0.1f);
+                    Assert.AreEqual(Math.Tan(0.1 * Math.PI), actual, 0.001);
+                    actual = tangent.Evaluate(0.6f);
+                    Assert.AreEqual(Math.Tan(0.6 * Math.PI), actual, 0.001);
+                    actual = tangent.Evaluate(0.9f);
+                    Assert.AreEqual(Math.Tan(0.9 * Math.PI), actual, 0.001);
+
+                    actual = reverse_sinus.Evaluate(0.1f);
+                    Assert.AreEqual(Math.Asin(0.1) / Math.PI, actual, 0.001);
+                    actual = reverse_sinus.Evaluate(0.6f);
+                    Assert.AreEqual(Math.Asin(0.6) / Math.PI, actual, 0.001);
+                    actual = reverse_sinus.Evaluate(0.9f);
+                    Assert.AreEqual(Math.Asin(0.9) / Math.PI, actual, 0.001);
+
+                    actual = reverse_cosinus.Evaluate(0.1f);
+                    Assert.AreEqual(Math.Acos(0.1) / Math.PI, actual, 0.001);
+                    actual = reverse_cosinus.Evaluate(0.6f);
+                    Assert.AreEqual(Math.Acos(0.6) / Math.PI, actual, 0.001);
+                    actual = reverse_cosinus.Evaluate(0.9f);
+                    Assert.AreEqual(Math.Acos(0.9) / Math.PI, actual, 0.001);
+                }
+            }
+
+            double MyFns(int Type, double[] Params, double R)
+            {
+                switch (Type)
+                {
+                    case TYPE_SIN:
+                        return Params[0] * Math.Sin(R * Math.PI);
+                    case -TYPE_SIN:
+                        return Math.Asin(R) / (Math.PI * Params[0]);
+                    case TYPE_COS:
+                        return Params[0] * Math.Cos(R * Math.PI);
+                    case -TYPE_COS:
+                        return Math.Acos(R) / (Math.PI * Params[0]);
+                    default:
+                        return -1.0;
+                }
+            }
+
+            double MyFns2(int Type, double[] Params, double R)
+            {
+                switch (Type)
+                {
+                    case TYPE_TAN:
+                        return Params[0] * Math.Tan(R * Math.PI);
+                    case -TYPE_TAN:
+                        return Math.Atan(R) / (Math.PI * Params[0]);
+                    default:
+                        return -1.0;
+                }
+            }
+
+            double Rec709Math(int Type, double[] Params, double R)
+            {
+                double Fun = 0;
+
+                switch (Type)
+                {
+                    case TYPE_709:
+                        if (R <= (Params[3] * Params[4])) Fun = R / Params[3];
+                        else Fun = Math.Pow(((R - Params[2]) / Params[1]), Params[0]);
+                        break;
+                    case -TYPE_709:
+                        if (R <= Params[4]) Fun = R * Params[3];
+                        else Fun = Params[1] * Math.Pow(R, (1 / Params[0])) + Params[2];
+                        break;
+                }
+
+                return Fun;
+            }
+        }
     }
 }
