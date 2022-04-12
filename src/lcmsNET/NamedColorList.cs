@@ -66,7 +66,7 @@ namespace lcmsNET
         public static NamedColorList Create(Context context, uint n, uint colorantCount, string prefix, string suffix)
         {
             return new NamedColorList(
-                    Interop.AllocNamedColorList(context?.Handle ?? IntPtr.Zero,
+                    Interop.AllocNamedColorList(Helper.GetHandle(context),
                             n, colorantCount, prefix ?? string.Empty, suffix ?? string.Empty), context);
         }
 

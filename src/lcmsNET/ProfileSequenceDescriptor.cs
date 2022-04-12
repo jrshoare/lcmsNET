@@ -66,7 +66,7 @@ namespace lcmsNET
         public static ProfileSequenceDescriptor Create(Context context, uint nItems)
         {
             return new ProfileSequenceDescriptor(
-                    Interop.AllocProfileSequenceDescription(context?.Handle ?? IntPtr.Zero, nItems), context);
+                    Interop.AllocProfileSequenceDescription(Helper.GetHandle(context), nItems), context);
         }
 
         /// <summary>

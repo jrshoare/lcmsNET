@@ -197,7 +197,7 @@ namespace lcmsNET
         }
         private unsafe void SetManufacturer(MultiLocalizedUnicode value)
         {
-            SeqDesc->Manufacturer = value?.Handle ?? IntPtr.Zero;
+            SeqDesc->Manufacturer = Helper.GetHandle(value);
         }
         private unsafe MultiLocalizedUnicode GetModel()
         {
@@ -206,7 +206,7 @@ namespace lcmsNET
         }
         private unsafe void SetModel(MultiLocalizedUnicode value)
         {
-            SeqDesc->Model = value?.Handle ?? IntPtr.Zero;
+            SeqDesc->Model = Helper.GetHandle(value);
         }
         private unsafe MultiLocalizedUnicode GetDescription()
         {
@@ -215,7 +215,7 @@ namespace lcmsNET
         }
         private unsafe void SetDescription(MultiLocalizedUnicode value)
         {
-            SeqDesc->Description = value?.Handle ?? IntPtr.Zero;
+            SeqDesc->Description = Helper.GetHandle(value);
         }
 
         private void EnsureNotClosed()

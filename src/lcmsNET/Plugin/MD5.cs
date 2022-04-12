@@ -52,7 +52,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public static MD5 Create(Context context = null)
         {
-            return new MD5(Interop.MD5Alloc(context?.Handle ?? IntPtr.Zero), context);
+            return new MD5(Interop.MD5Alloc(Helper.GetHandle(context)), context);
         }
 
         /// <summary>

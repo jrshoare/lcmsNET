@@ -47,5 +47,10 @@ namespace lcmsNET.Impl
             ascii.GetChars(asciiBytes, 0, asciiBytes.Length, asciiChars, 0);
             return new string(asciiChars);
         }
+
+        public static IntPtr GetHandle<T>(CmsHandle<T> cmsHandle)
+        {
+            return cmsHandle?.Handle ?? IntPtr.Zero;
+        }
     }
 }

@@ -56,7 +56,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreatePlaceholder(Context context = null)
         {
-            return new Profile(Interop.CreatePlaceholder(context?.Handle ?? IntPtr.Zero), context);
+            return new Profile(Interop.CreatePlaceholder(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace lcmsNET
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
-            return new Profile(Interop.CreateRGB(context?.Handle ?? IntPtr.Zero, whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
+            return new Profile(Interop.CreateRGB(Helper.GetHandle(context), whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateGray(Context context, in CIExyY whitePoint, ToneCurve transferFunction)
         {
-            return new Profile(Interop.CreateGray(context?.Handle ?? IntPtr.Zero, whitePoint, transferFunction.Handle), context);
+            return new Profile(Interop.CreateGray(Helper.GetHandle(context), whitePoint, transferFunction.Handle), context);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateLinearizationDeviceLink(Context context, ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
-            return new Profile(Interop.CreateLinearizationDeviceLink(context?.Handle ?? IntPtr.Zero, Convert.ToUInt32(space),
+            return new Profile(Interop.CreateLinearizationDeviceLink(Helper.GetHandle(context), Convert.ToUInt32(space),
                     transferFunction.Select(_ => _.Handle).ToArray()), context);
         }
 
@@ -217,7 +217,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateInkLimitingDeviceLink(Context context, ColorSpaceSignature space, double limit)
         {
-            return new Profile(Interop.CreateInkLimitingDeviceLink(context?.Handle ?? IntPtr.Zero, Convert.ToUInt32(space), limit), context);
+            return new Profile(Interop.CreateInkLimitingDeviceLink(Helper.GetHandle(context), Convert.ToUInt32(space), limit), context);
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateLab2(Context context, in CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab2(context?.Handle ?? IntPtr.Zero, whitePoint), context);
+            return new Profile(Interop.CreateLab2(Helper.GetHandle(context), whitePoint), context);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateLab4(Context context, in CIExyY whitePoint)
         {
-            return new Profile(Interop.CreateLab4(context?.Handle ?? IntPtr.Zero, whitePoint), context);
+            return new Profile(Interop.CreateLab4(Helper.GetHandle(context), whitePoint), context);
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateXYZ(Context context = null)
         {
-            return new Profile(Interop.CreateXYZ(context?.Handle ?? IntPtr.Zero), context);
+            return new Profile(Interop.CreateXYZ(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -347,7 +347,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Create_sRGB(Context context = null)
         {
-            return new Profile(Interop.Create_sRGB(context?.Handle ?? IntPtr.Zero), context);
+            return new Profile(Interop.Create_sRGB(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -363,7 +363,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateNull(Context context = null)
         {
-            return new Profile(Interop.CreateNull(context?.Handle ?? IntPtr.Zero), context);
+            return new Profile(Interop.CreateNull(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -414,7 +414,7 @@ namespace lcmsNET
         public static Profile CreateBCHSWabstract(Context context, int nLutPoints, double bright, double contrast,
                 double hue, double saturation, int tempSrc, int tempDest)
         {
-            return new Profile(Interop.CreateBCHSWabstract(context?.Handle ?? IntPtr.Zero, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
+            return new Profile(Interop.CreateBCHSWabstract(Helper.GetHandle(context), nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
         }
         #endregion
 
@@ -452,7 +452,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, string filepath, string access)
         {
-            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, filepath, access), context);
+            return new Profile(Interop.OpenProfile(Helper.GetHandle(context), filepath, access), context);
         }
 
         /// <summary>
@@ -487,7 +487,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, byte[] memory)
         {
-            return new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, memory), context);
+            return new Profile(Interop.OpenProfile(Helper.GetHandle(context), memory), context);
         }
 
         /// <summary>
@@ -505,7 +505,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, IOHandler iohandler)
         {
-            var profile = new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero), context, iohandler);
+            var profile = new Profile(Interop.OpenProfile(Helper.GetHandle(context), Helper.GetHandle(iohandler)), context, iohandler);
             iohandler?.Release();   // object is now owned by the profile
             return profile;
         }
@@ -526,7 +526,8 @@ namespace lcmsNET
         /// </remarks>
         public static Profile Open(Context context, IOHandler iohandler, bool writeable)
         {
-            var profile = new Profile(Interop.OpenProfile(context?.Handle ?? IntPtr.Zero, iohandler?.Handle ?? IntPtr.Zero, writeable ? 1 : 0), context, iohandler);
+            var profile = new Profile(Interop.OpenProfile(Helper.GetHandle(context), Helper.GetHandle(iohandler),
+                    writeable ? 1 : 0), context, iohandler);
             iohandler?.Release();   // object is now owned by the profile
             return profile;
         }
@@ -578,7 +579,7 @@ namespace lcmsNET
         {
             EnsureNotClosed();
 
-            return Interop.SaveProfile(handle, iohandler?.Handle ?? IntPtr.Zero);
+            return Interop.SaveProfile(handle, Helper.GetHandle(iohandler));
         }
         #endregion
 
@@ -991,8 +992,8 @@ namespace lcmsNET
         {
             EnsureNotClosed();
 
-            return Interop.GetPostScriptColorResource(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(type),
-                    Convert.ToUInt32(intent), Convert.ToUInt32(flags), handler?.Handle ?? IntPtr.Zero);
+            return Interop.GetPostScriptColorResource(handle, Helper.GetHandle(context), Convert.ToUInt32(type),
+                    Convert.ToUInt32(intent), Convert.ToUInt32(flags), Helper.GetHandle(handler));
         }
 
         /// <summary>
@@ -1009,7 +1010,7 @@ namespace lcmsNET
         {
             EnsureNotClosed();
 
-            return Interop.GetPostScriptCSA(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+            return Interop.GetPostScriptCSA(handle, Helper.GetHandle(context), Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
 
         /// <summary>
@@ -1026,7 +1027,7 @@ namespace lcmsNET
         {
             EnsureNotClosed();
 
-            return Interop.GetPostScriptCRD(handle, context?.ID ?? IntPtr.Zero, Convert.ToUInt32(intent), Convert.ToUInt32(flags));
+            return Interop.GetPostScriptCRD(handle, Helper.GetHandle(context), Convert.ToUInt32(intent), Convert.ToUInt32(flags));
         }
         #endregion
 

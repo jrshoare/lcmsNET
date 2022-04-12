@@ -67,7 +67,7 @@ namespace lcmsNET
         /// </remarks>
         public static Pipeline Create(Context context, uint inputChannels, uint outputChannels)
         {
-            return new Pipeline(Interop.PipelineAlloc(context?.Handle ?? IntPtr.Zero, inputChannels, outputChannels), context);
+            return new Pipeline(Interop.PipelineAlloc(Helper.GetHandle(context), inputChannels, outputChannels), context);
         }
 
         /// <summary>

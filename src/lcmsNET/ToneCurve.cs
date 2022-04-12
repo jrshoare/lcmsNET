@@ -99,7 +99,7 @@ namespace lcmsNET
         {
             if (parameters?.Length > 10) throw new ArgumentException($"'{nameof(parameters)}' array size must not exceed 10.");
 
-            return new ToneCurve(Interop.BuildParametricToneCurve(context?.Handle ?? IntPtr.Zero, type, parameters), context);
+            return new ToneCurve(Interop.BuildParametricToneCurve(Helper.GetHandle(context), type, parameters), context);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace lcmsNET
         /// </remarks>
         public static ToneCurve BuildGamma(Context context, double gamma)
         {
-            return new ToneCurve(Interop.BuildGammaToneCurve(context?.Handle ?? IntPtr.Zero, gamma), context);
+            return new ToneCurve(Interop.BuildGammaToneCurve(Helper.GetHandle(context), gamma), context);
         }
         #endregion
 
@@ -135,7 +135,7 @@ namespace lcmsNET
         /// </remarks>
         public static ToneCurve BuildSegmented(Context context, CurveSegment[] segments)
         {
-            return new ToneCurve(Interop.BuildSegmentedToneCurve(context?.Handle ?? IntPtr.Zero, segments), context);
+            return new ToneCurve(Interop.BuildSegmentedToneCurve(Helper.GetHandle(context), segments), context);
         }
         #endregion
 
@@ -154,7 +154,7 @@ namespace lcmsNET
         /// </remarks>
         public static ToneCurve BuildTabulated(Context context, ushort[] values)
         {
-            return new ToneCurve(Interop.BuildTabulatedToneCurve(context?.Handle ?? IntPtr.Zero, values), context);
+            return new ToneCurve(Interop.BuildTabulatedToneCurve(Helper.GetHandle(context), values), context);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace lcmsNET
         /// </remarks>
         public static ToneCurve BuildTabulated(Context context, float[] values)
         {
-            return new ToneCurve(Interop.BuildTabulatedToneCurve(context?.Handle ?? IntPtr.Zero, values), context);
+            return new ToneCurve(Interop.BuildTabulatedToneCurve(Helper.GetHandle(context), values), context);
         }
         #endregion
 
@@ -252,7 +252,7 @@ namespace lcmsNET
             if (other is null) throw new ArgumentNullException(nameof(other));
             other.EnsureNotClosed();
 
-            return new ToneCurve(Interop.JoinToneCurve(context?.Handle ?? IntPtr.Zero, Handle, other.Handle, nPoints));
+            return new ToneCurve(Interop.JoinToneCurve(Helper.GetHandle(context), Handle, other.Handle, nPoints));
         }
 
         /// <summary>

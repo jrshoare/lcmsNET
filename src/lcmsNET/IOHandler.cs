@@ -61,7 +61,7 @@ namespace lcmsNET
         /// </remarks>
         public static IOHandler Open(Context context)
         {
-            return new IOHandler(Interop.OpenIOHandler(context?.Handle ?? IntPtr.Zero), context);
+            return new IOHandler(Interop.OpenIOHandler(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace lcmsNET
         /// </remarks>
         public static IOHandler Open(Context context, string filepath, string access)
         {
-            return new IOHandler(Interop.OpenIOHandler(context?.Handle ?? IntPtr.Zero, filepath, access), context);
+            return new IOHandler(Interop.OpenIOHandler(Helper.GetHandle(context), filepath, access), context);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace lcmsNET
         /// </remarks>
         public static IOHandler Open(Context context, IntPtr handle, uint memorySize, string access)
         {
-            return new IOHandler(Interop.OpenIOHandler(context?.Handle ?? IntPtr.Zero, handle, memorySize, access), context);
+            return new IOHandler(Interop.OpenIOHandler(Helper.GetHandle(context), handle, memorySize, access), context);
         }
         #endregion
 

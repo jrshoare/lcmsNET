@@ -49,7 +49,7 @@ namespace lcmsNET
         /// </remarks>
         public static IT8 Create(Context context)
         {
-            return new IT8(Interop.IT8Alloc(context?.Handle ?? IntPtr.Zero), context);
+            return new IT8(Interop.IT8Alloc(Helper.GetHandle(context)), context);
         }
 
         #region Tables
@@ -97,7 +97,7 @@ namespace lcmsNET
         /// </remarks>
         public static IT8 Open(Context context, string filepath)
         {
-            return new IT8(Interop.IT8LoadFromFile(context?.Handle ?? IntPtr.Zero, filepath), context);
+            return new IT8(Interop.IT8LoadFromFile(Helper.GetHandle(context), filepath), context);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace lcmsNET
         /// </remarks>
         public static IT8 Open(Context context, byte[] memory)
         {
-            return new IT8(Interop.IT8LoadFromMem(context?.Handle ?? IntPtr.Zero, memory), context);
+            return new IT8(Interop.IT8LoadFromMem(Helper.GetHandle(context), memory), context);
         }
 
         /// <summary>

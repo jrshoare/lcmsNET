@@ -81,7 +81,7 @@ namespace lcmsNET
         /// </remarks>
         public static Dict Create(Context context)
         {
-            return new Dict(Interop.DictAlloc(context?.Handle ?? IntPtr.Zero), context);
+            return new Dict(Interop.DictAlloc(Helper.GetHandle(context)), context);
         }
 
         /// <summary>
@@ -127,9 +127,7 @@ namespace lcmsNET
         {
             EnsureNotClosed();
 
-            return Interop.DictAddEntry(handle, name, value,
-                    displayName?.Handle ?? IntPtr.Zero,
-                    displayValue?.Handle ?? IntPtr.Zero) != 0;
+            return Interop.DictAddEntry(handle, name, value, Helper.GetHandle(displayName), Helper.GetHandle(displayValue)) != 0;
         }
 
         #region IEnumerable<DictEntry> Support

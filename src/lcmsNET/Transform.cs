@@ -55,8 +55,8 @@ namespace lcmsNET
         public static Transform Create(Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(input.Handle, inputFormat,
-                    output.Handle, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
+            return new Transform(Interop.CreateTransform(Helper.GetHandle(input), inputFormat,
+                    Helper.GetHandle(output), outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(context?.Handle ?? IntPtr.Zero, input.Handle, inputFormat,
-                    output.Handle, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
+            return new Transform(Interop.CreateTransform(Helper.GetHandle(context), Helper.GetHandle(input),
+                    inputFormat, Helper.GetHandle(output), outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace lcmsNET
         public static Transform Create(Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Profile proofing, Intent intent, Intent proofingIntent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(input.Handle, inputFormat,
-                    output.Handle, outputFormat, proofing.Handle, Convert.ToUInt32(intent),
+            return new Transform(Interop.CreateTransform(Helper.GetHandle(input), inputFormat,
+                    Helper.GetHandle(output), outputFormat, Helper.GetHandle(proofing), Convert.ToUInt32(intent),
                     Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)));
         }
 
@@ -143,9 +143,9 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile input, uint inputFormat, Profile output, uint outputFormat,
                 Profile proofing, Intent intent, Intent proofingIntent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateTransform(context?.Handle ?? IntPtr.Zero, input.Handle, inputFormat,
-                    output.Handle, outputFormat, proofing.Handle, Convert.ToUInt32(intent),
-                    Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)), context);
+            return new Transform(Interop.CreateTransform(Helper.GetHandle(context), Helper.GetHandle(input),
+                    inputFormat, Helper.GetHandle(output), outputFormat, Helper.GetHandle(proofing),
+                    Convert.ToUInt32(intent), Convert.ToUInt32(proofingIntent), Convert.ToUInt32(flags)), context);
         }
 
         /// <summary>
@@ -168,7 +168,8 @@ namespace lcmsNET
         public static Transform Create(Profile[] profiles, uint inputFormat, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateMultiprofileTransform(profiles.Select(_ => _.Handle).ToArray(),
+            return new Transform(Interop.CreateMultiprofileTransform(
+                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
         }
 
@@ -193,8 +194,8 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile[] profiles, uint inputFormat, uint outputFormat,
                 Intent intent, CmsFlags flags)
         {
-            return new Transform(Interop.CreateMultiprofileTransform(context?.Handle ?? IntPtr.Zero,
-                    profiles.Select(_ => _.Handle).ToArray(),
+            return new Transform(Interop.CreateMultiprofileTransform(Helper.GetHandle(context),
+                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
@@ -228,10 +229,10 @@ namespace lcmsNET
         public static Transform Create(Context context, Profile[] profiles, bool[] bpc, Intent[] intents,
                 double[] adaptationStates, Profile gamut, int gamutPCSPosition, uint inputFormat, uint outputFormat, CmsFlags flags)
         {
-            return new Transform(Interop.CreateExtendedTransform(context?.Handle ?? IntPtr.Zero,
-                    profiles.Select(_ => _.Handle).ToArray(),
+            return new Transform(Interop.CreateExtendedTransform(Helper.GetHandle(context),
+                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
                     bpc.Select(_ => _ ? 1 : 0).ToArray(),
-                    intents.Select(_ => Convert.ToUInt32(_)).ToArray(), adaptationStates, gamut?.Handle ?? IntPtr.Zero,
+                    intents.Select(_ => Convert.ToUInt32(_)).ToArray(), adaptationStates, Helper.GetHandle(gamut),
                     gamutPCSPosition, inputFormat, outputFormat, Convert.ToUInt32(flags)), context);
         }
 

@@ -71,7 +71,7 @@ namespace lcmsNET
         /// </remarks>
         public static MultiLocalizedUnicode Create(Context context, uint nItems = 0)
         {
-            return new MultiLocalizedUnicode(Interop.MLUAlloc(context?.Handle ?? IntPtr.Zero, nItems), context);
+            return new MultiLocalizedUnicode(Interop.MLUAlloc(Helper.GetHandle(context), nItems), context);
         }
 
         /// <summary>

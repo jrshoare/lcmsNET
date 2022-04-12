@@ -46,7 +46,7 @@ namespace lcmsNET
         /// </remarks>
         public static GamutBoundaryDescriptor Create(Context context)
         {
-            return new GamutBoundaryDescriptor(Interop.GBDAlloc(context?.Handle ?? IntPtr.Zero), context);
+            return new GamutBoundaryDescriptor(Interop.GBDAlloc(Helper.GetHandle(context)), context);
         }
 
         /// <summary>

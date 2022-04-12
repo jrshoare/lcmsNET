@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Impl;
 using System;
 
 namespace lcmsNET.Plugin
@@ -41,7 +42,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public static IntPtr Malloc(Context context, uint size)
         {
-            return Interop.Malloc(context?.Handle ?? IntPtr.Zero, size);
+            return Interop.Malloc(Helper.GetHandle(context), size);
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public static void Free(Context context, IntPtr ptr)
         {
-            Interop.Free(context?.Handle ?? IntPtr.Zero, ptr);
+            Interop.Free(Helper.GetHandle(context), ptr);
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public static IntPtr MallocZero(Context context, uint size)
         {
-            return Interop.MallocZero(context?.Handle ?? IntPtr.Zero, size);
+            return Interop.MallocZero(Helper.GetHandle(context), size);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace lcmsNET.Plugin
         /// </remarks>
         public static IntPtr Calloc(Context context, uint count, uint size)
         {
-            return Interop.Calloc(context?.Handle ?? IntPtr.Zero, count, size);
+            return Interop.Calloc(Helper.GetHandle(context), count, size);
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace lcmsNET.Plugin
         /// <returns>A pointer to the unmanaged memory newly allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
         public static IntPtr Realloc(Context context, IntPtr ptr, uint newSize)
         {
-            return Interop.Realloc(context?.Handle ?? IntPtr.Zero, ptr, newSize);
+            return Interop.Realloc(Helper.GetHandle(context), ptr, newSize);
         }
 
         /// <summary>
@@ -114,7 +115,7 @@ namespace lcmsNET.Plugin
         /// <returns>A pointer to the unmanaged memory newly allocated, or <see cref="IntPtr.Zero"/> on error.</returns>
         public static IntPtr Duplicate(Context context, IntPtr ptr, uint size)
         {
-            return Interop.DupMem(context?.Handle ?? IntPtr.Zero, ptr, size);
+            return Interop.DupMem(Helper.GetHandle(context), ptr, size);
         }
     }
 }
