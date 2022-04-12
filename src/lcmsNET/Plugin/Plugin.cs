@@ -742,4 +742,106 @@ namespace lcmsNET.Plugin
         public const int MAX_TYPES_IN_LCMS_PLUGIN = 20;
     }
     #endregion
+
+    #region Formatters plug-in
+    /// <summary>
+    /// Defines the possible formatter directions.
+    /// </summary>
+    public enum FormatterDirection
+    {
+        /// <summary>
+        /// Input direction.
+        /// </summary>
+        Input = 0,
+        /// <summary>
+        /// Output direction.
+        /// </summary>
+        Output = 1
+    }
+
+    /// <summary>
+    /// Defines a delegate for a 16 bit unsigned integer formatter.
+    /// </summary>
+    /// <param name="CMMCargo"></param>
+    /// <param name="Values"></param>
+    /// <param name="Buffer"></param>
+    /// <param name="Stride"></param>
+    /// <returns></returns>
+    public delegate IntPtr Formatter16(
+        IntPtr CMMCargo,    // struct _cmstransfom_struct *
+        IntPtr Values,      // ushort[]
+        IntPtr Buffer,      // byte *
+        [MarshalAs(UnmanagedType.U4)] uint Stride);
+
+    /// <summary>
+    /// Defines a delegate for a 32 bit float formatter.
+    /// </summary>
+    /// <param name="CMMCargo"></param>
+    /// <param name="Values"></param>
+    /// <param name="Buffer"></param>
+    /// <param name="Stride"></param>
+    /// <returns></returns>
+    public delegate IntPtr FormatterFloat(
+        IntPtr CMMCargo,    // struct _cmstransfom_struct *
+        IntPtr Values,      // float[]
+        IntPtr Buffer,      // byte *
+        [MarshalAs(UnmanagedType.I4)] uint Stride);
+
+    /// <summary>
+    /// Defines a pointer to a formatter that can be either 16 bit unsigned or 32 bit float.
+    /// </summary>
+    public struct Formatter
+    {
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="Formatter16"/> or <see cref="FormatterFloat"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Fmt;
+    }
+
+    /// <summary>
+    /// Defines a delegate to implement a format factory.
+    /// </summary>
+    /// <param name="Type">The type to format.</param>
+    /// <param name="Dir">The required direction for the format.</param>
+    /// <param name="dwFlags">Flags to select the formatter.</param>
+    /// <returns></returns>
+    public delegate Formatter FormatterFactory(
+        [MarshalAs(UnmanagedType.U4)] uint Type,
+        [MarshalAs(UnmanagedType.I4)] FormatterDirection Dir,
+        [MarshalAs(UnmanagedType.U4)] uint dwFlags);
+
+    /// <summary>
+    /// Defines the formatters plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginFormatters
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="FormatterFactory"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr FormattersFactory;
+
+        /// <summary>
+        /// Identifies formatter as 16 bit.
+        /// </summary>
+        public const uint PACK_FLAGS_16BIT = 0x0000;
+        /// <summary>
+        /// Identifies formatter as 32 bit float.
+        /// </summary>
+        public const uint PACK_FLAGS_FLOAT = 0x0001;
+    }
+    #endregion
 }

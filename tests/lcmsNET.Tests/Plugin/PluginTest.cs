@@ -795,7 +795,7 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void PluginParametricCurveTest()
+        public void PluginParametricCurvesTest()
         {
             // Arrange
             const int TYPE_SIN = 1000;
@@ -971,6 +971,148 @@ namespace lcmsNET.Tests.Plugin
 
                 return Fun;
             }
+        }
+
+        [TestMethod]
+        public void PluginFormattersTest()
+        {
+            // Arrange
+            uint TYPE_RGB_565 = COLORSPACE_SH(PixelType.RGB) | CHANNELS_SH(3) | BYTES_SH(0) | (1 << 23);
+            var myUnroll565 = new Formatter16(MyUnroll565);
+            var myPack565 = new Formatter16(MyPack565);
+            var myFormatterFactory = new FormatterFactory(MyFormatterFactory);
+            var myFormatterFactory2 = new FormatterFactory(MyFormatterFactory2);
+
+            PluginFormatters formattersSample = new PluginFormatters
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.Formatters,
+                    Next = IntPtr.Zero
+                },
+                FormattersFactory = Marshal.GetFunctionPointerForDelegate(myFormatterFactory)
+            };
+
+            int rawsize = Marshal.SizeOf(formattersSample);
+            IntPtr formattersSamplePlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(formattersSample, formattersSamplePlugin, false);
+
+            PluginFormatters formattersSample2 = new PluginFormatters
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.Formatters,
+                    Next = IntPtr.Zero
+                },
+                FormattersFactory = Marshal.GetFunctionPointerForDelegate(myFormatterFactory2)
+            };
+
+            rawsize = Marshal.SizeOf(formattersSample2);
+            IntPtr formattersSample2Plugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(formattersSample2, formattersSample2Plugin, false);
+
+            // Act
+            using (var ctx = Context.Create(formattersSamplePlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            {
+                cpy.RegisterPlugins(formattersSample2Plugin);
+
+                using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+                using (var transform = Transform.Create(cpy2, null, TYPE_RGB_565,
+                        null, TYPE_RGB_565, Intent.Perceptual, CmsFlags.NullTransform))
+                {
+                    byte[] stream = { 0xFF, 0xFF, 0x34, 0x12, 0x00, 0x00, 0xDD, 0x33 };
+                    byte[] result = new byte[stream.Length];
+
+                    transform.DoTransform(stream, result, 4);
+
+                    // Assert
+                    for (int i = 0; i < stream.Length; i++)
+                    {
+                        Assert.AreEqual(stream[i], result[i]);
+                    }
+                }
+            }
+
+            Formatter MyFormatterFactory(uint Type, FormatterDirection Dir, uint dwFlags)
+            {
+                Formatter result = new Formatter
+                {
+                    Fmt = IntPtr.Zero
+                };
+
+                if ((Type == TYPE_RGB_565) &&
+                    ((dwFlags & PluginFormatters.PACK_FLAGS_FLOAT) == 0) &&
+                    (Dir == FormatterDirection.Input))
+                {
+                    result.Fmt = Marshal.GetFunctionPointerForDelegate(myUnroll565);
+                }
+
+                return result;
+            }
+
+            Formatter MyFormatterFactory2(uint Type, FormatterDirection Dir, uint dwFlags)
+            {
+                Formatter result = new Formatter
+                {
+                    Fmt = IntPtr.Zero
+                };
+
+                if ((Type == TYPE_RGB_565) &&
+                    ((dwFlags & PluginFormatters.PACK_FLAGS_FLOAT) == 0) &&
+                    (Dir == FormatterDirection.Output))
+                {
+                    result.Fmt = Marshal.GetFunctionPointerForDelegate(myPack565);
+                }
+
+                return result;
+            }
+
+            IntPtr MyUnroll565(IntPtr CMMCargo, IntPtr Values, IntPtr Buffer, uint Stride)
+            {
+                unsafe
+                {
+                    ushort pixel = *(ushort*)Buffer.ToPointer();
+
+                    double r = Math.Floor((pixel & 31) * 65535.0 / 31.0 + 0.5);
+                    double g = Math.Floor((((pixel >> 5) & 63) * 65535.0) / 63.0 + 0.5);
+                    double b = Math.Floor((((pixel >> 11) & 31) * 65535.0) / 31.0 + 0.5);
+
+                    ushort *wIn = (ushort*)Values.ToPointer();
+                    wIn[2] = (ushort)r;
+                    wIn[1] = (ushort)g;
+                    wIn[0] = (ushort)b;
+
+                    return Buffer + 2;
+                }
+            }
+
+            IntPtr MyPack565(IntPtr CMMCargo, IntPtr Values, IntPtr Buffer, uint Stride)
+            {
+                unsafe
+                {
+                    ushort *wOut = (ushort*)Values.ToPointer();
+
+                    int r = (int)Math.Floor((wOut[2] * 31) / 65535.0 + 0.5);
+                    int g = (int)Math.Floor((wOut[1] * 63) / 65535.0 + 0.5);
+                    int b = (int)Math.Floor((wOut[0] * 31) / 65535.0 + 0.5);
+
+                    ushort pixel = (ushort)((r & 31) | ((g & 63) << 5) | ((b & 31) << 11));
+
+                    ushort *output = (ushort*)Buffer.ToPointer();
+                    *output = pixel;
+
+                    return Buffer + 2;
+                }
+            }
+
+            uint COLORSPACE_SH(PixelType s) { return Convert.ToUInt32(s) << 16; }
+            uint CHANNELS_SH(uint s) { return s << 3; }
+            uint BYTES_SH(uint s) { return s; }
         }
     }
 }
