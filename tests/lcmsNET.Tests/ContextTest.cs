@@ -349,16 +349,22 @@ namespace lcmsNET.Tests
             // Arrange
             using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
             {
-
-                // Act
-                var supportedIntents = context.SupportedIntents;
-
-                // Assert
-                Assert.IsNotNull(supportedIntents);
-
-                foreach (var (code, description) in supportedIntents)
+                try
                 {
-                    TestContext.WriteLine($"code: {code}, description: {description}");
+                    // Act
+                    var supportedIntents = context.SupportedIntents;
+
+                    // Assert
+                    Assert.IsNotNull(supportedIntents);
+
+                    foreach (var (code, description) in supportedIntents)
+                    {
+                        TestContext.WriteLine($"code: {code}, description: {description}");
+                    }
+                }
+                catch (EntryPointNotFoundException)
+                {
+                    Assert.Inconclusive("Requires Little CMS 2.6 or later.");
                 }
             }
         }

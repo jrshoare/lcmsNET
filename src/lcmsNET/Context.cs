@@ -247,8 +247,13 @@ namespace lcmsNET
         public IntPtr ID => Handle;
 
         /// <summary>
-        /// Gets the collection of all supported intents.
+        /// Gets the collection of all supported intents for this context.
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.6 or later.
+        /// </para>
+        /// </remarks>
         public IEnumerable<(uint code, string description)> SupportedIntents => Interop.GetSupportedIntentsTHR(handle);
 
         /// <summary>
