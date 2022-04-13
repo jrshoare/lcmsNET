@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -1563,6 +1564,11 @@ namespace lcmsNET
                 Interop.SetAdaptationState(value);
             }
         }
+
+        /// <summary>
+        /// Gets the collection of all supported intents.
+        /// </summary>
+        public static IEnumerable<(uint code, string description)> SupportedIntents => Interop.GetSupportedIntents();
 
         #region Pre-defined formatters
         /// <summary>

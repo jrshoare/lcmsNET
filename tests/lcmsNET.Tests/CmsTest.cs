@@ -459,5 +459,20 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expected, actual);
             }
         }
+
+        [TestMethod]
+        public void SupportedIntentsTest()
+        {
+            // Act
+            var supportedIntents = Cms.SupportedIntents;
+
+            // Assert
+            Assert.IsNotNull(supportedIntents);
+
+            foreach (var (code, description) in supportedIntents)
+            {
+                TestContext.WriteLine($"code: {code}, description: {description}");
+            }
+        }
     }
 }

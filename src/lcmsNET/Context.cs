@@ -20,6 +20,7 @@
 
 using lcmsNET.Impl;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -244,6 +245,11 @@ namespace lcmsNET
         /// Gets the identifier of this context.
         /// </summary>
         public IntPtr ID => Handle;
+
+        /// <summary>
+        /// Gets the collection of all supported intents.
+        /// </summary>
+        public IEnumerable<(uint code, string description)> SupportedIntents => Interop.GetSupportedIntentsTHR(handle);
 
         /// <summary>
         /// Frees the context handle.

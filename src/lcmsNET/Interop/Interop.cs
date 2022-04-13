@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -117,6 +118,42 @@ namespace lcmsNET
         internal static double TempFromWhitePoint(out double tempK, in CIExyY xyY)
         {
             return TempFromWhitePoint_Internal(out tempK, xyY);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetSupportedIntents", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint GetSupportedIntents_Internal(
+                [MarshalAs(UnmanagedType.U4)] uint nMax,
+                IntPtr Codes,
+                IntPtr Descriptions);
+
+        internal static IEnumerable<(uint code, string description)> GetSupportedIntents()
+        {
+            // get intent count first
+            uint count = GetSupportedIntents_Internal(0, IntPtr.Zero, IntPtr.Zero);
+
+            List<(uint code, string description)> result = new List<(uint code, string description)>();
+
+            unsafe
+            {
+                IntPtr codesPtr = Marshal.AllocHGlobal((int)(count * sizeof(uint)));
+                IntPtr descriptionsPtr = Marshal.AllocHGlobal((int)(count * sizeof(IntPtr)));
+
+                count = GetSupportedIntents_Internal(count, codesPtr, descriptionsPtr);
+
+                uint* codes = (uint*)codesPtr.ToPointer();
+                IntPtr* descriptions = (IntPtr*)descriptionsPtr.ToPointer();
+                for (var i = 0; i < count; i++)
+                {
+                    uint code = codes[i];
+                    string description = Marshal.PtrToStringAnsi(descriptions[i]);
+                    result.Add((code, description));
+                }
+
+                Marshal.FreeHGlobal(descriptionsPtr);
+                Marshal.FreeHGlobal(codesPtr);
+            }
+
+            return result;
         }
     }
 }
