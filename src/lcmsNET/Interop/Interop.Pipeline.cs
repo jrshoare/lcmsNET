@@ -174,5 +174,21 @@ namespace lcmsNET
         {
             return PipelineSetSaveAs8bitsFlag_Internal(handle, on);
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsDefaultICCintents", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr DefaultICCIntents_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint nProfiles,
+                uint[] intents,
+                IntPtr[] profiles,
+                int[] bpc,
+                double[] adaptationStates,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+
+        internal static IntPtr DefaultICCIntents(IntPtr contextID, uint[] intents, IntPtr[] profiles, int[] bpc,
+                double[] adaptationStates, uint flags)
+        {
+            return DefaultICCIntents_Internal(contextID, (uint)profiles.Length, intents, profiles, bpc, adaptationStates, flags);
+        }
     }
 }

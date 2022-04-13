@@ -22,6 +22,7 @@ using lcmsNET.Plugin;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace lcmsNET.Tests.Plugin
 {
@@ -1113,6 +1114,101 @@ namespace lcmsNET.Tests.Plugin
             uint COLORSPACE_SH(PixelType s) { return Convert.ToUInt32(s) << 16; }
             uint CHANNELS_SH(uint s) { return s << 3; }
             uint BYTES_SH(uint s) { return s; }
+        }
+
+        [TestMethod]
+        public void PluginIntentTest()
+        {
+            // Arrange
+            const uint INTENT_DECEPTIVE = 300;
+            var myIntent = new IntentFn(MyNewIntent);
+
+            PluginIntent intentSample = new PluginIntent
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.RenderingIntent,
+                    Next = IntPtr.Zero
+                },
+                Intent = INTENT_DECEPTIVE,
+                Link = Marshal.GetFunctionPointerForDelegate(myIntent),
+                Description = new byte[256]
+            };
+            var description = "bypass gray to gray rendering intent";
+            Encoding.ASCII.GetBytes(description, 0, description.Length, intentSample.Description, 0);
+
+            int rawsize = Marshal.SizeOf(intentSample);
+            IntPtr intentSamplePlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(intentSample, intentSamplePlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(intentSamplePlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using (var linear1 = ToneCurve.BuildGamma(cpy2, 3.0))
+            using (var linear2 = ToneCurve.BuildGamma(cpy2, 1.0))
+            using (var h1 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear1 }))
+            using (var h2 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear2 }))
+            {
+                using (var xform = Transform.Create(cpy2, h1, Cms.TYPE_GRAY_8, h2, Cms.TYPE_GRAY_8, (Intent)INTENT_DECEPTIVE, CmsFlags.None))
+                {
+                    byte[] inBuffer = new byte[] { 10, 20, 30, 40 };
+                    byte[] outBuffer = new byte[inBuffer.Length];
+
+                    xform.DoTransform(inBuffer, outBuffer, inBuffer.Length);
+
+                    // Assert
+                    for (var i = 0; i < inBuffer.Length; i++)
+                    {
+                        Assert.AreEqual(inBuffer[i], outBuffer[i]);
+                    }
+                }
+            }
+
+            IntPtr MyNewIntent(IntPtr contextID,
+                uint nProfiles,
+                IntPtr intents,             // uint[]
+                IntPtr hProfiles,           // IntPtr[]
+                IntPtr BPC,                 // int[]
+                IntPtr AdaptationStates,    // double[]
+                uint flags)
+            {
+                Intent[] ICCIntents = new Intent[nProfiles];
+                Profile[] profiles = new Profile[nProfiles];
+                bool[] bpc = new bool[nProfiles];
+                double[] adaptationStates = new double[nProfiles];
+                Context context = Context.FromHandle(contextID);
+
+                unsafe
+                {
+                    uint* theIntents = (uint*)intents.ToPointer();
+                    IntPtr* pProfiles = (IntPtr*)hProfiles.ToPointer();
+                    int* pBPC = (int*)BPC.ToPointer();
+                    double* pAdaptationStates = (double*)AdaptationStates.ToPointer();
+
+                    for (uint i = 0; i < nProfiles; i++)
+                    {
+                        ICCIntents[i] = (theIntents[i] == INTENT_DECEPTIVE)
+                                ? Intent.Perceptual : (Intent)theIntents[i];
+                        profiles[i] = Profile.FromHandle(pProfiles[i]);
+                        bpc[i] = pBPC[i] != 0;
+                        adaptationStates[i] = pAdaptationStates[i];
+                    }
+
+                    if (profiles[0].ColorSpace != ColorSpaceSignature.GrayData ||
+                        profiles[nProfiles-1].ColorSpace != ColorSpaceSignature.GrayData)
+                    {
+                        return Pipeline.DefaultICCIntents(context,
+                                ICCIntents, profiles, bpc, adaptationStates, (CmsFlags)flags).Handle;
+                    }
+
+                    Pipeline result = Pipeline.Create(context, 1, 1);
+                    result.Insert(Stage.Create(context, 1), StageLoc.At_Begin);
+                    return result.Release();
+                }
+            }
         }
     }
 }

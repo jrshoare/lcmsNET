@@ -22,6 +22,7 @@ using lcmsNET.Impl;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace lcmsNET
 {
@@ -255,6 +256,37 @@ namespace lcmsNET
             EnsureNotClosed();
 
             return Interop.PipelineSetSaveAs8BitsFlag(handle, on ? 1 : 0) != 0;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Pipeline"/> class with default ICC intents.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="intents">The intent to apply on each profile to profile joint.</param>
+        /// <param name="profiles">An array of open profiles.</param>
+        /// <param name="bpc">An array of black point compensation states for each profile to profile joint.</param>
+        /// <param name="adaptationStates">An array of observer adaptation states for each profile to profile joint.</param>
+        /// <param name="flags">The flags to control the process.</param>
+        /// <returns></returns>
+        public static Pipeline DefaultICCIntents(Context context, Intent[] intents, Profile[] profiles, bool[] bpc,
+                double[] adaptationStates, CmsFlags flags)
+        {
+            return new Pipeline(Interop.DefaultICCIntents(Helper.GetHandle(context),
+                    intents.Select(_ => Convert.ToUInt32(_)).ToArray(),
+                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
+                    bpc.Select(_ => _ ? 1 : 0).ToArray(),
+                    adaptationStates, Convert.ToUInt32(flags)),
+                    context);
+        }
+
+        /// <summary>
+        /// Releases ownership of the pipeline.
+        /// </summary>
+        /// <returns>The pointer to the pipeline.</returns>
+        public new IntPtr Release()
+        {
+            base.Release();
+            return Handle;
         }
 
         /// <summary>

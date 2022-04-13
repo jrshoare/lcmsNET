@@ -31,10 +31,23 @@ namespace lcmsNET
     /// </summary>
     public sealed class Profile : CmsHandle<Profile>
     {
-        internal Profile(IntPtr handle, Context context = null, IOHandler iohandler = null)
-            : base(handle, context, isOwner: true)
+        internal Profile(IntPtr handle, Context context = null, IOHandler iohandler = null, bool isOwner = true)
+            : base(handle, context, isOwner: isOwner)
         {
             IOHandler = iohandler;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Profile"/> class from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing profile.</param>
+        /// <returns>A new <see cref="Profile"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        public static Profile FromHandle(IntPtr handle)
+        {
+            return new Profile(handle, isOwner: false);
         }
 
         #region Predefined virtual profiles

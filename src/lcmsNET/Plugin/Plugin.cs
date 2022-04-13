@@ -844,4 +844,59 @@ namespace lcmsNET.Plugin
         public const uint PACK_FLAGS_FLOAT = 0x0001;
     }
     #endregion
+
+    #region Intent plug-in
+    /// <summary>
+    /// Defines a delegate to accept a chain of profiles and return a pipeline
+    /// implementing a new intent.
+    /// </summary>
+    /// <param name="contextID"></param>
+    /// <param name="nProfiles"></param>
+    /// <param name="intents"></param>
+    /// <param name="profiles"></param>
+    /// <param name="bpc"></param>
+    /// <param name="adaptationStates"></param>
+    /// <param name="flags"></param>
+    /// <returns></returns>
+    public delegate IntPtr IntentFn(IntPtr contextID,
+            [MarshalAs(UnmanagedType.U4)] uint nProfiles,
+            IntPtr intents,             // uint[]
+            IntPtr profiles,            // IntPtr[]
+            IntPtr bpc,                 // int[]
+            IntPtr adaptationStates,    // double[]
+            [MarshalAs(UnmanagedType.U4)] uint flags);
+
+    /// <summary>
+    /// Defines the intent plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginIntent
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// The intent number.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint Intent;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="IntentFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Link;
+
+        /// <summary>
+        /// A description for the intent.
+        /// </summary>
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.I1, SizeConst = 256)]
+        public byte[] Description;
+    }
+    #endregion
 }
