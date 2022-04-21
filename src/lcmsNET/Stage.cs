@@ -68,6 +68,35 @@ namespace lcmsNET
         IntPtr cargo);
 
     /// <summary>
+    /// Defines a delegate that can be used to evaluate a stage.
+    /// </summary>
+    /// <param name="In">Pointer to a const array of floats.</param>
+    /// <param name="Out">Pointer to an array of floats.</param>
+    /// <param name="mpe">Pointer to a stage.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void StageEvalFn(
+        IntPtr In,  // const float[]
+        IntPtr Out, // float[]
+        IntPtr mpe);
+
+    /// <summary>
+    /// Defines a delegate that can be used to duplicate private data.
+    /// </summary>
+    /// <param name="mpe">A pointer to a stage.</param>
+    /// <returns>A pointer to the duplicated data.</returns>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr StageDupElemFn(
+        IntPtr mpe);
+
+    /// <summary>
+    /// Defines a delegate that can be used to free private data.
+    /// </summary>
+    /// <param name="mpe">A pointer to a stage.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void StageFreeElemFn(
+        IntPtr mpe);
+
+    /// <summary>
     /// Represents a stage in a pipeline.
     /// </summary>
     public sealed class Stage : CmsHandle<Stage>
@@ -228,6 +257,44 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Creates a new stage type.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="type">A <see cref="StageSignature"/> for the type.</param>
+        /// <param name="inputChannels">The number of input channels.</param>
+        /// <param name="outputChannels">The number of output channels.</param>
+        /// <param name="evalFn">A delegate to evaluate the stage.</param>
+        /// <param name="dupElemFnm">A delegate to duplicate data if user data is being used, can be null.</param>
+        /// <param name="freeElemFn">A delegate to free data if user data is being used, can be null.</param>
+        /// <param name="data">Pointer to user data or <see cref="IntPtr.Zero"/> if no data is needed.</param>
+        /// <returns>A new <see cref="Stage"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </remarks>
+        public static Stage AllocPlaceholder(Context context, StageSignature type, uint inputChannels, uint outputChannels,
+                StageEvalFn evalFn, StageDupElemFn dupElemFnm, StageFreeElemFn freeElemFn, IntPtr data)
+        {
+            return new Stage(Interop.StageAllocPlaceholder(Helper.GetHandle(context), Convert.ToUInt32(type),
+                    inputChannels, outputChannels, evalFn, dupElemFnm, freeElemFn, data), context);
+        }
+
+        /// <summary>
+        /// Creates a stage from the supplied handle.
+        /// </summary>
+        /// <param name="handle">A handle to an existing stage.</param>
+        /// <returns>A new <see cref="Stage"/> instance referencing an existing stage.</returns>
+        /// <exception cref="LcmsNETException">
+        /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
+        /// </exception>
+        internal static Stage FromHandle(IntPtr handle)
+        {
+            return new Stage(handle, context: null, isOwner: false);
+        }
+
+        /// <summary>
         /// Duplicates a stage.
         /// </summary>
         /// <returns>A new <see cref="Stage"/> instance.</returns>
@@ -317,6 +384,16 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Releases ownership of the stage.
+        /// </summary>
+        /// <returns>The pointer to the stage.</returns>
+        public new IntPtr Release()
+        {
+            base.Release();
+            return Handle;
+        }
+
+        /// <summary>
         /// Gets the number of input channels in the stage.
         /// </summary>
         public uint InputChannels => Interop.StageInputChannels(handle);
@@ -330,6 +407,11 @@ namespace lcmsNET
         /// Gets the stage type.
         /// </summary>
         public StageSignature StageType => (StageSignature)Interop.StageType(handle);
+
+        /// <summary>
+        /// Gets the user data associated with the stage.
+        /// </summary>
+        public IntPtr Data => Interop.StageData(handle);
 
         /// <summary>
         /// Frees the stage handle.

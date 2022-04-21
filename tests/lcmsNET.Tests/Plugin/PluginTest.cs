@@ -1210,5 +1210,134 @@ namespace lcmsNET.Tests.Plugin
                 }
             }
         }
+
+        [TestMethod()]
+        public void PluginStageTest()
+        {
+            // Arrange
+            const TagTypeSignature SigNegateType = (TagTypeSignature)0x6E202020;  // 'n   '
+            var read = new TagTypeRead(NegateRead);
+            var write = new TagTypeWrite(NegateWrite);
+
+            PluginMultiProcessElement mpeSample = new PluginMultiProcessElement
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.MultiProcessElement,
+                    Next = IntPtr.Zero
+                },
+                Handler = new TagTypeHandler
+                {
+                    Signature = SigNegateType,
+                    Read = Marshal.GetFunctionPointerForDelegate(read),
+                    Write = Marshal.GetFunctionPointerForDelegate(write),
+                    Duplicate = IntPtr.Zero,
+                    Free = IntPtr.Zero
+                }
+            };
+
+            var rawsize = Marshal.SizeOf(mpeSample);
+            IntPtr mpePlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(mpeSample, mpePlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(mpePlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                byte[] data = null;
+
+                using (var profile = Profile.CreatePlaceholder(cpy2))
+                {
+                    using (var pipe = Pipeline.Create(cpy2, 3, 3))
+                    {
+                        pipe.Insert(Stage.FromHandle(StageAllocNegate(cpy2.Handle)), StageLoc.At_Begin);
+
+                        float[] In = new float[] { 0.3f, 0.2f, 0.9f };
+                        var actual = pipe.Evaluate(In);
+
+                        // Assert
+                        Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
+                        Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
+                        Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
+
+                        profile.WriteTag(TagSignature.DToB3, pipe);
+                    }
+
+                    profile.Save(null, out uint bytesNeeded);
+                    data = new byte[bytesNeeded];
+                    profile.Save(data, out bytesNeeded);
+                }
+
+                using (var profile2 = Profile.Open(data))
+                {
+                    // unsupported stage in global context
+                    var expected = IntPtr.Zero;
+                    var actual = profile2.ReadTag(TagSignature.DToB3);
+                    Assert.AreEqual(expected, actual);
+                }
+
+                using (var profile3 = Profile.Open(cpy2, data))
+                {
+                    using (var pipe2 = profile3.ReadTag<Pipeline>(TagSignature.DToB3))
+                    {
+                        float[] In = new float[] { 0.3f, 0.2f, 0.9f };
+                        var actual = pipe2.Evaluate(In);
+
+                        // Assert
+                        Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
+                        Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
+                        Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
+                    }
+                }
+            }
+
+            void EvaluateNegate(IntPtr In, IntPtr Out, IntPtr mpe)
+            {
+                unsafe
+                {
+                    float* pOut = (float*)Out.ToPointer();
+                    float* pIn = (float *)In.ToPointer();
+
+                    pOut[0] = 1.0f - pIn[0];
+                    pOut[1] = 1.0f - pIn[1];
+                    pOut[2] = 1.0f - pIn[2];
+                }
+            }
+
+            IntPtr StageAllocNegate(IntPtr contextID)
+            {
+                using (var context = Context.FromHandle(contextID))
+                {
+                    return Stage.AllocPlaceholder(context, (StageSignature)SigNegateType, 3, 3,
+                            EvaluateNegate, null, null, IntPtr.Zero).Release();
+                }
+            }
+
+            IntPtr NegateRead(in TagTypeHandler self, IntPtr io, out uint nItems, uint tagSize)
+            {
+                nItems = 1;
+
+                using (var iohandler = IOHandler.FromHandle(io))
+                {
+                    ushort chans = 0;
+                    if (!iohandler.Read(ref chans)) return IntPtr.Zero;
+                    if (chans != 3) return IntPtr.Zero;
+                }
+
+                return StageAllocNegate(self.ContextID);
+            }
+
+            int NegateWrite(in TagTypeHandler self, IntPtr io, IntPtr ptr, uint nItems)
+            {
+                using (var iohandler = IOHandler.FromHandle(io))
+                {
+                    const ushort chans = 3;
+                    return iohandler.Write(chans) ? 1 : 0;
+                }
+            }
+        }
     }
 }

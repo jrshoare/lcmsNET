@@ -153,6 +153,14 @@ namespace lcmsNET
             return StageType_Internal(handle);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsStageData", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr StageData_Internal(IntPtr handle);
+
+        internal static IntPtr StageData(IntPtr handle)
+        {
+            return StageData_Internal(handle);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsStageNext", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr StageNext_Internal(IntPtr handle);
 
@@ -224,6 +232,23 @@ namespace lcmsNET
             {
                 return IntPtr.Zero;
             }
+        }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsStageAllocPlaceholder", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr StageAllocPlaceholder_Internal(
+                IntPtr ContextID,
+                [MarshalAs(UnmanagedType.U4)] uint Type,
+                [MarshalAs(UnmanagedType.U4)] uint InputChannels,
+                [MarshalAs(UnmanagedType.U4)] uint OutputChannels,
+                StageEvalFn EvalPtr,
+                StageDupElemFn DupElemPtr,
+                StageFreeElemFn FreePtr,
+                IntPtr Data);
+
+        internal static IntPtr StageAllocPlaceholder(IntPtr contextId, uint type, uint inputChannels, uint outputChannels,
+                StageEvalFn evalFn, StageDupElemFn dupElemFn, StageFreeElemFn freeElemFn, IntPtr data)
+        {
+            return StageAllocPlaceholder_Internal(contextId, type, inputChannels, outputChannels, evalFn, dupElemFn, freeElemFn, data);
         }
     }
 }

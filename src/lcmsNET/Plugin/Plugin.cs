@@ -899,4 +899,39 @@ namespace lcmsNET.Plugin
         public byte[] Description;
     }
     #endregion
+
+    #region Stages plug-in
+    /// <summary>
+    /// Defines the stages plug-in structure.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The <see cref="TagTypeHandler.Duplicate"/> and <see cref="TagTypeHandler.Free"/>
+    /// fields of <see cref="Handler"/> are not used and should be set to <see cref="IntPtr.Zero"/>.
+    /// </para>
+    /// <para>
+    /// The <see cref="TagTypeHandler.Read"/> delegate must invoke
+    /// <see cref="Stage.AllocPlaceholder(Context, StageSignature, uint, uint, StageEvalFn, StageDupElemFn, StageFreeElemFn, IntPtr)"/>
+    /// to create the stage.
+    /// </para>
+    /// <para>
+    /// The <see cref="TagTypeHandler.Write"/> delegate can access the stage internals by using
+    /// <see cref="Stage.InputChannels"/>, <see cref="Stage.OutputChannels"/>, <see cref="Stage.StageType"/>
+    /// and <see cref="Stage.Data"/>.
+    /// </para>
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginMultiProcessElement
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// The tag type handler.
+        /// </summary>
+        public TagTypeHandler Handler;
+    }
+    #endregion
 }
