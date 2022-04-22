@@ -240,15 +240,19 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.U4)] uint Type,
                 [MarshalAs(UnmanagedType.U4)] uint InputChannels,
                 [MarshalAs(UnmanagedType.U4)] uint OutputChannels,
-                StageEvalFn EvalPtr,
-                StageDupElemFn DupElemPtr,
-                StageFreeElemFn FreePtr,
+                IntPtr EvalPtr,
+                IntPtr DupElemPtr,
+                IntPtr FreePtr,
                 IntPtr Data);
 
         internal static IntPtr StageAllocPlaceholder(IntPtr contextId, uint type, uint inputChannels, uint outputChannels,
                 StageEvalFn evalFn, StageDupElemFn dupElemFn, StageFreeElemFn freeElemFn, IntPtr data)
         {
-            return StageAllocPlaceholder_Internal(contextId, type, inputChannels, outputChannels, evalFn, dupElemFn, freeElemFn, data);
+            IntPtr evalPtr = (evalFn is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(evalFn);
+            IntPtr dupElemPtr = (dupElemFn is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(dupElemFn);
+            IntPtr freeElemPtr = (freeElemFn is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(freeElemFn);
+
+            return StageAllocPlaceholder_Internal(contextId, type, inputChannels, outputChannels, evalPtr, dupElemPtr, freeElemPtr, data);
         }
     }
 }
