@@ -289,7 +289,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        internal static Stage FromHandle(IntPtr handle)
+        public static Stage FromHandle(IntPtr handle)
         {
             return new Stage(handle, context: null, isOwner: false);
         }

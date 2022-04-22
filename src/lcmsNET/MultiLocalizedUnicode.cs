@@ -47,7 +47,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing multi-localized Unicode string.</param>
         /// <returns>A new <see cref="MultiLocalizedUnicode"/> instance referencing an existing multi-localized Unicode string.</returns>
-        internal static MultiLocalizedUnicode FromHandle(IntPtr handle)
+        public static MultiLocalizedUnicode FromHandle(IntPtr handle)
         {
             return new MultiLocalizedUnicode(handle, context: null, isOwner: false);
         }

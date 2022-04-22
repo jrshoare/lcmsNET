@@ -782,7 +782,7 @@ namespace lcmsNET
         /// Failed to create instance as no tag was found with the given tag signature.
         /// </exception>
         /// <exception cref="MissingMethodException">
-        /// Type <typeparamref name="T"/> does not contain a non-public static method with signature
+        /// Type <typeparamref name="T"/> does not contain a static method with signature
         /// '<typeparamref name="T"/> FromHandle(<see cref="IntPtr"/>)'.
         /// </exception>
         /// <exception cref="ObjectDisposedException">
@@ -796,7 +796,7 @@ namespace lcmsNET
             Helper.CheckCreated<T>(ptr);
 
             Type t = typeof(T);
-            MethodInfo method = t.GetMethod("FromHandle", BindingFlags.NonPublic | BindingFlags.Static,
+            MethodInfo method = t.GetMethod("FromHandle", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static,
                     null, new Type[] { typeof(IntPtr) }, null);
             if (method is null) throw new MissingMethodException(nameof(T), "FromHandle(IntPtr)");
 
