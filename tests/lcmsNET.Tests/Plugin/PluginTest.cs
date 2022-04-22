@@ -1339,5 +1339,100 @@ namespace lcmsNET.Tests.Plugin
                 }
             }
         }
+
+        [TestMethod()]
+        public void PluginOptimizationTest()
+        {
+            // Arrange
+            var optimize = new OptimizeFn(MyOptimize);
+
+            PluginOptimization optimizationSample = new PluginOptimization
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.Optimization,
+                    Next = IntPtr.Zero
+                },
+                Optimize = Marshal.GetFunctionPointerForDelegate(optimize)
+            };
+
+            var rawsize = Marshal.SizeOf(optimizationSample);
+            IntPtr optimizationPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(optimizationSample, optimizationPlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(optimizationPlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
+                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
+                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    byte[] In = new byte[] { 120, 20, 30, 40 };
+                    byte[] Out = new byte[In.Length];
+
+                    xform.DoTransform(In, Out, In.Length);
+
+                    // Assert
+                    for (int i = 0; i < In.Length; i++)
+                    {
+                        Assert.AreEqual(In[i], Out[i]);
+                    }
+                }
+            }
+
+            void FastEvaluteCurves(IntPtr In, IntPtr Out, IntPtr Data)
+            {
+                unsafe
+                {
+                    ushort* pIn = (ushort *)In.ToPointer();
+                    ushort* pOut = (ushort *)Out.ToPointer();
+
+                    pOut[0] = pIn[0];
+                }
+            }
+
+            int MyOptimize(IntPtr lut, uint intent, IntPtr inputFormat, IntPtr outputFormat, IntPtr dwFlags)
+            {
+                unsafe
+                {
+                    IntPtr *pLut = (IntPtr *)lut.ToPointer();
+                    using (var pipeline = Pipeline.FromHandle(pLut[0]))
+                    {
+                        foreach (var stage in pipeline)
+                        {
+                            if (stage.StageType != StageSignature.CurveSetElemType) return 0;
+
+                            StageToneCurveData *data = (StageToneCurveData *)stage.Data;
+                            if (data->nCurves != 1) return 0;
+                            IntPtr* theCurves = (IntPtr*)data->TheCurves;
+                            using (var toneCurve = ToneCurve.FromHandle(theCurves[0]))
+                            {
+                                if (toneCurve.EstimateGamma(0.1) > 1.0) return 0;
+                            }
+                        }
+
+                        uint* flags = (uint*)dwFlags.ToPointer();
+                        *flags |= (uint)CmsFlags.NoCache;
+
+                        pipeline.SetOptimizationParameters(FastEvaluteCurves, IntPtr.Zero, null, null);
+                    }
+                }
+
+                return 1;
+            }
+        }
+
+#pragma warning disable CS0649
+        private struct StageToneCurveData
+        {
+            public uint nCurves;
+            public IntPtr TheCurves;    // cmsToneCurve**
+        }
+#pragma warning restore CS0649
     }
 }

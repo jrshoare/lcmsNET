@@ -23,9 +23,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+    /// <summary>
+    /// Defines a delegate that can be used to duplicate user data.
+    /// </summary>
+    /// <param name="contextID">The handle to the <see cref="Context"/> with which the user data is associated.</param>
+    /// <param name="userData">The pointer to the user data to be duplicated.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr DupUserData(IntPtr contextID, IntPtr userData);
+
+    /// <summary>
+    /// Defines a delegate to evaluate the optimized version of a LUT.
+    /// </summary>
+    /// <param name="In">Pointer to a const array of <see cref="ushort"/>.</param>
+    /// <param name="Out">Pointer to an array of <see cref="ushort"/>.</param>
+    /// <param name="Data">Pointer to private data.</param>
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void OptEval16(IntPtr In, IntPtr Out, IntPtr Data);
+
     /// <summary>
     /// Defines a location of a <see cref="Stage"/> within a <see cref="Pipeline"/>.
     /// </summary>
@@ -79,7 +97,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        internal static Pipeline FromHandle(IntPtr handle)
+        public static Pipeline FromHandle(IntPtr handle)
         {
             return new Pipeline(handle, context: null, isOwner: false);
         }
@@ -290,6 +308,23 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Sets the optimisation parameters for a pipeline.
+        /// </summary>
+        /// <param name="eval16">Delegate to perform fast evaluation of the pipeline.</param>
+        /// <param name="privateData">Initial private data, can be <see cref="IntPtr.Zero"/>.</param>
+        /// <param name="freePrivateDataFn">
+        /// Delegate to free private data, can be null if <paramref name="privateData"/> is <see cref="IntPtr.Zero"/>.
+        /// </param>
+        /// <param name="dupPrivateDataFn">
+        /// Delegate to duplicate private data, can be null if <paramref name="privateData"/> is <see cref="IntPtr.Zero"/>.
+        /// </param>
+        public void SetOptimizationParameters(OptEval16 eval16, IntPtr privateData,
+                FreeUserData freePrivateDataFn, DupUserData dupPrivateDataFn)
+        {
+            Interop.PipelineSetOptimizationParameters(handle, eval16, privateData, freePrivateDataFn, dupPrivateDataFn);
+        }
+
+        /// <summary>
         /// Gets the number of input channels for the pipeline.
         /// </summary>
         public uint InputChannels => Interop.PipelineInputChannels(handle);
@@ -329,12 +364,10 @@ namespace lcmsNET
         {
             public StageEnumerator(IntPtr handle)
             {
-                Handle = handle;
                 First = GetFirst(handle);
                 Last = GetLast(handle);
                 Location = Position.Before;
             }
-            private IntPtr Handle { get; set; }
 
             public Stage Current
             {

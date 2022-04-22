@@ -934,4 +934,43 @@ namespace lcmsNET.Plugin
         public TagTypeHandler Handler;
     }
     #endregion
+
+    #region Optimization plug-in
+    /// <summary>
+    /// Defines a delegate that defines the optimization algorithm callback.
+    /// </summary>
+    /// <param name="Lut"></param>
+    /// <param name="Intent"></param>
+    /// <param name="InputFormat"></param>
+    /// <param name="OutputFormat"></param>
+    /// <param name="dwFlags"></param>
+    /// <returns></returns>
+    public delegate int OptimizeFn(
+            IntPtr Lut,
+            [MarshalAs(UnmanagedType.U4)] uint Intent,
+            IntPtr InputFormat,
+            IntPtr OutputFormat,
+            IntPtr dwFlags);
+
+    /// <summary>
+    /// Defines the optimization plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginOptimization
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="OptimizeFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Optimize;
+    }
+    #endregion
 }

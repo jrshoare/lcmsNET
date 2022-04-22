@@ -190,5 +190,23 @@ namespace lcmsNET
         {
             return DefaultICCIntents_Internal(contextID, (uint)profiles.Length, intents, profiles, bpc, adaptationStates, flags);
         }
+
+        [DllImport(Liblcms, EntryPoint = "_cmsPipelineSetOptimizationParameters", CallingConvention = CallingConvention.StdCall)]
+        internal static extern void PipelineSetOptimizationParameters_Internal(
+                IntPtr handle,
+                IntPtr eval16Ptr,
+                IntPtr privateData,
+                IntPtr freePrivateDataPtr,
+                IntPtr dupPrivateDataPtr);
+
+        internal static void PipelineSetOptimizationParameters(IntPtr handle, OptEval16 eval16, IntPtr privateData,
+                FreeUserData freePrivateDataFn, DupUserData dupUserDataFn)
+        {
+            IntPtr eval16Ptr = (eval16 is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(eval16);
+            IntPtr freePtr = (freePrivateDataFn is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(freePrivateDataFn);
+            IntPtr dupPtr = (dupUserDataFn is null) ? IntPtr.Zero : Marshal.GetFunctionPointerForDelegate(dupUserDataFn);
+
+            PipelineSetOptimizationParameters_Internal(handle, eval16Ptr, privateData, freePtr, dupPtr);
+        }
     }
 }
