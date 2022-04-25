@@ -261,8 +261,8 @@ namespace lcmsNET
         /// <param name="lineCount">The number of lines; same on input as in output.</param>
         /// <param name="bytesPerLineIn">The distance in bytes from one line to the next on the input bitmap.</param>
         /// <param name="bytesPerLineOut">The distance in bytes from one line to the next in the output bitmap.</param>
-        /// <param name="bytesPerPlaneIn">The distance in bytes from one plance to the next inside a line on the input bitmap.</param>
-        /// <param name="bytesPerPlaneOut">The distance in bytes from one plance to the next inside a line in the output bitmap.</param>
+        /// <param name="bytesPerPlaneIn">The distance in bytes from one plane to the next inside a line on the input bitmap.</param>
+        /// <param name="bytesPerPlaneOut">The distance in bytes from one plane to the next inside a line in the output bitmap.</param>
         /// <exception cref="ObjectDisposedException">
         /// The Transform has already been disposed.
         /// </exception>
