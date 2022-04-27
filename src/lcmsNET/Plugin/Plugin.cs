@@ -67,7 +67,11 @@ namespace lcmsNET.Plugin
         /// <summary>
         /// 'xfmH'
         /// </summary>
-        Transform = 0x7A666D48
+        Transform = 0x7A666D48,
+        /// <summary>
+        /// 'mtxH'
+        /// </summary>
+        Mutex = 0x6D747A48
     }
 
     #region Base structure
@@ -1086,6 +1090,89 @@ namespace lcmsNET.Plugin
         /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
         /// </remarks>
         public IntPtr Factory;
+    }
+    #endregion
+
+    #region Mutex plug-in
+    /// <summary>
+    /// Defines a delegate to create a mutex.
+    /// </summary>
+    /// <param name="ContextID">The calling thread context.</param>
+    /// <returns>A pointer to the mutex created.</returns>
+    public delegate IntPtr CreateMutexFn(IntPtr ContextID);
+
+    /// <summary>
+    /// Defines a delegate to destroy a mutex.
+    /// </summary>
+    /// <param name="ContextID">The calling thread context.</param>
+    /// <param name="mutex">A pointer to the mutex to be destroyed.</param>
+    public delegate void DestroyMutexFn(IntPtr ContextID, IntPtr mutex);
+
+    /// <summary>
+    /// Defines a delegate to lock a mutex.
+    /// </summary>
+    /// <param name="ContextID">The calling thread context.</param>
+    /// <param name="mutex">A pointer to the mutex to be locked.</param>
+    /// <returns>1 if successful, otherwise 0.</returns>
+    public delegate int LockMutexFn(IntPtr ContextID, IntPtr mutex);
+
+    /// <summary>
+    /// Defines a delegate to unlock a mutex.
+    /// </summary>
+    /// <param name="ContextID">The calling thread context.</param>
+    /// <param name="mutex">A pointer to the mutex to be unlocked.</param>
+    public delegate void UnlockMutexFn(IntPtr ContextID, IntPtr mutex);
+
+    /// <summary>
+    /// Defines the mutex plug-in structure.
+    /// </summary>
+    /// <remarks>
+    /// Requires Little CMS version 2.6 or later.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginMutex
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="CreateMutexFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Create;
+
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="DestroyMutexFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Destroy;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="LockMutexFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Lock;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="UnlockMutexFn"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Unlock;
     }
     #endregion
 }

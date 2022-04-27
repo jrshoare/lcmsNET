@@ -1594,5 +1594,101 @@ namespace lcmsNET.Tests.Plugin
                 }
             }
         }
+
+        [TestMethod()]
+        public void PluginMutexTest()
+        {
+            // Arrange
+            var create = new CreateMutexFn(MyCreateMutex);
+            var destroy = new DestroyMutexFn(MyDestroyMutex);
+            var locker = new LockMutexFn(MyLockMutex);
+            var unlocker = new UnlockMutexFn(MyUnlockMutex);
+
+            PluginMutex mutexSample = new PluginMutex
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.Mutex,
+                    Next = IntPtr.Zero
+                },
+                Create = Marshal.GetFunctionPointerForDelegate(create),
+                Destroy = Marshal.GetFunctionPointerForDelegate(destroy),
+                Lock = Marshal.GetFunctionPointerForDelegate(locker),
+                Unlock = Marshal.GetFunctionPointerForDelegate(unlocker)
+            };
+
+            var rawsize = Marshal.SizeOf(mutexSample);
+            IntPtr mutexPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(mutexSample, mutexPlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(mutexPlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
+                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
+                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    byte[] In = new byte[] { 10, 20, 30, 40 };
+                    byte[] Out = new byte[In.Length];
+
+                    xform.DoTransform(In, Out, In.Length);
+
+                    // Assert
+                    for (int i = 0; i < In.Length; i++)
+                    {
+                        Assert.AreEqual(In[i], Out[i]);
+                    }
+                }
+            }
+
+            IntPtr MyCreateMutex(IntPtr ContextID)
+            {
+                TestContext.WriteLine($"Creating mutex in context {ContextID}");
+
+                var myMutex = new MyMutex();
+                int size = Marshal.SizeOf(myMutex);
+                IntPtr ptr = Marshal.AllocHGlobal(size);
+                Marshal.StructureToPtr(myMutex, ptr, false);
+
+                return ptr;
+            }
+
+            void MyDestroyMutex(IntPtr ContextID, IntPtr mutex)
+            {
+                TestContext.WriteLine($"Destroying mutex in context {ContextID}");
+
+                MyMutex myMutex = Marshal.PtrToStructure<MyMutex>(mutex);
+                if (myMutex.nLocks != 0) TestContext.WriteLine("Destroying mutex when number of locks is non-zero.");
+                Marshal.FreeHGlobal(mutex);
+            }
+
+            int MyLockMutex(IntPtr ContextID, IntPtr mutex)
+            {
+                TestContext.WriteLine($"Locking mutex in context {ContextID}");
+
+                MyMutex myMutex = Marshal.PtrToStructure<MyMutex>(mutex);
+                myMutex.nLocks++;
+
+                return 1;
+            }
+
+            void MyUnlockMutex(IntPtr ContextID, IntPtr mutex)
+            {
+                TestContext.WriteLine($"Unlocking mutex in context {ContextID}");
+
+                MyMutex myMutex = Marshal.PtrToStructure<MyMutex>(mutex);
+                myMutex.nLocks--;
+            }
+        }
+
+        private struct MyMutex
+        {
+            public int nLocks;
+        }
     }
 }
