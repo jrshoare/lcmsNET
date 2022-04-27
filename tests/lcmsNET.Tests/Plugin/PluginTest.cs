@@ -1434,5 +1434,165 @@ namespace lcmsNET.Tests.Plugin
             public IntPtr TheCurves;    // cmsToneCurve**
         }
 #pragma warning restore CS0649
+
+        [TestMethod()]
+        public void PluginTransform2Test()
+        {
+            // Arrange
+            var factory = new TransformFactory(MyTransformFactory);
+
+            PluginTransform transformSample = new PluginTransform
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2080,
+                    Type = PluginType.Transform,
+                    Next = IntPtr.Zero
+                },
+                Factory = Marshal.GetFunctionPointerForDelegate(factory)
+            };
+
+            var rawsize = Marshal.SizeOf(transformSample);
+            IntPtr transformPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(transformSample, transformPlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(transformPlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
+                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
+                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    byte[] In = new byte[] { 10, 20, 30, 40 };
+                    byte[] Out = new byte[In.Length];
+
+                    xform.DoTransform(In, Out, In.Length);
+
+                    // Assert
+                    for (int i = 0; i < In.Length; i++)
+                    {
+                        Assert.AreEqual((byte)42, Out[i]);
+                    }
+                }
+            }
+
+            // only works for gray8 as output and always returns '42'
+            void TranscendentalTransform2(IntPtr CMMCargo, IntPtr InputBuffer, IntPtr OutputBuffer, uint PixelsPerLine,
+                    uint LineCount, IntPtr Stride)
+            {
+                unsafe
+                {
+                    byte* pOut = (byte*)OutputBuffer.ToPointer();
+                    Stride* stride = (Stride*)Stride.ToPointer();
+
+                    for (uint line = 0; line < LineCount; line++)
+                    {
+                        for (uint pixel = 0; pixel < PixelsPerLine; pixel++)
+                        {
+                            *pOut++ = 42;
+                        }
+                        pOut += stride->BytesPerLineOut - PixelsPerLine;
+                    }
+                }
+            }
+
+            int MyTransformFactory(IntPtr xformPtr, IntPtr UserData, IntPtr FreePrivateDataFn, IntPtr Lut,
+                    IntPtr InputFormat, IntPtr OutputFormat, IntPtr dwFlags)
+            {
+                unsafe
+                {
+                    uint* outputFormat = (uint*)OutputFormat.ToPointer();
+                    if (*outputFormat == Cms.TYPE_GRAY_8)
+                    {
+                        IntPtr* ptr = (IntPtr*)xformPtr.ToPointer();
+                        *ptr = Marshal.GetFunctionPointerForDelegate(new Transform2Fn(TranscendentalTransform2));
+                        return 1;
+                    }
+
+                    return 0;
+                }
+            }
+        }
+
+        [TestMethod()]
+        public void PluginTransformTest()
+        {
+            // Arrange
+            var factory = new TransformFactory(MyTransformFactory);
+
+            PluginTransform transformSample = new PluginTransform
+            {
+                Base = new PluginBase
+                {
+                    Magic = Cms.PluginMagicNumber,
+                    ExpectedVersion = (uint)2060,
+                    Type = PluginType.Transform,
+                    Next = IntPtr.Zero
+                },
+                Factory = Marshal.GetFunctionPointerForDelegate(factory)
+            };
+
+            var rawsize = Marshal.SizeOf(transformSample);
+            IntPtr transformPlugin = Marshal.AllocHGlobal(rawsize);
+            Marshal.StructureToPtr(transformSample, transformPlugin, false);
+
+            // Act
+            using (var ctx = Context.Create(transformPlugin, IntPtr.Zero))
+            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            {
+                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
+                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
+                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                {
+                    byte[] In = new byte[] { 10, 20, 30, 40 };
+                    byte[] Out = new byte[In.Length];
+
+                    xform.DoTransform(In, Out, In.Length);
+
+                    // Assert
+                    for (int i = 0; i < In.Length; i++)
+                    {
+                        Assert.AreEqual((byte)42, Out[i]);
+                    }
+                }
+            }
+
+            // only works for gray8 as output and always returns '42'
+            void TranscendentalTransform(IntPtr CMMCargo, IntPtr InputBuffer, IntPtr OutputBuffer, uint Size, uint Stride)
+            {
+                unsafe
+                {
+                    byte* pOut = (byte*)OutputBuffer.ToPointer();
+
+                    for (uint i = 0; i < Size; i++)
+                    {
+                        pOut[i] = 42;
+                    }
+                }
+            }
+
+            int MyTransformFactory(IntPtr xformPtr, IntPtr UserData, IntPtr FreePrivateDataFn, IntPtr Lut,
+                    IntPtr InputFormat, IntPtr OutputFormat, IntPtr dwFlags)
+            {
+                unsafe
+                {
+                    uint* outputFormat = (uint*)OutputFormat.ToPointer();
+                    if (*outputFormat == Cms.TYPE_GRAY_8)
+                    {
+                        IntPtr* ptr = (IntPtr*)xformPtr.ToPointer();
+                        *ptr = Marshal.GetFunctionPointerForDelegate(new TransformFn(TranscendentalTransform));
+                        return 1;
+                    }
+
+                    return 0;
+                }
+            }
+        }
     }
 }

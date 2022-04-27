@@ -973,4 +973,119 @@ namespace lcmsNET.Plugin
         public IntPtr Optimize;
     }
     #endregion
+
+    #region Full transform plug-in
+    /// <summary>
+    /// Defines the stride of a line. 
+    /// </summary>
+    /// <remarks>
+    /// Requires Little CMS version 2.8 or later.
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Stride
+    {
+        /// <summary>
+        /// The distance in bytes from one line to the next on the input.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint BytesPerLineIn;
+        /// <summary>
+        /// The distance in bytes from one line to the next in the output.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint BytesPerLineOut;
+        /// <summary>
+        /// The distance in bytes from one plane to the next inside a line on the input.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint BytesPerPlaneIn;
+        /// <summary>
+        /// The distance in bytes from one plane to the next inside a line on the output.
+        /// </summary>
+        [MarshalAs(UnmanagedType.U4)]
+        public uint BytesPerPlaneOut;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="CMM"></param>
+    /// <param name="InputBuffer"></param>
+    /// <param name="OutputBuffer"></param>
+    /// <param name="Size"></param>
+    /// <param name="Stride"></param>
+    /// <remarks>
+    /// Requires Little CMS version 2.4 to 2.7 and is deprecated in later versions.
+    /// </remarks>
+    public delegate void TransformFn(
+            IntPtr CMM,             // struct _cmstransform_struct *
+            IntPtr InputBuffer,     // const void *
+            IntPtr OutputBuffer,    // void *
+            [MarshalAs(UnmanagedType.U4)] uint Size,
+            [MarshalAs(UnmanagedType.U4)] uint Stride);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="CMMCargo"></param>
+    /// <param name="InputBuffer"></param>
+    /// <param name="OutputBuffer"></param>
+    /// <param name="PixelsPerLine"></param>
+    /// <param name="LineCount"></param>
+    /// <param name="Stride">Pointer to <see cref="Stride"/> structure.</param>
+    /// <remarks>
+    /// Requires Little CMS version 2.8 or later.
+    /// </remarks>
+    public delegate void Transform2Fn(
+            IntPtr CMMCargo,        // struct _cmstransfom_struct *
+            IntPtr InputBuffer,     // const void *
+            IntPtr OutputBuffer,    // void*
+            [MarshalAs(UnmanagedType.U4)] uint PixelsPerLine,
+            [MarshalAs(UnmanagedType.U4)] uint LineCount,
+            IntPtr Stride);         // const Stride *
+
+    /// <summary>
+    /// Defines a delegate that defines the transform factory.
+    /// </summary>
+    /// <param name="xformPtr"></param>
+    /// <param name="UserData"></param>
+    /// <param name="FreePrivateDataFn"></param>
+    /// <param name="Lut"></param>
+    /// <param name="InputFormat"></param>
+    /// <param name="OutputFormat"></param>
+    /// <param name="dwFlags"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Requires Little CMS version 2.4 or later.
+    /// </remarks>
+    public delegate int TransformFactory(
+            IntPtr xformPtr,        // Transform2Fn *
+            IntPtr UserData,        // void**
+            IntPtr FreePrivateDataFn,
+            IntPtr Lut,             // pipeline**
+            IntPtr InputFormat,     // uint*
+            IntPtr OutputFormat,    // uint*
+            IntPtr dwFlags);        // uint*
+
+    /// <summary>
+    /// Defines the full transform plug-in structure.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PluginTransform
+    {
+        /// <summary>
+        /// Inherited <see cref="PluginBase"/> structure.
+        /// </summary>
+        public PluginBase Base;
+
+        /// <summary>
+        /// Pointer to a delegate of type <see cref="TransformFactory"/>.
+        /// </summary>
+        /// <remarks>
+        /// Invoke <see cref="Marshal.GetFunctionPointerForDelegate(Delegate)"/>
+        /// to obtain the <see cref="IntPtr"/> to be assigned to this value.
+        /// </remarks>
+        public IntPtr Factory;
+    }
+    #endregion
 }
