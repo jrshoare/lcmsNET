@@ -20,6 +20,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace lcmsNET.Tests
 {
@@ -73,6 +75,18 @@ namespace lcmsNET.Tests
         //}
         //
         #endregion
+
+        private MemoryStream Save(string resourceName)
+        {
+            MemoryStream ms = new MemoryStream();
+            var thisExe = Assembly.GetExecutingAssembly();
+            var assemblyName = new AssemblyName(thisExe.FullName);
+            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
+            {
+                s.CopyTo(ms);
+            }
+            return ms;
+        }
 
         [TestMethod()]
         public void CreateTest()
@@ -423,6 +437,28 @@ namespace lcmsNET.Tests
 
             // Assert
             // (in callback)
+        }
+
+        private static int SamplerInspect16Bit(ushort[] input, ushort[] output, IntPtr cargo)
+        {
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void InspectA2B0UsingStageSampleCLUT()
+        {
+            using (MemoryStream ms = Save(".Resources.Lab.icc"))
+            using (var profile = Profile.Open(ms.GetBuffer()))
+            using (var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0))
+            {
+                foreach (var stage in pipeline)
+                {
+                    if (stage.StageType == StageSignature.CLutElemType)
+                    {
+                        stage.SampleCLUT(SamplerInspect16Bit, IntPtr.Zero, StageSamplingFlags.Inspect);
+                    }
+                }
+            }
         }
     }
 }
