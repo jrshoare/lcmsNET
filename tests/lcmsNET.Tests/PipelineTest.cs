@@ -163,14 +163,14 @@ namespace lcmsNET.Tests
                 var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
                 pipeline.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
 
-                float[] values = new float[4] { 10 / 100.0f, 10 / 100.0f, 0, 12 };
+                float[] values = new float[] { 10 / 100.0f, 10 / 100.0f, 0 };
 
                 // Act
                 float[] result = pipeline.Evaluate(values);
 
                 // Assert
                 Assert.IsNotNull(result);
-                Assert.AreEqual(values.Length, result.Length);
+                Assert.AreEqual((int)outputChannels, result.Length);
             }
         }
 
@@ -204,14 +204,14 @@ namespace lcmsNET.Tests
                 var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
                 pipeline.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
 
-                ushort[] values = new ushort[3] { 0x1234, 0x5678, 0x9ABC };
+                ushort[] values = new ushort[] { 0x1234, 0x5678, 0x9ABC };
 
                 // Act
                 ushort[] result = pipeline.Evaluate(values);
 
                 // Assert
                 Assert.IsNotNull(result);
-                Assert.AreEqual(values.Length, result.Length);
+                Assert.AreEqual((int)outputChannels, result.Length);
             }
         }
 
@@ -257,15 +257,15 @@ namespace lcmsNET.Tests
                 var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
                 pipeline.Insert(stage, StageLoc.At_Begin);    // stage is not usable after insertion
 
-                float[] values = new float[4] { 0, 0, 0, 0 };
-                float[] hint = new float[3] { 0.1f, 0.1f, 0.1f };
+                float[] values = new float[] { 0, 0, 0 };
+                float[] hint = new float[] { 0.1f, 0.1f, 0.1f };
 
                 // Act
                 float[] result = pipeline.EvaluateReverse(values, hint, out bool success);
 
                 // Assert
                 Assert.IsTrue(success);
-                Assert.AreEqual(values.Length, result.Length);
+                Assert.AreEqual((int)inputChannels, result.Length);
             }
         }
 

@@ -144,11 +144,11 @@ namespace lcmsNET
         /// </exception>
         public float[] Evaluate(float[] values)
         {
-            if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
+            if (values?.Length != InputChannels) throw new ArgumentException($"'{nameof(values)}' array size must equal the number of input channels.");
 
             EnsureNotClosed();
 
-            float[] result = new float[values.Length];
+            float[] result = new float[OutputChannels];
             Interop.PipelineEvalFloat(handle, values, result);
             return result;
         }
@@ -165,11 +165,11 @@ namespace lcmsNET
         /// </exception>
         public float[] EvaluateReverse(float[] values, float[] hint, out bool success)
         {
-            if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
+            if (values?.Length != OutputChannels) throw new ArgumentException($"'{nameof(values)}' array size must equal the number of output channels.");
 
             EnsureNotClosed();
 
-            float[] result = new float[values.Length];
+            float[] result = new float[InputChannels];
             success = Interop.PipelineEvalReverseFloat(handle, values, result, hint) != 0;
             return result;
         }
@@ -184,11 +184,11 @@ namespace lcmsNET
         /// </exception>
         public ushort[] Evaluate(ushort[] values)
         {
-            if (!(values?.Length > 0)) throw new ArgumentException($"'{nameof(values)}' array size must be greater than 0.");
+            if (values?.Length != InputChannels) throw new ArgumentException($"'{nameof(values)}' array size must equal the number of input channels.");
 
             EnsureNotClosed();
 
-            ushort[] result = new ushort[values.Length];
+            ushort[] result = new ushort[OutputChannels];
             Interop.PipelineEval16(handle, values, result);
             return result;
         }
