@@ -423,7 +423,7 @@ namespace lcmsNET
         }
 
         // Constants from lcms_plugin.h and lcms_internal.h
-        internal const int MAX_INPUT_DIMENSIONS = 8;
+        internal const int MAX_INPUT_DIMENSIONS = 15;
         internal const int MAX_STAGE_CHANNELS = 128;
     }
 }

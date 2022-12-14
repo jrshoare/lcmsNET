@@ -460,5 +460,27 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        private static int SamplerInspectFloat(float[] input, float[] output, IntPtr cargo)
+        {
+            return 1; // 1 = true, 0 = false
+        }
+
+        [TestMethod()]
+        public void InspectA2B0UsingStageSampleCLUT2()
+        {
+            using (MemoryStream ms = Save(".Resources.Lab.icc"))
+            using (var profile = Profile.Open(ms.GetBuffer()))
+            using (var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0))
+            {
+                foreach (var stage in pipeline)
+                {
+                    if (stage.StageType == StageSignature.CLutElemType)
+                    {
+                        stage.SampleCLUT(SamplerInspectFloat, IntPtr.Zero, StageSamplingFlags.Inspect);
+                    }
+                }
+            }
+        }
     }
 }
