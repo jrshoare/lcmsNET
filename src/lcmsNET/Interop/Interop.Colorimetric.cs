@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
@@ -57,13 +58,19 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLabEncoded2Float", CallingConvention = CallingConvention.StdCall)]
-        private static extern void LabEncoded2Float_Internal(
+        private unsafe static extern void LabEncoded2Float_Internal(
                 out CIELab lab,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab);
+                /*const*/ ushort* wLab);
 
-        internal static void LabEncoded2Float(out CIELab lab, ushort[] wLab)
+        internal static void LabEncoded2Float(out CIELab lab, ReadOnlySpan<ushort> wLab)
         {
-            LabEncoded2Float_Internal(out lab, wLab);
+            unsafe
+            {
+                fixed (ushort* ptr = wLab)
+                {
+                    LabEncoded2Float_Internal(out lab, ptr);
+                }
+            }
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2LabEncoded", CallingConvention = CallingConvention.StdCall)]
@@ -77,13 +84,19 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsLabEncoded2FloatV2", CallingConvention = CallingConvention.StdCall)]
-        private static extern void LabEncoded2FloatV2_Internal(
+        private unsafe static extern void LabEncoded2FloatV2_Internal(
                 out CIELab lab,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] wLab);
+                /*const*/ ushort* wLab);
 
-        internal static void LabEncoded2FloatV2(out CIELab lab, ushort[] wLab)
+        internal static void LabEncoded2FloatV2(out CIELab lab, ReadOnlySpan<ushort> wLab)
         {
-            LabEncoded2FloatV2_Internal(out lab, wLab);
+            unsafe
+            {
+                fixed (ushort* ptr = wLab)
+                {
+                    LabEncoded2FloatV2_Internal(out lab, ptr);
+                }
+            }
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2LabEncodedV2", CallingConvention = CallingConvention.StdCall)]
@@ -97,13 +110,19 @@ namespace lcmsNET
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsXYZEncoded2Float", CallingConvention = CallingConvention.StdCall)]
-        private static extern void XYZEncoded2Float_Internal(
+        private unsafe static extern void XYZEncoded2Float_Internal(
                 out CIEXYZ fxyz,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] xyz);
+                /*const*/ ushort* xyz);
 
-        internal static void XYZEncoded2Float(out CIEXYZ fxyz, ushort[] xyz)
+        internal static void XYZEncoded2Float(out CIEXYZ fxyz, ReadOnlySpan<ushort> xyz)
         {
-            XYZEncoded2Float_Internal(out fxyz, xyz);
+            unsafe
+            {
+                fixed (ushort* ptr = xyz)
+                {
+                    XYZEncoded2Float_Internal(out fxyz, ptr);
+                }
+            }
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsFloat2XYZEncoded", CallingConvention = CallingConvention.StdCall)]

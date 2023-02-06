@@ -343,11 +343,21 @@ namespace lcmsNET
         /// <summary>
         /// Converts an Lab value encoded using ICC v4 convention to <see cref="CIELab"/>.
         /// </summary>
-        /// <param name="wLab">An array of 3 values encoding an Lab value using ICC v4 convention.</param>
+        /// <param name="wLab">An array in which the first 3 values encode an Lab value using ICC v4 convention.</param>
         /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab LabEncoded2Float(ushort[] wLab)
         {
-            if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
+            return LabEncoded2Float(new ReadOnlySpan<ushort>(wLab, 0, 3));
+        }
+
+        /// <summary>
+        /// Converts an Lab value encoded using ICC v4 convention to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="wLab">A read only span of 3 values encoding an Lab value using ICC v4 convention.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
+        public static CIELab LabEncoded2Float(ReadOnlySpan<ushort> wLab)
+        {
+            if (wLab.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' length must equal 3.");
 
             Interop.LabEncoded2Float(out CIELab lab, wLab);
             return lab;
@@ -368,11 +378,21 @@ namespace lcmsNET
         /// <summary>
         /// Converts an Lab value encoded using ICC v2 convention to <see cref="CIELab"/>.
         /// </summary>
-        /// <param name="wLab">An array of 3 values encoding an Lab value using ICC v2 convention.</param>
+        /// <param name="wLab">An array in which the first 3 values encode an Lab value using ICC v2 convention.</param>
         /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
         public static CIELab LabEncoded2FloatV2(ushort[] wLab)
         {
-            if (wLab?.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' array size must equal 3.");
+            return LabEncoded2FloatV2(new ReadOnlySpan<ushort>(wLab, 0, 3));
+        }
+
+        /// <summary>
+        /// Converts an Lab value encoded using ICC v2 convention to <see cref="CIELab"/>.
+        /// </summary>
+        /// <param name="wLab">A read only span of 3 values encoding an Lab value using ICC v2 convention.</param>
+        /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
+        public static CIELab LabEncoded2FloatV2(ReadOnlySpan<ushort> wLab)
+        {
+            if (wLab.Length != 3) throw new ArgumentException($"'{nameof(wLab)}' length must equal 3.");
 
             Interop.LabEncoded2FloatV2(out CIELab lab, wLab);
             return lab;
@@ -397,7 +417,17 @@ namespace lcmsNET
         /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
         public static CIEXYZ XYZEncoded2Float(ushort[] xyz)
         {
-            if (xyz?.Length != 3) throw new ArgumentException($"'{nameof(xyz)}' array size must equal 3.");
+            return XYZEncoded2Float(new ReadOnlySpan<ushort>(xyz, 0, 3));
+        }
+
+        /// <summary>
+        /// Converts an XYZ value encoded using ICC convention to <see cref="CIEXYZ"/>.
+        /// </summary>
+        /// <param name="xyz">A read only span of 3 values encoding an XYZ value using ICC convention.</param>
+        /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
+        public static CIEXYZ XYZEncoded2Float(ReadOnlySpan<ushort> xyz)
+        {
+            if (xyz.Length != 3) throw new ArgumentException($"'{nameof(xyz)}' length must equal 3.");
 
             Interop.XYZEncoded2Float(out CIEXYZ fxyz, xyz);
             return fxyz;
