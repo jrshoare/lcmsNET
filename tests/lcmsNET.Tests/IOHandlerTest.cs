@@ -499,15 +499,31 @@ namespace lcmsNET.Tests
         public void ReadTagTypeSignatureTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
+            uint memorySize = 100;
+            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
+
+            try
             {
-                bool expected = true;
+                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "w"))
+                {
+                    TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
+                    iohandler.Write(sig);
+                }
 
-                // Act
-                bool actual = iohandler.Read(out TagTypeSignature sig);
+                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
+                {
+                    bool expected = true;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
+                    // Act
+                    bool actual = iohandler.Read(out TagTypeSignature sig);
+
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(hglobal);
             }
         }
 
