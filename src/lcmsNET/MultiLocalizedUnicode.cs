@@ -36,6 +36,10 @@ namespace lcmsNET
         /// The country code for 'no country'.
         /// </summary>
         public const string NoCountry = "\0\0";
+        /// <summary>
+        /// A special language/country code to retrieve the Unicode description from V2 profiles.
+        /// </summary>
+        public const string V2Unicode = "\xff\xff";
 
         internal MultiLocalizedUnicode(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)
@@ -125,6 +129,26 @@ namespace lcmsNET
             return Interop.MLUSetWide(handle, languageCode, countryCode, value) != 0;
         }
 
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// Sets a wide character (16 bit) entry for the given language and country code
+        /// by converting it from UTF-8 encoding.
+        /// </summary>
+        /// <param name="languageCode">The ISO 639-1 language code.</param>
+        /// <param name="countryCode">The ISO 3166-1 country code.</param>
+        /// <param name="value">The value to be set.</param>
+        /// <returns>true if set successfully, otherwise false.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The multi-localized Unicode string has already been disposed.
+        /// </exception>
+        public bool SetUTF8(string languageCode, string countryCode, string value)
+        {
+            EnsureNotClosed();
+
+            return Interop.MLUSetUTF8(handle, languageCode, countryCode, value) != 0;
+        }
+#endif
+
         /// <summary>
         /// Gets the ASCII (7 bit) entry for the given language and country code.
         /// </summary>
@@ -156,6 +180,29 @@ namespace lcmsNET
 
             return Interop.MLUGetWide(handle, languageCode, countryCode);
         }
+
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// Gets the UTF-8 entry for the given language and country code.
+        /// </summary>
+        /// <param name="languageCode">The ISO 639-1 language code.</param>
+        /// <param name="countryCode">The ISO 3166-1 country code.</param>
+        /// <returns>The entry, or null if not found.</returns>
+        /// <exception cref="ObjectDisposedException">
+        /// The multi-localized Unicode string has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS 2.16 version or later.
+        /// </para>
+        /// </remarks>
+        public string GetUTF8(string languageCode, string countryCode)
+        {
+            EnsureNotClosed();
+
+            return Interop.MLUGetUTF8(handle, languageCode, countryCode);
+        }
+#endif
 
         /// <summary>
         /// Gets the translation rule for the given language and country code.

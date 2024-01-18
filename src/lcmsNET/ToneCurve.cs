@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace lcmsNET
 {
     /// <summary>
-    /// Represents a segemnt of a curve.
+    /// Represents a segment of a curve.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CurveSegment
@@ -59,6 +59,16 @@ namespace lcmsNET
         /// Pointer to a floating point array of size <see cref="nGridPoints"/> if <see cref="type"/> == 0.
         /// </summary>
         public IntPtr sampledPoints;
+
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="CurveSegment"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="CurveSegment"/> instance.</returns>
+        internal static CurveSegment FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<CurveSegment>(handle);
+        }
     }
 
     /// <summary>
@@ -136,6 +146,26 @@ namespace lcmsNET
         public static ToneCurve BuildSegmented(Context context, CurveSegment[] segments)
         {
             return new ToneCurve(Interop.BuildSegmentedToneCurve(Helper.GetHandle(context), segments), context);
+        }
+
+        /// <summary>
+        /// Gets the curve segment at the specified index.
+        /// </summary>
+        /// <param name="segmentIndex">The zero-based index of the curve segment to be obtained.</param>
+        /// <returns>The <see cref="CurveSegment"/> at the specified index.</returns>
+        /// <exception cref="IndexOutOfRangeException">
+        /// The index is out of range.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// Requires Little CMS version 2.16 or later.
+        /// </para>
+        /// </remarks>
+        public CurveSegment GetCurveSegment(int segmentIndex)
+        {
+            IntPtr handle = Interop.GetCurveSegment(Handle, segmentIndex);
+            if (handle == IntPtr.Zero) throw new IndexOutOfRangeException(nameof(segmentIndex));
+            return CurveSegment.FromHandle(handle);
         }
         #endregion
 

@@ -319,6 +319,70 @@ namespace lcmsNET.Tests
             }
         }
 
+// At the time of writing these tests are excluded because an i/o exception occurs at runtime
+// due to Little CMS (2.16) leaving the file open, so do not re-enable until this is fixed!
+#if false
+        [TestMethod()]
+        public void CreateDeviceLinkFromCubeFileTest()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                var cubepath = Path.Combine(tempPath, "Aqua.cube");
+                Save(".Resources.Aqua.cube", cubepath);
+
+                // Act
+                using (var profile = Profile.CreateDeviceLinkFromCubeFile(cubepath))
+                {
+                    // Assert
+                    Assert.IsNotNull(profile);
+                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+
+        [TestMethod()]
+        public void CreateDeviceLinkFromCubeFileTest2()
+        {
+            // Arrange
+            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
+            Directory.CreateDirectory(tempPath);
+
+            try
+            {
+                IntPtr plugin = IntPtr.Zero;
+                IntPtr userData = IntPtr.Zero;
+                var cubepath = Path.Combine(tempPath, "Aqua.cube");
+                Save(".Resources.Aqua.cube", cubepath);
+
+                // Act
+                using var context = Context.Create(plugin, userData);
+                using var profile = Profile.CreateDeviceLinkFromCubeFile(context, cubepath);
+
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+            finally
+            {
+                Directory.Delete(tempPath, true);
+            }
+        }
+#endif
+
         [TestMethod()]
         public void CreateDeviceLinkTest()
         {
@@ -527,6 +591,28 @@ namespace lcmsNET.Tests
             {
                 // Assert
                 Assert.IsNotNull(profile);
+            }
+        }
+
+        [TestMethod()]
+        public void Create_OkLabTest()
+        {
+            try
+            {
+                // Arrange
+                IntPtr plugin = IntPtr.Zero;
+                IntPtr userData = IntPtr.Zero;
+
+                // Act
+                using var context = Context.Create(plugin, userData);
+                using var profile = Profile.Create_OkLab(context);
+
+                // Assert
+                Assert.IsNotNull(profile);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
             }
         }
 

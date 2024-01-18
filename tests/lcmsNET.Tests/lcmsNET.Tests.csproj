@@ -13,6 +13,7 @@
     <OutputPath>..\..\bin</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Aqua.cube" />
     <None Remove="Resources\CIELABD50.icc" />
     <None Remove="Resources\D50_XYZ.icc" />
     <None Remove="Resources\IT8.txt" />
@@ -22,6 +23,7 @@
     <None Remove="Resources\sRGB_ICC_v4_Appearance.icc" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Aqua.cube" />
     <EmbeddedResource Include="Resources\D50_XYZ.icc" />
     <EmbeddedResource Include="Resources\IT8.txt" />
     <EmbeddedResource Include="Resources\Lab.icc" />

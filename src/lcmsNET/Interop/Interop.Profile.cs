@@ -123,6 +123,25 @@ namespace lcmsNET
             return CreateInkLimitingDeviceLinkTHR_Internal(contextID, colorSpaceSignature, limit);
         }
 
+        [DllImport(Liblcms, EntryPoint = "cmsCreateDeviceLinkFromCubeFile", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr CreateDeviceLinkFromCubeFile_Internal(
+                [MarshalAs(UnmanagedType.LPStr)] string filename);
+
+        internal static IntPtr CreateDeviceLinkFromCubeFile(string filepath)
+        {
+            return CreateDeviceLinkFromCubeFile_Internal(filepath);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsCreateDeviceLinkFromCubeFileTHR", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr CreateDeviceLinkFromCubeFileTHR_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.LPStr)] string filename);
+
+        internal static IntPtr CreateDeviceLinkFromCubeFile(IntPtr contextID, string filepath)
+        {
+            return CreateDeviceLinkFromCubeFileTHR_Internal(contextID, filepath);
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsTransform2DeviceLink", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr Transform2DeviceLink_Internal(
                 IntPtr contextID,
@@ -254,6 +273,15 @@ namespace lcmsNET
                 double hue, double saturation, int tempSrc, int tempDest)
         {
             return CreateBCHSWabstractProfileTHR_Internal(contextID, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest);
+        }
+
+        [DllImport(Liblcms, EntryPoint = "cmsCreate_OkLabProfile", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr Create_OkLabProfile_Internal(
+                IntPtr contextID);
+
+        internal static IntPtr Create_OkLab(IntPtr contextID)
+        {
+            return Create_OkLabProfile_Internal(contextID);
         }
 
         [DllImport(Liblcms, EntryPoint = "cmsOpenProfileFromFile", CallingConvention = CallingConvention.StdCall)]

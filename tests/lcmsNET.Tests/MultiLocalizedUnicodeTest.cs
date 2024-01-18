@@ -169,6 +169,36 @@ namespace lcmsNET.Tests
             }
         }
 
+#if NET5_0_OR_GREATER
+        [TestMethod()]
+        public void SetUTF8Test()
+        {
+            try
+            {
+                // Arrange
+                IntPtr plugin = IntPtr.Zero;
+                IntPtr userData = IntPtr.Zero;
+                uint nItems = 0;
+                string languageCode = "en";
+                string countryCode = "US";
+
+                // Act
+                using (var context = Context.Create(plugin, userData))
+                using (var mlu = MultiLocalizedUnicode.Create(context, nItems))
+                {
+                    bool set = mlu.SetUTF8(languageCode, countryCode, "SetUTF8");
+
+                    // Assert
+                    Assert.IsTrue(set);
+                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+        }
+#endif
+
         [TestMethod()]
         public void GetASCIITest()
         {
@@ -242,6 +272,56 @@ namespace lcmsNET.Tests
                 Assert.IsNull(actual);
             }
         }
+
+#if NET5_0_OR_GREATER
+        [TestMethod()]
+        public void GetUTF8Test()
+        {
+            try
+            {
+                // Arrange
+                IntPtr plugin = IntPtr.Zero;
+                IntPtr userData = IntPtr.Zero;
+                uint nItems = 0;
+                string languageCode = "en";
+                string countryCode = "US";
+                string expected = "GetUTF8";
+
+                // Act
+                using var context = Context.Create(plugin, userData);
+                using var mlu = MultiLocalizedUnicode.Create(context, nItems);
+                mlu.SetUTF8(languageCode, countryCode, expected);
+                var actual = mlu.GetUTF8(languageCode, countryCode);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+        }
+
+        [TestMethod()]
+        public void GetUTF8TestNonExistent()
+        {
+            try
+            {
+                // Arrange
+                using var mlu = MultiLocalizedUnicode.Create(null);
+
+                // Act
+                var actual = mlu.GetUTF8("en", "US");
+
+                // Assert
+                Assert.IsNull(actual);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+        }
+#endif
 
         [TestMethod()]
         public void GetTranslationTest()

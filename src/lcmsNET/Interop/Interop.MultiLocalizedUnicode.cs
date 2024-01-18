@@ -84,6 +84,23 @@ namespace lcmsNET
             return MLUsetWide_Internal(handle, language, country, value);
         }
 
+#if NET5_0_OR_GREATER
+        [DllImport(Liblcms, EntryPoint = "cmsMLUsetUTF8", CallingConvention = CallingConvention.StdCall)]
+        private static extern int MLUsetUTF8_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
+                [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8String);
+
+        internal static int MLUSetUTF8(IntPtr handle, string languageCode, string countryCode, string value)
+        {
+            byte[] language = Helper.ToASCIIBytes(languageCode);
+            byte[] country = Helper.ToASCIIBytes(countryCode);
+
+            return MLUsetUTF8_Internal(handle, language, country, value);
+        }
+#endif
+
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetASCII", CallingConvention = CallingConvention.StdCall)]
         private static extern uint MLUgetASCII_Internal(
                 IntPtr handle,
@@ -141,6 +158,37 @@ namespace lcmsNET
                 Marshal.FreeHGlobal(buffer);
             }
         }
+
+#if NET5_0_OR_GREATER
+        [DllImport(Liblcms, EntryPoint = "cmsMLUgetUTF8", CallingConvention = CallingConvention.StdCall)]
+        private static extern uint MLUgetUTF8_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+
+        internal static string MLUGetUTF8(IntPtr handle, string languageCode, string countryCode)
+        {
+            byte[] language = Helper.ToASCIIBytes(languageCode);
+            byte[] country = Helper.ToASCIIBytes(countryCode);
+
+            IntPtr buffer = IntPtr.Zero;
+            uint bytes = MLUgetUTF8_Internal(handle, language, country, buffer, 0);
+            if (bytes == 0) return null;
+
+            buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
+            try
+            {
+                MLUgetUTF8_Internal(handle, language, country, buffer, bytes);
+                return Marshal.PtrToStringUTF8(buffer);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+#endif
 
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetTranslation", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUgetTranslation_Internal(

@@ -526,5 +526,88 @@ namespace lcmsNET.Tests
                 }
             }
         }
+
+        [TestMethod()]
+        public void GetCurveSegmentTest()
+        {
+            // Arrange
+            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = IntPtr.Zero;
+            float[] sampled = [0.0f, 1.0f];
+            GCHandle hSampled = GCHandle.Alloc(sampled, GCHandleType.Pinned);
+            IntPtr ptrSampled = hSampled.AddrOfPinnedObject();
+            int segmentIndex = 1;
+
+            try
+            {
+                CurveSegment[] segments =
+                [
+                    new CurveSegment
+                    {
+                        x0 = -1e22f,
+                        x1 = 1.0f,
+                        type = 6,
+                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        nGridPoints = 0,
+                        sampledPoints = IntPtr.Zero
+                    },
+                    new CurveSegment
+                    {
+                        x0 = 0.0f,
+                        x1 = 1.0f,
+                        type = 0,
+                        parameters = new double[10],
+                        nGridPoints = 2,
+                        sampledPoints = ptrSampled
+                    },
+                    new CurveSegment
+                    {
+                        x0 = 1.0f,
+                        x1 = -1e22f,
+                        type = 6,
+                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        nGridPoints = 0,
+                        sampledPoints = IntPtr.Zero
+                    }
+                ];
+
+                // Act
+                using var context = Context.Create(plugin, userData);
+                using var toneCurve = ToneCurve.BuildSegmented(context, segments);
+                CurveSegment curveSegment = toneCurve.GetCurveSegment(segmentIndex);
+                var x0 = curveSegment.x0;
+                var x1 = curveSegment.x1;
+                var type = curveSegment.type;
+                var parameters = curveSegment.parameters;
+                var nGridPoints = curveSegment.nGridPoints;
+                var sampledPoints = curveSegment.sampledPoints;
+
+                // Assert
+                Assert.AreEqual(segments[segmentIndex].x0, x0);
+                Assert.AreEqual(segments[segmentIndex].x1, x1);
+                Assert.AreEqual(segments[segmentIndex].type, type);
+                CollectionAssert.AreEqual(segments[segmentIndex].parameters, parameters);
+                Assert.AreEqual(segments[segmentIndex].nGridPoints, nGridPoints);
+                if (type == 0)
+                {
+                    unsafe
+                    {
+                        float *points = (float*)sampledPoints.ToPointer();
+                        for (var i = 0; i < nGridPoints; i++)
+                        {
+                            Assert.AreEqual(sampled[i], points[i]);
+                        }
+                    }
+                }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+            finally
+            {
+                hSampled.Free();
+            }
+        }
     }
 }

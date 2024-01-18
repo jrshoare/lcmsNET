@@ -234,6 +234,53 @@ namespace lcmsNET
         }
 
         /// <summary>
+        /// Creates a new instance of the <see cref="Profile"/> class for a device link profile operating
+        /// in RGB from a 3D LUT file.
+        /// </summary>
+        /// <param name="filepath">The full path to the file.</param>
+        /// <returns>A new <see cref="Profile"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// The file format corresponds to .CUBE file format as defined by Adobe in document
+        /// cube-lut-specification-1.0.pdf.
+        /// </para>
+        /// <para>
+        /// Creates the instance in the global context.
+        /// </para>
+        /// </remarks>
+        public static Profile CreateDeviceLinkFromCubeFile(string filepath)
+        {
+            return new Profile(Interop.CreateDeviceLinkFromCubeFile(filepath));
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Profile"/> class for a device link profile operating
+        /// in RGB from a 3D LUT file in the given context.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <param name="filepath">The full path to the file.</param>
+        /// <returns>A new <see cref="Profile"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// The file format corresponds to .CUBE file format as defined by Adobe in document
+        /// cube-lut-specification-1.0.pdf.
+        /// </para>
+        /// <para>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </para>
+        /// </remarks>
+        public static Profile CreateDeviceLinkFromCubeFile(Context context, string filepath)
+        {
+            return new Profile(Interop.CreateDeviceLinkFromCubeFile(Helper.GetHandle(context), filepath), context);
+        }
+
+        /// <summary>
         /// Creates a new instance of the <see cref="Profile"/> class for a device link profile from a given color transform.
         /// </summary>
         /// <param name="transform">A transform.</param>
@@ -428,6 +475,22 @@ namespace lcmsNET
                 double hue, double saturation, int tempSrc, int tempDest)
         {
             return new Profile(Interop.CreateBCHSWabstract(Helper.GetHandle(context), nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest), context);
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Profile"/> class for OkLab color space.
+        /// </summary>
+        /// <param name="context">A <see cref="Context"/>, or null for the global context.</param>
+        /// <returns>A new <see cref="Profile"/> instance.</returns>
+        /// <exception cref="LcmsNETException">
+        /// Failed to create instance.
+        /// </exception>
+        /// <remarks>
+        /// Creates the instance in the global context if <paramref name="context"/> is null.
+        /// </remarks>
+        public static Profile Create_OkLab(Context context = null)
+        {
+            return new Profile(Interop.Create_OkLab(Helper.GetHandle(context)), context);
         }
         #endregion
 

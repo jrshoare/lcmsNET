@@ -245,5 +245,14 @@ namespace lcmsNET
         {
             FreeToneCurve_Internal(handle);
         }
+
+        [DllImport(Liblcms, EntryPoint = "cmsGetToneCurveSegment", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr GetToneCurveSegment_Internal(
+                [MarshalAs(UnmanagedType.I4)] int segment,
+                IntPtr handle);
+        internal static IntPtr GetCurveSegment(IntPtr handle, int segment)
+        {
+            return GetToneCurveSegment_Internal(segment, handle);
+        }
     }
 }

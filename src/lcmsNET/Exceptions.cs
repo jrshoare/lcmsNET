@@ -56,6 +56,7 @@ namespace lcmsNET
         {
         }
 
+#if !NET8_0_OR_GREATER
         /// <summary>
         /// Initialises a new instance of the <see cref="LcmsNETException"/> class with serialised data.
         /// </summary>
@@ -64,5 +65,6 @@ namespace lcmsNET
         protected LcmsNETException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
+#endif
     }
 }
