@@ -287,7 +287,7 @@ namespace lcmsNET.Tests.Plugin
                     Assert.IsTrue(written);
 
                     profile.Save(null, out uint bytesNeeded);
-                    Assert.AreNotEqual(0, bytesNeeded);
+                    Assert.AreNotEqual(0u, bytesNeeded);
                     byte[] profileMemory = new byte[bytesNeeded];
 
                     bool saved = profile.Save(profileMemory, out uint bytesWritten);

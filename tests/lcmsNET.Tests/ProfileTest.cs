@@ -1861,7 +1861,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            uint notExpected = 0;
+            int notExpected = 0;
 
             try
             {
@@ -1891,7 +1891,7 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            uint notExpected = 0;
+            int notExpected = 0;
 
             try
             {
