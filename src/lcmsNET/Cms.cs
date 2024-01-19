@@ -603,9 +603,17 @@ namespace lcmsNET
         /// </summary>
         Meta = 0x6D657461,
         /// <summary>
+        /// 'cicp' - read/write using <see cref="VideoSignalType"/>.
+        /// </summary>
+        Cicp = 0x63696370,
+        /// <summary>
         /// 'arts' - read/write using <see cref="CIEXYZTRIPLE"/>.
         /// </summary>
-        ArgyllArts = 0x61727473
+        ArgyllArts = 0x61727473,
+        /// <summary>
+        /// 'MHC2' read/write not yet supported.
+        /// </summary>
+        MHC2 = 0x4D484332
     }
 
     /// <summary>
@@ -617,6 +625,10 @@ namespace lcmsNET
         /// 'chrm'
         /// </summary>
         Chromaticity = 0x6368726D,
+        /// <summary>
+        /// 'cicp'
+        /// </summary>
+        Cicp = 0x63696370,
         /// <summary>
         /// 'clro'
         /// </summary>
@@ -1443,6 +1455,43 @@ namespace lcmsNET
         internal static ICCViewingConditions FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ICCViewingConditions>(handle);
+        }
+    }
+
+    /// <summary>
+    /// Defines a video signal type.
+    /// </summary>
+    /// <remarks>
+    /// See recommendation ITU-T H.273 (ISO/IEC 23091-2).
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct VideoSignalType
+    {
+        /// <summary>
+        /// Colour primaries code point.
+        /// </summary>
+        public byte ColourPrimaries;
+        /// <summary>
+        /// Transfer characteristics code point.
+        /// </summary>
+        public byte TransferCharacteristics;
+        /// <summary>
+        /// Matrix coefficients code point.
+        /// </summary>
+        public byte MatrixCoefficients;
+        /// <summary>
+        /// Scaling and offsets values applied in association with <see cref="MatrixCoefficients"/>.
+        /// </summary>
+        public byte VideoFullRangeFlag;
+
+        /// <summary>
+        /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="VideoSignalType"/> object.
+        /// </summary>
+        /// <param name="handle">A handle to the unmanaged block of memory.</param>
+        /// <returns>A new <see cref="VideoSignalType"/> instance.</returns>
+        internal static VideoSignalType FromHandle(IntPtr handle)
+        {
+            return Marshal.PtrToStructure<VideoSignalType>(handle);
         }
     }
 

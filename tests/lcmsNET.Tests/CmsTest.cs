@@ -436,6 +436,36 @@ namespace lcmsNET.Tests
             }
         }
 
+        [TestMethod()]
+        public void VideoSignalType_FromHandleTest()
+        {
+            try
+            {
+                // Arrange
+                using var profile = Profile.CreatePlaceholder(null);
+                var expected = new VideoSignalType
+                {
+                    ColourPrimaries = 1,
+                    TransferCharacteristics = 13,
+                    MatrixCoefficients = 0,
+                    VideoFullRangeFlag = 1
+                };
+
+                profile.WriteTag(TagSignature.Cicp, expected);
+
+                // Act
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<VideoSignalType>(TagSignature.Cicp);
+
+                // Assert
+                Assert.AreEqual(expected, actual);
+            }
+            catch (LcmsNETException ex)
+            {
+                Assert.Inconclusive("Possibly requires later version of Little CMS.");
+            }
+        }
+
         // https://www.argyllcms.com/doc/ArgyllCMS_arts_tag.html
         [TestMethod()]
         public void TagSignatureTest_ArgyllArts()
