@@ -460,7 +460,7 @@ namespace lcmsNET.Tests
                 // Assert
                 Assert.AreEqual(expected, actual);
             }
-            catch (LcmsNETException ex)
+            catch (LcmsNETException)
             {
                 Assert.Inconclusive("Possibly requires later version of Little CMS.");
             }

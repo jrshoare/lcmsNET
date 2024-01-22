@@ -611,7 +611,7 @@ namespace lcmsNET
         /// </summary>
         ArgyllArts = 0x61727473,
         /// <summary>
-        /// 'MHC2' read/write not yet supported.
+        /// 'MHC2' read/write using <see cref="lcmsNET.MHC2"/>.
         /// </summary>
         MHC2 = 0x4D484332
     }
