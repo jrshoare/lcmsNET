@@ -3,9 +3,9 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8</TargetFrameworks>
     <LangVersion>7.3</LangVersion>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Authors>jrshoare</Authors>
     <Company />
@@ -19,7 +19,7 @@
     <PackageIconUrl>https://github.com/jrshoare/lcmsNET/raw/master/src/lcmsNET/icon.png</PackageIconUrl>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
-    <Copyright>Copyright (c) 2019-2022 John Stevenson-Hoare</Copyright>
+    <Copyright>Copyright (c) 2019-2024 John Stevenson-Hoare</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
   </PropertyGroup>
 
