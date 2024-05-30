@@ -27,7 +27,7 @@ namespace lcmsNET
     /// Represents the laydown order that colorants will be printed on an n-colorant device.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ColorantOrder
+    public readonly struct ColorantOrder
     {
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)]
         private readonly byte[] _;
