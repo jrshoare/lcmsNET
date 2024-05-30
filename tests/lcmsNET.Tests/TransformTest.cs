@@ -82,17 +82,13 @@ namespace lcmsNET.Tests
         /// </summary>
         /// <param name="resourceName"></param>
         /// <param name="path"></param>
-        private void Save(string resourceName, string path)
+        private static void Save(string resourceName, string path)
         {
             var thisExe = Assembly.GetExecutingAssembly();
             var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                using (var fs = File.Create(path))
-                {
-                    s.CopyTo(fs);
-                }
-            }
+            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
+            using var fs = File.Create(path);
+            s.CopyTo(fs);
         }
 
         [TestMethod()]
@@ -110,14 +106,13 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    // Assert
-                    Assert.IsNotNull(transform);
-                }
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(transform);
             }
             finally
             {
@@ -142,15 +137,14 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    // Assert
-                    Assert.IsNotNull(transform);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(transform);
             }
             finally
             {
@@ -175,15 +169,14 @@ namespace lcmsNET.Tests
                 Save(".Resources.D50_XYZ.icc", proofingpath);
 
                 // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var proofing = Profile.Open(proofingpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
-                {
-                    // Assert
-                    Assert.IsNotNull(transform);
-                }
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var proofing = Profile.Open(proofingpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(transform);
             }
             finally
             {
@@ -210,16 +203,15 @@ namespace lcmsNET.Tests
                 Save(".Resources.D50_XYZ.icc", proofingpath);
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var proofing = Profile.Open(proofingpath, "r"))
-                using (var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
-                {
-                    // Assert
-                    Assert.IsNotNull(transform);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var proofing = Profile.Open(proofingpath, "r");
+                using var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(transform);
             }
             finally
             {
@@ -302,14 +294,15 @@ namespace lcmsNET.Tests
 
                 // Act
                 Profile[] profiles = new Profile[1];
-                bool[] bpc = new bool[] { true };
-                Intent[] intents = new Intent[] { Intent.RelativeColorimetric };
-                double[] adaptationStates = new double[] { 1.0 };
+                bool[] bpc = [true];
+                Intent[] intents = [Intent.RelativeColorimetric];
+                double[] adaptationStates = [1.0];
                 Profile gamut = null;
                 int gamutPCSPosition = 0;
                 uint inputFormat = Cms.TYPE_RGB_8;
                 uint outputFormat = Cms.TYPE_XYZ_16;
                 CmsFlags flags = CmsFlags.None;
+
                 using (var context = Context.Create(plugin, userData))
                 using (profiles[0] = Profile.Open(srgbpath, "r"))
                 using (var transform = Transform.Create(context, profiles, bpc, intents, adaptationStates,
@@ -340,17 +333,16 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    byte[] inputBuffer = new byte[] { 255, 147, 226 };
-                    byte[] outputBuffer = new byte[3];
-                    transform.DoTransform(inputBuffer, outputBuffer, 1);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-                    // Assert
-                }
+                byte[] inputBuffer = [255, 147, 226];
+                byte[] outputBuffer = new byte[3];
+                transform.DoTransform(inputBuffer, outputBuffer, 1);
+
+                // Assert
             }
             finally
             {
@@ -373,17 +365,16 @@ namespace lcmsNET.Tests
                 Save(".Resources.D50_XYZ.icc", xyzpath);
 
                 // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var xyz = Profile.Open(xyzpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    byte[] inputBuffer = new byte[] { 255, 255, 255 };
-                    byte[] outputBuffer = new byte[3];
-                    transform.DoTransform(inputBuffer, outputBuffer, 1);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var xyz = Profile.Open(xyzpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
 
-                    // Assert
-                }
+                byte[] inputBuffer = [255, 255, 255];
+                byte[] outputBuffer = new byte[3];
+                transform.DoTransform(inputBuffer, outputBuffer, 1);
+
+                // Assert
             }
             finally
             {
@@ -414,18 +405,17 @@ namespace lcmsNET.Tests
                     Save(".Resources.D50_XYZ.icc", xyzpath);
 
                     // Act
-                    using (var srgb = Profile.Open(srgbpath, "r"))
-                    using (var xyz = Profile.Open(xyzpath, "r"))
-                    using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None))
-                    {
-                        byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
-                        byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
-                        transform.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
-                                bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);    // >= 2.8
+                    using var srgb = Profile.Open(srgbpath, "r");
+                    using var xyz = Profile.Open(xyzpath, "r");
+                    using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
 
-                        // Assert
-                    }
+                    byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
+                    byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
+                    transform.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+                            bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);    // >= 2.8
+
+                    // Assert
                 }
                 finally
                 {
@@ -456,7 +446,7 @@ namespace lcmsNET.Tests
                 using (var transform = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
                         Intent.RelativeColorimetric, CmsFlags.None))
                 {
-                    byte[] inputBuffer = new byte[] { 255, 255, 255 };
+                    byte[] inputBuffer = [255, 255, 255];
                     byte[] outputBuffer = new byte[6];
                     transform.DoTransform(inputBuffer, outputBuffer, 1);
 
@@ -486,17 +476,15 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var expected = Context.Create(plugin, userData))
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    var actual = transform.Context;
+                using var expected = Context.Create(plugin, userData);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+                var actual = transform.Context;
 
-                    // Assert
-                    Assert.AreSame(expected, actual);
-                }
+                // Assert
+                Assert.AreSame(expected, actual);
             }
             finally
             {
@@ -521,17 +509,15 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var expected = Context.Create(plugin, userData))
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    var actual = transform.Context;
+                using var expected = Context.Create(plugin, userData);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+                var actual = transform.Context;
 
-                    // Assert
-                    Assert.AreSame(expected, actual);
-                }
+                // Assert
+                Assert.AreSame(expected, actual);
             }
             finally
             {
@@ -558,18 +544,16 @@ namespace lcmsNET.Tests
                 Save(".Resources.D50_XYZ.icc", proofingpath);
 
                 // Act
-                using (var expected = Context.Create(plugin, userData))
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var proofing = Profile.Open(proofingpath, "r"))
-                using (var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None))
-                {
-                    var actual = transform.Context;
+                using var expected = Context.Create(plugin, userData);
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var proofing = Profile.Open(proofingpath, "r");
+                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
+                var actual = transform.Context;
 
-                    // Assert
-                    Assert.AreSame(expected, actual);
-                }
+                // Assert
+                Assert.AreSame(expected, actual);
             }
             finally
             {
@@ -592,17 +576,16 @@ namespace lcmsNET.Tests
                 var labpath = Path.Combine(tempPath, "lab.icc");
                 Save(".Resources.Lab.icc", labpath);
 
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    // Act
-                    uint actual = transform.InputFormat;
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Act
+                uint actual = transform.InputFormat;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -625,17 +608,16 @@ namespace lcmsNET.Tests
                 var labpath = Path.Combine(tempPath, "lab.icc");
                 Save(".Resources.Lab.icc", labpath);
 
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    // Act
-                    uint actual = transform.OutputFormat;
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Act
+                uint actual = transform.OutputFormat;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -647,17 +629,15 @@ namespace lcmsNET.Tests
         public void ChangeBuffersFormatTest()
         {
             // Arrange
-            using (var profile = Profile.Create_sRGB())
-            using (var transform = Transform.Create(profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None))
-            {
-                profile.Dispose();
+            using var profile = Profile.Create_sRGB();
+            using var transform = Transform.Create(profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None);
+            profile.Dispose();
 
-                // Act
-                var changed = transform.ChangeBuffersFormat(Cms.TYPE_BGR_16, Cms.TYPE_RGB_16);
+            // Act
+            var changed = transform.ChangeBuffersFormat(Cms.TYPE_BGR_16, Cms.TYPE_RGB_16);
 
-                // Assert
-                Assert.IsTrue(changed);
-            }
+            // Assert
+            Assert.IsTrue(changed);
         }
 
         [TestMethod()]
@@ -676,26 +656,24 @@ namespace lcmsNET.Tests
 
             try
             {
-                using (var context = Context.Create(plugin: IntPtr.Zero, userData: expected))
-                using (var profile = Profile.Create_sRGB(context))
-                using (var transform = Transform.Create(context, profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None))
-                {
-                    profile.Dispose();
-                    transform.SetUserData(expected, FreeUserData);
+                using var context = Context.Create(plugin: IntPtr.Zero, userData: expected);
+                using var profile = Profile.Create_sRGB(context);
+                using var transform = Transform.Create(context, profile, Cms.TYPE_RGB_16, profile, Cms.TYPE_RGB_16, Intent.Perceptual, CmsFlags.None);
+                profile.Dispose();
+                transform.SetUserData(expected, FreeUserData);
 
-                    // Act
-                    var actual = transform.UserData;
+                // Act
+                var actual = transform.UserData;
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             catch (EntryPointNotFoundException)
             {
                 Assert.Inconclusive("Requires Little CMS 2.4 or later.");
             }
 
-            void FreeUserData(IntPtr contextID, IntPtr userData)
+            static void FreeUserData(IntPtr contextID, IntPtr userData)
             {
                 Marshal.FreeHGlobal(userData);
             }
@@ -715,17 +693,16 @@ namespace lcmsNET.Tests
                 var labpath = Path.Combine(tempPath, "lab.icc");
                 Save(".Resources.Lab.icc", labpath);
 
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.NoOptimize | CmsFlags.BlackPointCompensation))
-                {
-                    // Act
-                    CmsFlags actual = transform.Flags;
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.NoOptimize | CmsFlags.BlackPointCompensation);
 
-                    // Assert
-                    // transform creation may add or remove flags so do not assert equality with values passed to create method
-                }
+                // Act
+                CmsFlags actual = transform.Flags;
+
+                // Assert
+                // transform creation may add or remove flags so do not assert equality with values passed to create method
             }
             catch (EntryPointNotFoundException)
             {

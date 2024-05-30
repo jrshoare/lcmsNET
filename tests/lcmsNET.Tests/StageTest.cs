@@ -76,9 +76,9 @@ namespace lcmsNET.Tests
         //
         #endregion
 
-        private MemoryStream Save(string resourceName)
+        private static MemoryStream Save(string resourceName)
         {
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new();
             var thisExe = Assembly.GetExecutingAssembly();
             var assemblyName = new AssemblyName(thisExe.FullName);
             using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
@@ -97,12 +97,11 @@ namespace lcmsNET.Tests
             uint nChannels = 3;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, nChannels))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, nChannels);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -113,18 +112,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint nChannels = 3;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 2.2))
-            {
-                ToneCurve[] curves = new ToneCurve[3] { toneCurve, toneCurve, toneCurve };
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 2.2);
+            ToneCurve[] curves = [toneCurve, toneCurve, toneCurve];
 
-                // Act
-                using (var stage = Stage.Create(context, nChannels, curves))
-                {
-                    // Assert
-                    Assert.IsNotNull(stage);
-                }
-            }
+            // Act
+            using var stage = Stage.Create(context, nChannels, curves);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -134,11 +130,10 @@ namespace lcmsNET.Tests
             uint nChannels = 3;
 
             // Act
-            using (var stage = Stage.Create(null, nChannels, null))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var stage = Stage.Create(null, nChannels, null);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -153,15 +148,14 @@ namespace lcmsNET.Tests
                 { 0.0, 1.0, 0.0 },
                 { 0.0, 0.0, 1.0 }
             };
-            double[] offset = new double[] { 0, 0, 0 };
+            double[] offset = [0, 0, 0];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, matrix, offset))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, matrix, offset);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -173,8 +167,8 @@ namespace lcmsNET.Tests
             uint nGridPoints = 2;
             uint inputChannels = 3;
             uint outputChannels = 3;
-            ushort[] table = new ushort[]
-            {
+            ushort[] table =
+            [
                 0,    0,   0,                 // 0 0 0
                 0,    0,   0xffff,            // 0 0 1
 
@@ -186,15 +180,14 @@ namespace lcmsNET.Tests
 
                 0xffff,    0xffff,   0,       // 1 1 0
                 0xffff,    0xffff,   0xffff,  // 1 1 1
-            };
+            ];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -206,8 +199,8 @@ namespace lcmsNET.Tests
             uint nGridPoints = 2;
             uint inputChannels = 3;
             uint outputChannels = 3;
-            float[] table = new float[]
-            {
+            float[] table =
+            [
                 0,    0,    0,
                 0,    0,    1.0f,
 
@@ -219,15 +212,14 @@ namespace lcmsNET.Tests
 
                 1.0f,    1.0f,    0,
                 1.0f,    1.0f,    1.0f
-            };
+            ];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -240,12 +232,11 @@ namespace lcmsNET.Tests
             uint outputChannels = 3;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, clutPoint, outputChannels, (ushort[])null))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, clutPoint, outputChannels, (ushort[])null);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -254,16 +245,15 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            uint[] clutPoint = new uint[] { 7, 8, 9 };
+            uint[] clutPoint = [7, 8, 9];
             uint outputChannels = 3;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, clutPoint, outputChannels, (float[])null))
-            {
-                // Assert
-                Assert.IsNotNull(stage);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, clutPoint, outputChannels, (float[])null);
+
+            // Assert
+            Assert.IsNotNull(stage);
         }
 
         [TestMethod()]
@@ -275,13 +265,12 @@ namespace lcmsNET.Tests
             uint nChannels = 3;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, nChannels))
-            using (var duplicate = stage.Duplicate())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, nChannels);
+            using var duplicate = stage.Duplicate();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -293,15 +282,14 @@ namespace lcmsNET.Tests
             uint nChannels = 3;
             StageSignature expected = StageSignature.IdentityElemType;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, nChannels))
-            {
-                // Act
-                StageSignature actual = stage.StageType;
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, nChannels);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            StageSignature actual = stage.StageType;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -312,15 +300,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 3;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, expected))
-            {
-                // Act
-                uint actual = stage.InputChannels;
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, expected);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            uint actual = stage.InputChannels;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -331,15 +318,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 3;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var stage = Stage.Create(context, expected))
-            {
-                // Act
-                uint actual = stage.OutputChannels;
+            using var context = Context.Create(plugin, userData);
+            using var stage = Stage.Create(context, expected);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            uint actual = stage.OutputChannels;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         private static ushort Fn8D1(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
@@ -370,14 +356,13 @@ namespace lcmsNET.Tests
         public void SampleCLUTTest1()
         {
             // Arrange
-            using (var stage = Stage.Create(null, 9, 3, 3, (ushort[])null))
-            {
-                // Act
-                var actual = stage.SampleCLUT(Sampler3D16Bit, IntPtr.Zero, StageSamplingFlags.None);
+            using var stage = Stage.Create(null, 9, 3, 3, (ushort[])null);
 
-                // Assert
-                Assert.IsTrue(actual);
-            }
+            // Act
+            var actual = stage.SampleCLUT(Sampler3D16Bit, IntPtr.Zero, StageSamplingFlags.None);
+
+            // Assert
+            Assert.IsTrue(actual);
         }
 
         private static int Sampler3DFloat(float[] input, float[] output, IntPtr cargo)
@@ -389,14 +374,13 @@ namespace lcmsNET.Tests
         public void SampleCLUTTest2()
         {
             // Arrange
-            using (var stage = Stage.Create(null, 9, 3, 3, (float[])null))
-            {
-                // Act
-                var actual = stage.SampleCLUT(Sampler3DFloat, IntPtr.Zero, StageSamplingFlags.None);
+            using var stage = Stage.Create(null, 9, 3, 3, (float[])null);
 
-                // Assert
-                Assert.IsTrue(actual);
-            }
+            // Act
+            var actual = stage.SampleCLUT(Sampler3DFloat, IntPtr.Zero, StageSamplingFlags.None);
+
+            // Assert
+            Assert.IsTrue(actual);
         }
 
         private static int EstimateTAC16Bit(ushort[] input, ushort[] output, IntPtr cargo)
@@ -410,7 +394,7 @@ namespace lcmsNET.Tests
         public void SliceSpaceTest1()
         {
             // Arrange
-            uint[] gridPoints = { 6, 74, 74 };
+            uint[] gridPoints = [6, 74, 74];
 
             // Act
             var actual = Stage.SliceSpace(gridPoints, EstimateTAC16Bit, IntPtr.Zero);
@@ -430,7 +414,7 @@ namespace lcmsNET.Tests
         public void SliceSpaceTest2()
         {
             // Arrange
-            uint[] gridPoints = { 2, 16, 16 };
+            uint[] gridPoints = [2, 16, 16];
 
             // Act
             var actual = Stage.SliceSpace(gridPoints, EstimateTACFloat, IntPtr.Zero);
@@ -447,16 +431,14 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void InspectA2B0UsingStageSampleCLUT()
         {
-            using (MemoryStream ms = Save(".Resources.Lab.icc"))
-            using (var profile = Profile.Open(ms.GetBuffer()))
-            using (var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0))
+            using MemoryStream ms = Save(".Resources.Lab.icc");
+            using var profile = Profile.Open(ms.GetBuffer());
+            using var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0);
+            foreach (var stage in pipeline)
             {
-                foreach (var stage in pipeline)
+                if (stage.StageType == StageSignature.CLutElemType)
                 {
-                    if (stage.StageType == StageSignature.CLutElemType)
-                    {
-                        stage.SampleCLUT(SamplerInspect16Bit, IntPtr.Zero, StageSamplingFlags.Inspect);
-                    }
+                    stage.SampleCLUT(SamplerInspect16Bit, IntPtr.Zero, StageSamplingFlags.Inspect);
                 }
             }
         }
@@ -469,16 +451,14 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void InspectA2B0UsingStageSampleCLUT2()
         {
-            using (MemoryStream ms = Save(".Resources.Lab.icc"))
-            using (var profile = Profile.Open(ms.GetBuffer()))
-            using (var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0))
+            using MemoryStream ms = Save(".Resources.Lab.icc");
+            using var profile = Profile.Open(ms.GetBuffer());
+            using var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0);
+            foreach (var stage in pipeline)
             {
-                foreach (var stage in pipeline)
+                if (stage.StageType == StageSignature.CLutElemType)
                 {
-                    if (stage.StageType == StageSignature.CLutElemType)
-                    {
-                        stage.SampleCLUT(SamplerInspectFloat, IntPtr.Zero, StageSamplingFlags.Inspect);
-                    }
+                    stage.SampleCLUT(SamplerInspectFloat, IntPtr.Zero, StageSamplingFlags.Inspect);
                 }
             }
         }

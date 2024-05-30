@@ -332,7 +332,7 @@ namespace lcmsNET.Tests
         public void AlarmCodesTest()
         {
             // Arrange
-            ushort[] alarmCodes = new ushort[16] { 10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678 };
+            ushort[] alarmCodes = [10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678];
 
             // Act
             Cms.AlarmCodes = alarmCodes;
@@ -366,7 +366,7 @@ namespace lcmsNET.Tests
             double tempK = 6504;
 
             // Act
-            bool success = Cms.WhitePointFromTemp(out CIExyY xyY, tempK);
+            bool success = Cms.WhitePointFromTemp(out _, tempK);
 
             // Assert
             Assert.IsTrue(success);
@@ -380,7 +380,7 @@ namespace lcmsNET.Tests
             Cms.WhitePointFromTemp(out CIExyY xyY, expected);
 
             // Act
-            bool success = Cms.TempFromWhitePoint(out double actual, xyY);
+            bool success = Cms.TempFromWhitePoint(out _, xyY);
 
             // Assert
             Assert.IsTrue(success);
@@ -390,50 +390,46 @@ namespace lcmsNET.Tests
         public void ICCMeasurementConditions_FromHandleTest()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            ICCMeasurementConditions expected = new()
             {
-                var expected = new ICCMeasurementConditions
-                {
-                    Observer = Observer.CIE1931,
-                    Backing = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                    Geometry = MeasurementGeometry.ZeroDOrDZero,
-                    Flare = 0.5,
-                    IlluminantType = IlluminantType.D65
-                };
+                Observer = Observer.CIE1931,
+                Backing = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                Geometry = MeasurementGeometry.ZeroDOrDZero,
+                Flare = 0.5,
+                IlluminantType = IlluminantType.D65
+            };
 
-                profile.WriteTag(TagSignature.Measurement, expected);
+            profile.WriteTag(TagSignature.Measurement, expected);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<ICCMeasurementConditions>(TagSignature.Measurement);
+            // Act
+            // implicit call to FromHandle
+            var actual = profile.ReadTag<ICCMeasurementConditions>(TagSignature.Measurement);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ICCViewingConditions_FromHandleTest()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = new ICCViewingConditions
             {
-                var expected = new ICCViewingConditions
-                {
-                    IlluminantXYZ = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
-                    SurroundXYZ = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                    IlluminantType = IlluminantType.E
-                };
+                IlluminantXYZ = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                SurroundXYZ = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                IlluminantType = IlluminantType.E
+            };
 
-                profile.WriteTag(TagSignature.ViewingConditions, expected);
+            profile.WriteTag(TagSignature.ViewingConditions, expected);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<ICCViewingConditions>(TagSignature.ViewingConditions);
+            // Act
+            // implicit call to FromHandle
+            var actual = profile.ReadTag<ICCViewingConditions>(TagSignature.ViewingConditions);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -471,23 +467,21 @@ namespace lcmsNET.Tests
         public void TagSignatureTest_ArgyllArts()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            // Bradford matrix
+            CIEXYZTRIPLE expected = new()
             {
-                // Bradford matrix
-                CIEXYZTRIPLE expected = new CIEXYZTRIPLE
-                {
-                    Red = new CIEXYZ { X = 0.89509583, Y = 0.26640320, Z = -0.16140747 },
-                    Green = new CIEXYZ { X = -0.75019836, Y = 1.71350098, Z = 0.03669739 },
-                    Blue = new CIEXYZ { X = 0.03889465, Y = -0.06849670, Z = 1.02960205 }
-                };
+                Red = new CIEXYZ { X = 0.89509583, Y = 0.26640320, Z = -0.16140747 },
+                Green = new CIEXYZ { X = -0.75019836, Y = 1.71350098, Z = 0.03669739 },
+                Blue = new CIEXYZ { X = 0.03889465, Y = -0.06849670, Z = 1.02960205 }
+            };
 
-                // Act
-                profile.WriteTag(TagSignature.ArgyllArts, expected);
-                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ArgyllArts);
+            // Act
+            profile.WriteTag(TagSignature.ArgyllArts, expected);
+            var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ArgyllArts);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]

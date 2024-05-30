@@ -130,7 +130,7 @@ namespace lcmsNET.Tests
             ushort hour = 10;
             ushort minute = 4;
             ushort second = 32;
-            DateTimeNumber date = new DateTimeNumber()
+            DateTimeNumber date = new()
             {
                 year = BinaryPrimitives.ReverseEndianness(year),
                 month = BinaryPrimitives.ReverseEndianness(month),
@@ -191,22 +191,20 @@ namespace lcmsNET.Tests
         public void FromHandleTest()
         {
             // Arrange
-            using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                var expected = new DateTime(2021, 1, 8, 10, 4, 32);
-                Tm tm = new Tm(expected);
+            using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+            using var profile = Profile.CreatePlaceholder(context);
+            var expected = new DateTime(2021, 1, 8, 10, 4, 32);
+            Tm tm = new(expected);
 
-                profile.WriteTag(TagSignature.CalibrationDateTime, tm);
+            profile.WriteTag(TagSignature.CalibrationDateTime, tm);
 
-                // Act
-                // implicit call to FromHandle
-                var target = profile.ReadTag<Tm>(TagSignature.CalibrationDateTime);
-                DateTime actual = target;
+            // Act
+            // implicit call to FromHandle
+            var target = profile.ReadTag<Tm>(TagSignature.CalibrationDateTime);
+            DateTime actual = target;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -214,7 +212,7 @@ namespace lcmsNET.Tests
         {
             // Arrange
             var expected = new DateTime(2022, 08, 03, 11, 49, 53);
-            var target = new Tm(expected);
+            Tm target = new(expected);
 
             // Act
             DateTimeNumber actual = target;

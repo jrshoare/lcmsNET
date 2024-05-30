@@ -84,11 +84,10 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            {
-                // Assert
-                Assert.IsNotNull(context);
-            }
+            using var context = Context.Create(plugin, userData);
+
+            // Assert
+            Assert.IsNotNull(context);
         }
 
         [TestMethod()]
@@ -99,15 +98,12 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            {
-                using (var duplicate = context.Duplicate(userData))
-                {
-                    // Assert
-                    Assert.IsNotNull(duplicate);
-                    Assert.AreNotSame(duplicate, context);
-                }
-            }
+            using var context = Context.Create(plugin, userData);
+            using var duplicate = context.Duplicate(userData);
+
+            // Assert
+            Assert.IsNotNull(duplicate);
+            Assert.AreNotSame(duplicate, context);
         }
 
         [TestMethod()]
@@ -115,19 +111,18 @@ namespace lcmsNET.Tests
         {
             // Arrange
             IntPtr plugin = IntPtr.Zero;
-            byte[] bytes = new byte[] { 0xff, 0xaa, 0xdd, 0xee };
+            byte[] bytes = [0xff, 0xaa, 0xdd, 0xee];
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             IntPtr expected = handle.AddrOfPinnedObject();
             try
             {
-                using (var context = Context.Create(plugin, expected))
-                {
-                    // Act
-                    IntPtr actual = context.UserData;
+                using var context = Context.Create(plugin, expected);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Act
+                IntPtr actual = context.UserData;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -142,14 +137,13 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr expected = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, expected))
-            {
-                // Act
-                IntPtr actual = context.UserData;
+            using var context = Context.Create(plugin, expected);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            IntPtr actual = context.UserData;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -157,7 +151,7 @@ namespace lcmsNET.Tests
         {
             // Arrange
             IntPtr plugin = IntPtr.Zero;
-            byte[] bytes = new byte[] { 0xff, 0xaa, 0xdd, 0xee };
+            byte[] bytes = [0xff, 0xaa, 0xdd, 0xee];
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             IntPtr userData = handle.AddrOfPinnedObject();
 
@@ -166,16 +160,14 @@ namespace lcmsNET.Tests
             IntPtr expected = IntPtr.Zero;
             try
             {
-                using (var context = Context.Create(plugin, userData))
-                {
-                    context.Dispose();
+                using var context = Context.Create(plugin, userData);
+                context.Dispose();
 
-                    // Act
-                    IntPtr actual = context.UserData;
+                // Act
+                IntPtr actual = context.UserData;
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -192,13 +184,11 @@ namespace lcmsNET.Tests
             IntPtr notExpected = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            {
-                IntPtr actual = context.ID;
+            using var context = Context.Create(plugin, userData);
+            IntPtr actual = context.ID;
 
-                // Assert
-                Assert.AreNotEqual(notExpected, actual);
-            }
+            // Assert
+            Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
@@ -211,44 +201,42 @@ namespace lcmsNET.Tests
                 IntPtr userData = IntPtr.Zero;
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
+                using var context = Context.Create(plugin, userData);
+                PluginTag tag = new PluginTag
                 {
-                    PluginTag tag = new PluginTag
+                    Base = new PluginBase
                     {
-                        Base = new PluginBase
-                        {
-                            Magic = Cms.PluginMagicNumber,
-                            ExpectedVersion = (uint)Cms.EncodedCMMVersion,    // >= 2.8
-                            Type = PluginType.Tag,
-                            Next = IntPtr.Zero
-                        },
-                        Signature = (TagSignature)0x696e6b63,   // 'inkc'
-                        Descriptor = new TagDescriptor
-                        {
-                            ElemCount = 1,
-                            nSupportedTypes = 1,
-                            SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                            Decider = IntPtr.Zero
-                        }
-                    };
-                    tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;
-
-                    int rawsize = Marshal.SizeOf(tag);
-                    IntPtr buffer = Marshal.AllocHGlobal(rawsize);
-                    Marshal.StructureToPtr(tag, buffer, false);
-                    try
+                        Magic = Cms.PluginMagicNumber,
+                        ExpectedVersion = (uint)Cms.EncodedCMMVersion,    // >= 2.8
+                        Type = PluginType.Tag,
+                        Next = IntPtr.Zero
+                    },
+                    Signature = (TagSignature)0x696e6b63,   // 'inkc'
+                    Descriptor = new TagDescriptor
                     {
-                        var registered = context.RegisterPlugins(buffer);
-
-                        // Assert
-                        Assert.IsTrue(registered);
+                        ElemCount = 1,
+                        nSupportedTypes = 1,
+                        SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
+                        Decider = IntPtr.Zero
                     }
-                    finally
-                    {
-                        context.UnregisterPlugins();
-                        Marshal.DestroyStructure(buffer, typeof(PluginTag));
-                        Marshal.FreeHGlobal(buffer);
-                    }
+                };
+                tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;
+
+                int rawsize = Marshal.SizeOf(tag);
+                IntPtr buffer = Marshal.AllocHGlobal(rawsize);
+                Marshal.StructureToPtr(tag, buffer, false);
+                try
+                {
+                    var registered = context.RegisterPlugins(buffer);
+
+                    // Assert
+                    Assert.IsTrue(registered);
+                }
+                finally
+                {
+                    context.UnregisterPlugins();
+                    Marshal.DestroyStructure(buffer, typeof(PluginTag));
+                    Marshal.FreeHGlobal(buffer);
                 }
             }
             catch (EntryPointNotFoundException)
@@ -265,12 +253,10 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            {
-                context.UnregisterPlugins();
+            using var context = Context.Create(plugin, userData);
+            context.UnregisterPlugins();
 
-                // Assert
-            }
+            // Assert
         }
 
         [TestMethod()]
@@ -280,18 +266,17 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            {
-                // Act
-                context.SetErrorHandler(HandleError);
+            using var context = Context.Create(plugin, userData);
 
-                TestContext.WriteLine($"context.ID: {context.ID}");
-                // force error to observe output in Test Explorer results window for this test
-                try { Profile.Open(context, @"???", "r"); } catch { }
+            // Act
+            context.SetErrorHandler(HandleError);
 
-                // restore default error handler
-                context.SetErrorHandler(null);
-            }
+            TestContext.WriteLine($"context.ID: {context.ID}");
+            // force error to observe output in Test Explorer results window for this test
+            try { Profile.Open(context, @"???", "r"); } catch { }
+
+            // restore default error handler
+            context.SetErrorHandler(null);
 
             // Assert
             void HandleError(IntPtr contextID, int errorCode, string errorText)
@@ -307,19 +292,17 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
+            using var context = Context.Create(plugin, userData);
+            ushort[] alarmCodes = [10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678];
+
+            // Act
+            context.AlarmCodes = alarmCodes;
+            var values = context.AlarmCodes;
+
+            // Assert
+            for (int i = 0; i < alarmCodes.Length; i++)
             {
-                ushort[] alarmCodes = new ushort[16] { 10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678 };
-
-                // Act
-                context.AlarmCodes = alarmCodes;
-                var values = context.AlarmCodes;
-
-                // Assert
-                for (int i = 0; i < alarmCodes.Length; i++)
-                {
-                    Assert.AreEqual(alarmCodes[i], values[i]);
-                }
+                Assert.AreEqual(alarmCodes[i], values[i]);
             }
         }
 
@@ -330,42 +313,38 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            {
-                double expected = 0.53;
+            using var context = Context.Create(plugin, userData);
+            double expected = 0.53;
 
-                // Act
-                context.AdaptationState = expected;
+            // Act
+            context.AdaptationState = expected;
 
-                // Assert
-                double actual = context.AdaptationState;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            double actual = context.AdaptationState;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void SupportedIntentsTest()
         {
             // Arrange
-            using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
+            using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+            try
             {
-                try
-                {
-                    // Act
-                    var supportedIntents = context.SupportedIntents;
+                // Act
+                var supportedIntents = context.SupportedIntents;
 
-                    // Assert
-                    Assert.IsNotNull(supportedIntents);
+                // Assert
+                Assert.IsNotNull(supportedIntents);
 
-                    foreach (var (code, description) in supportedIntents)
-                    {
-                        TestContext.WriteLine($"code: {code}, description: {description}");
-                    }
-                }
-                catch (EntryPointNotFoundException)
+                foreach (var (code, description) in supportedIntents)
                 {
-                    Assert.Inconclusive("Requires Little CMS 2.6 or later.");
+                    TestContext.WriteLine($"code: {code}, description: {description}");
                 }
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.6 or later.");
             }
         }
     }

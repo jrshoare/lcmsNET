@@ -73,7 +73,7 @@ namespace lcmsNET.Tests
         //
         #endregion
 
-        MultiLocalizedUnicode Create(string enUS, string esES)
+        static MultiLocalizedUnicode Create(string enUS, string esES)
         {
             var mlu = MultiLocalizedUnicode.Create(null, 0);
             mlu.SetWide("en", "US", enUS);
@@ -88,11 +88,10 @@ namespace lcmsNET.Tests
             uint nItems = 3;
 
             // Act
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                // Assert
-                Assert.IsNotNull(psd);
-            }
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+
+            // Assert
+            Assert.IsNotNull(psd);
         }
 
         [TestMethod()]
@@ -102,12 +101,11 @@ namespace lcmsNET.Tests
             uint nItems = 1;
 
             // Act
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var duplicate = psd.Duplicate())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var duplicate = psd.Duplicate();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -116,14 +114,13 @@ namespace lcmsNET.Tests
             // Arrange
             uint expected = 7;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, expected))
-            {
-                // Act
-                uint actual = psd.Length;
+            using var psd = ProfileSequenceDescriptor.Create(null, expected);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            uint actual = psd.Length;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -132,14 +129,13 @@ namespace lcmsNET.Tests
             // Arrange
             uint nItems = 4;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                // Act
-                ProfileSequenceItem item = psd[2];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
 
-                // Assert
-                Assert.IsNotNull(item);
-            }
+            // Act
+            ProfileSequenceItem item = psd[2];
+
+            // Assert
+            Assert.IsNotNull(item);
         }
 
         [TestMethod()]
@@ -148,30 +144,28 @@ namespace lcmsNET.Tests
             // Arrange
             uint nItems = 3;
 
-            using (var profile = Profile.CreatePlaceholder(null))
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                var item = psd[0];
-                item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
-                item.Manufacturer = Create("Hello 0", "Hola 0");
-                item.Model = Create("Hello 0", "Hola 0");
+            using var profile = Profile.CreatePlaceholder(null);
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            var item = psd[0];
+            item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
+            item.Manufacturer = Create("Hello 0", "Hola 0");
+            item.Model = Create("Hello 0", "Hola 0");
 
-                item = psd[1];
-                item.Attributes = DeviceAttributes.Reflective | DeviceAttributes.Matte;
-                item.Manufacturer = Create("Hello 1", "Hola 1");
-                item.Model = Create("Hello 1", "Hola 1");
+            item = psd[1];
+            item.Attributes = DeviceAttributes.Reflective | DeviceAttributes.Matte;
+            item.Manufacturer = Create("Hello 1", "Hola 1");
+            item.Model = Create("Hello 1", "Hola 1");
 
-                item = psd[2];
-                item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Glossy;
-                item.Manufacturer = Create("Hello 2", "Hola 2");
-                item.Model = Create("Hello 2", "Hola 2");
+            item = psd[2];
+            item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Glossy;
+            item.Manufacturer = Create("Hello 2", "Hola 2");
+            item.Model = Create("Hello 2", "Hola 2");
 
-                // Act
-                bool written = profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
+            // Act
+            bool written = profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
 
-                // Assert
-                Assert.IsTrue(written);
-            }
+            // Assert
+            Assert.IsTrue(written);
         }
 
         [TestMethod()]
@@ -180,27 +174,24 @@ namespace lcmsNET.Tests
             // Arrange
             uint expected = 1;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var psd = ProfileSequenceDescriptor.Create(null, expected))
             {
-                using (var psd = ProfileSequenceDescriptor.Create(null, expected))
-                {
-                    var item = psd[0];
-                    item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
-                    item.Manufacturer = Create("Hello 0", "Hola 0");
-                    item.Model = Create("Hello 0", "Hola 0");
+                var item = psd[0];
+                item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
+                item.Manufacturer = Create("Hello 0", "Hola 0");
+                item.Model = Create("Hello 0", "Hola 0");
 
-                    profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
-                }
-
-                // Act
-                // implicit call to FromHandle
-                using (var roPsd = profile.ReadTag<ProfileSequenceDescriptor>(TagSignature.ProfileSequenceDesc))
-                {
-                    // Assert
-                    uint actual = roPsd.Length;
-                    Assert.AreEqual(expected, actual);
-                }
+                profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
             }
+
+            // Act
+            // implicit call to FromHandle
+            using var roPsd = profile.ReadTag<ProfileSequenceDescriptor>(TagSignature.ProfileSequenceDesc);
+
+            // Assert
+            uint actual = roPsd.Length;
+            Assert.AreEqual(expected, actual);
         }
     }
 }

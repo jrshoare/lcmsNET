@@ -80,11 +80,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var dict = Dict.Create(null))
-            {
-                // Assert
-                Assert.IsNotNull(dict);
-            }
+            using var dict = Dict.Create(null);
+
+            // Assert
+            Assert.IsNotNull(dict);
         }
 
         [TestMethod()]
@@ -93,12 +92,11 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var dict = Dict.Create(null))
-            using (var duplicate = dict.Duplicate())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var dict = Dict.Create(null);
+            using var duplicate = dict.Duplicate();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -108,41 +106,37 @@ namespace lcmsNET.Tests
             string name = "name";
             string value = "value";
 
-            using (var dict = Dict.Create(null))
-            using (var displayName = MultiLocalizedUnicode.Create(null, 0))
-            {
-                displayName.SetWide("en", "US", "Hello");
+            using var dict = Dict.Create(null);
+            using var displayName = MultiLocalizedUnicode.Create(null, 0);
+            displayName.SetWide("en", "US", "Hello");
 
-                // Act
-                bool added = dict.Add(name, value, displayName, null);
+            // Act
+            bool added = dict.Add(name, value, displayName, null);
 
-                // Assert
-                Assert.IsTrue(added);
-            }
+            // Assert
+            Assert.IsTrue(added);
         }
 
         [TestMethod()]
         public void EnumerateTest()
         {
             // Arrange
-            using (var dict = Dict.Create(null))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-            {
-                mlu.SetASCII("en", "GB", "Hello");
+            using var dict = Dict.Create(null);
+            using var mlu = MultiLocalizedUnicode.Create(null, 0);
+            mlu.SetASCII("en", "GB", "Hello");
 
-                dict.Add("first", null, null, null);
-                dict.Add("second", "second-value", null, null);
-                dict.Add("third", "third-value", mlu, null);
-                int expected = 3;
+            dict.Add("first", null, null, null);
+            dict.Add("second", "second-value", null, null);
+            dict.Add("third", "third-value", mlu, null);
+            int expected = 3;
 
-                // Act
-                var actual = dict.Count();
+            // Act
+            var actual = dict.Count();
 
-                var list = dict.ToArray();
+            var list = dict.ToArray();
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -151,29 +145,25 @@ namespace lcmsNET.Tests
             // Arrange
             int expected = 3;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var dict = Dict.Create(null))
+            using (var mlu = MultiLocalizedUnicode.Create(null, 0))
             {
-                using (var dict = Dict.Create(null))
-                using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-                {
-                    mlu.SetASCII("en", "GB", "Hello");
+                mlu.SetASCII("en", "GB", "Hello");
 
-                    dict.Add("first", null, null, null);
-                    dict.Add("second", "second-value", null, null);
-                    dict.Add("third", "third-value", mlu, null);
+                dict.Add("first", null, null, null);
+                dict.Add("second", "second-value", null, null);
+                dict.Add("third", "third-value", mlu, null);
 
-                    profile.WriteTag(TagSignature.Meta, dict);
-                }
-
-                // Act
-                // implicit call to FromHandle
-                using (var roDict = profile.ReadTag<Dict>(TagSignature.Meta))
-                {
-                    // Assert
-                    int actual = roDict.Count();
-                    Assert.AreEqual(expected, actual);
-                }
+                profile.WriteTag(TagSignature.Meta, dict);
             }
+
+            // Act
+            // implicit call to FromHandle
+            using var roDict = profile.ReadTag<Dict>(TagSignature.Meta);
+            // Assert
+            int actual = roDict.Count();
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -182,27 +172,25 @@ namespace lcmsNET.Tests
             // Arrange
             int expected = 3;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var dict = Dict.Create(null))
+            using (var mlu = MultiLocalizedUnicode.Create(null, 0))
             {
-                using (var dict = Dict.Create(null))
-                using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-                {
-                    mlu.SetASCII("en", "GB", "Hello");
+                mlu.SetASCII("en", "GB", "Hello");
 
-                    dict.Add("first", null, null, null);
-                    dict.Add("second", "second-value", null, null);
-                    dict.Add("third", "third-value", mlu, null);
+                dict.Add("first", null, null, null);
+                dict.Add("second", "second-value", null, null);
+                dict.Add("third", "third-value", mlu, null);
 
-                    profile.WriteTag(TagSignature.Meta, dict);
-                }
+                profile.WriteTag(TagSignature.Meta, dict);
+            }
 
-                // Act
-                using (var dict = profile.ReadTag<Dict>(TagSignature.Meta))
-                {
-                    // Assert
-                    int actual = dict.Count();
-                    Assert.AreEqual(expected, actual);
-                }
+            // Act
+            using (var dict = profile.ReadTag<Dict>(TagSignature.Meta))
+            {
+                // Assert
+                int actual = dict.Count();
+                Assert.AreEqual(expected, actual);
             }
         }
     }

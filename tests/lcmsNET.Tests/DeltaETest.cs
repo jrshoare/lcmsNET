@@ -77,11 +77,11 @@ namespace lcmsNET.Tests
         public void DE76Test()
         {
             // Arrange
-            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
-            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new() { L = 87.5, a = 3.21, b = -16.7 };
 
             // Act
-            var actual = DeltaE.DE76(lab1, lab2);
+            _ = DeltaE.DE76(lab1, lab2);
 
             // Assert
         }
@@ -90,13 +90,13 @@ namespace lcmsNET.Tests
         public void CMCTest()
         {
             // Arrange
-            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
-            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new() { L = 87.5, a = 3.21, b = -16.7 };
             double l = 2.0;
             double c = 1.0;
 
             // Act
-            var actual = DeltaE.CMC(lab1, lab2, l, c);
+            _ = DeltaE.CMC(lab1, lab2, l, c);
 
             // Assert
         }
@@ -105,11 +105,11 @@ namespace lcmsNET.Tests
         public void CIEDE2000Test()
         {
             // Arrange
-            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
-            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new() { L = 87.5, a = 3.21, b = -16.7 };
 
             // Act
-            var actual = DeltaE.CIEDE2000(lab1, lab2);
+            _ = DeltaE.CIEDE2000(lab1, lab2);
 
             // Assert
         }
@@ -118,11 +118,11 @@ namespace lcmsNET.Tests
         public void BFDTest()
         {
             // Arrange
-            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
-            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new() { L = 87.5, a = 3.21, b = -16.7 };
 
             // Act
-            var actual = DeltaE.BFD(lab1, lab2);
+            _ = DeltaE.BFD(lab1, lab2);
 
             // Assert
         }
@@ -131,11 +131,11 @@ namespace lcmsNET.Tests
         public void CIE94Test()
         {
             // Arrange
-            CIELab lab1 = new CIELab { L = 100.0, a = 0.0, b = 0.0 };
-            CIELab lab2 = new CIELab { L = 87.5, a = 3.21, b = -16.7 };
+            CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
+            CIELab lab2 = new() { L = 87.5, a = 3.21, b = -16.7 };
 
             // Act
-            var actual = DeltaE.CIE94(lab1, lab2);
+            _ = DeltaE.CIE94(lab1, lab2);
 
             // Assert
         }

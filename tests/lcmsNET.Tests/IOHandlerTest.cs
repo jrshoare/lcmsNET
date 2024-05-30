@@ -83,29 +83,13 @@ namespace lcmsNET.Tests
         /// </summary>
         /// <param name="resourceName"></param>
         /// <param name="path"></param>
-        private void Save(string resourceName, string path)
+        private static void Save(string resourceName, string path)
         {
             var thisExe = Assembly.GetExecutingAssembly();
             var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                using (var fs = File.Create(path))
-                {
-                    s.CopyTo(fs);
-                }
-            }
-        }
-
-        private MemoryStream Save(string resourceName)
-        {
-            MemoryStream ms = new MemoryStream();
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                s.CopyTo(ms);
-            }
-            return ms;
+            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
+            using var fs = File.Create(path);
+            s.CopyTo(fs);
         }
 
         [TestMethod()]
@@ -116,12 +100,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var iohandler = IOHandler.Open(context))
-            {
-                // Assert
-                Assert.IsNotNull(iohandler);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var iohandler = IOHandler.Open(context);
+
+            // Assert
+            Assert.IsNotNull(iohandler);
         }
 
         [TestMethod()]
@@ -139,12 +122,11 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var iohandler = IOHandler.Open(context, srgbpath, "r"))
-                {
-                    // Assert
-                    Assert.IsNotNull(iohandler);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var iohandler = IOHandler.Open(context, srgbpath, "r");
+
+                // Assert
+                Assert.IsNotNull(iohandler);
             }
             finally
             {
@@ -162,11 +144,10 @@ namespace lcmsNET.Tests
             try
             {
                 // Act
-                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
-                {
-                    // Assert
-                    Assert.IsNotNull(iohandler);
-                }
+                using var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r");
+
+                // Assert
+                Assert.IsNotNull(iohandler);
             }
             finally
             {
@@ -178,68 +159,60 @@ namespace lcmsNET.Tests
         public void ReadByteTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                byte b = 0;
-                bool actual = iohandler.Read(ref b);
+            // Act
+            byte b = 0;
+            bool actual = iohandler.Read(ref b);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadUshortTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                ushort us = 0;
-                bool actual = iohandler.Read(ref us);
+            // Act
+            ushort us = 0;
+            bool actual = iohandler.Read(ref us);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadUintTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                uint n = 0;
-                bool actual = iohandler.Read(ref n);
+            // Act
+            uint n = 0;
+            bool actual = iohandler.Read(ref n);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadUlongTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                ulong ul = 0;
-                bool actual = iohandler.Read(ref ul);
+            // Act
+            ulong ul = 0;
+            bool actual = iohandler.Read(ref ul);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -278,221 +251,195 @@ namespace lcmsNET.Tests
         public void ReadDoubleTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                double d = 0.0;
-                bool actual = iohandler.Read(ref d);
+            // Act
+            double d = 0.0;
+            bool actual = iohandler.Read(ref d);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadXYZTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                CIEXYZ xyz = new CIEXYZ();
-                bool actual = iohandler.Read(ref xyz);
+            // Act
+            CIEXYZ xyz = new();
+            bool actual = iohandler.Read(ref xyz);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadUshortArrayTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
 
-                // Act
-                ushort[] us = new ushort[17];
-                bool actual = iohandler.Read(us);
+            // Act
+            ushort[] us = new ushort[17];
+            bool actual = iohandler.Read(us);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteByteTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                byte n = 0x37;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            byte n = 0x37;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(n);
+            // Act
+            bool actual = iohandler.Write(n);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteUshortTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                ushort n = 0x4c57;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            ushort n = 0x4c57;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(n);
+            // Act
+            bool actual = iohandler.Write(n);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteUintTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                uint n = 0xf6e21048;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            uint n = 0xf6e21048;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(n);
+            // Act
+            bool actual = iohandler.Write(n);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteUlongTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                ulong n = 0xc2d41f6622386d1e;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            ulong n = 0xc2d41f6622386d1e;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(n);
+            // Act
+            bool actual = iohandler.Write(n);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteFloatTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                float f = 0.3897f;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            float f = 0.3897f;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(f);
+            // Act
+            bool actual = iohandler.Write(f);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteDoubleTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                double d = 0.2874502;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            double d = 0.2874502;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(d);
+            // Act
+            bool actual = iohandler.Write(d);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteXYZTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(xyz);
+            // Act
+            bool actual = iohandler.Write(xyz);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteUshortArrayTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                ushort[] array = new ushort[] { 0x2837, 0x0005, 0x1cdf, 0x4798, 0x2265 };
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            ushort[] array = [0x2837, 0x0005, 0x1cdf, 0x4798, 0x2265];
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(array);
+            // Act
+            bool actual = iohandler.Write(array);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadAlignmentTest()
         {
-            using (var iohandler = IOHandler.Open(null))
-            {
-                bool expected = true;
-                byte b = 0;
-                iohandler.Read(ref b);
+            using var iohandler = IOHandler.Open(null);
+            bool expected = true;
+            byte b = 0;
+            iohandler.Read(ref b);
 
-                // Act
-                bool actual = iohandler.ReadAlignment();
+            // Act
+            bool actual = iohandler.ReadAlignment();
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteAlignmentTest()
         {
-            using (var iohandler = IOHandler.Open(null))
-            {
-                byte n = 0x37;
-                bool expected = true;
-                iohandler.Write(n);
+            using var iohandler = IOHandler.Open(null);
+            byte n = 0x37;
+            bool expected = true;
+            iohandler.Write(n);
 
-                // Act
-                bool actual = iohandler.WriteAlignment();
+            // Act
+            bool actual = iohandler.WriteAlignment();
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -527,22 +474,19 @@ namespace lcmsNET.Tests
             }
         }
 
-
         [TestMethod()]
         public void WriteTagTypeSignatureTest()
         {
             // Arrange
-            using (var iohandler = IOHandler.Open(null))
-            {
-                TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
-                bool expected = true;
+            using var iohandler = IOHandler.Open(null);
+            TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
+            bool expected = true;
 
-                // Act
-                bool actual = iohandler.Write(sig);
+            // Act
+            bool actual = iohandler.Write(sig);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
     }
 }

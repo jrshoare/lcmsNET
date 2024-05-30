@@ -99,32 +99,30 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void FromHandleTest()
         {
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            ScreeningFlags expectedFlag = ScreeningFlags.FrequencyUnitLinesCm;
+            uint expectedNChannels = 1;
+            ScreeningChannel[] expectedChannels = new ScreeningChannel[16];
+            expectedChannels[0].Frequency = 2.0;
+            expectedChannels[0].ScreenAngle = 3.0;
+            expectedChannels[0].SpotShape = SpotShape.Ellipse;
+
+            var expected = new Screening(expectedFlag, expectedNChannels, expectedChannels);
+            profile.WriteTag(TagSignature.Screening, expected);
+
+            // Act
+            // implicit call to FromHandle
+            var target = profile.ReadTag<Screening>(TagSignature.Screening);
+            var actualFlag = target.Flag;
+            var actualNChannels = target.nChannels;
+            var actualChannels = target.Channels;
+
+            // Assert
+            Assert.AreEqual(expectedFlag, actualFlag);
+            Assert.AreEqual(expectedNChannels, actualNChannels);
+            for (int i = 0; i < 16; i++)
             {
-                ScreeningFlags expectedFlag = ScreeningFlags.FrequencyUnitLinesCm;
-                uint expectedNChannels = 1;
-                ScreeningChannel[] expectedChannels = new ScreeningChannel[16];
-                expectedChannels[0].Frequency = 2.0;
-                expectedChannels[0].ScreenAngle = 3.0;
-                expectedChannels[0].SpotShape = SpotShape.Ellipse;
-
-                var expected = new Screening(expectedFlag, expectedNChannels, expectedChannels);
-                profile.WriteTag(TagSignature.Screening, expected);
-
-                // Act
-                // implicit call to FromHandle
-                var target = profile.ReadTag<Screening>(TagSignature.Screening);
-                var actualFlag = target.Flag;
-                var actualNChannels = target.nChannels;
-                var actualChannels = target.Channels;
-
-                // Assert
-                Assert.AreEqual(expectedFlag, actualFlag);
-                Assert.AreEqual(expectedNChannels, actualNChannels);
-                for (int i = 0; i < 16; i++)
-                {
-                    Assert.AreEqual(expectedChannels[i], actualChannels[i]);
-                }
+                Assert.AreEqual(expectedChannels[i], actualChannels[i]);
             }
         }
     }

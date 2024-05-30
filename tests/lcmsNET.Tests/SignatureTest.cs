@@ -119,38 +119,34 @@ namespace lcmsNET.Tests
         public void FromHandleTest()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = (Signature)0xF32794E2;
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = (Signature)0xF32794E2;
 
-                profile.WriteTag(TagSignature.Technology, expected);
+            profile.WriteTag(TagSignature.Technology, expected);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<Signature>(TagSignature.Technology);
+            // Act
+            // implicit call to FromHandle
+            var actual = profile.ReadTag<Signature>(TagSignature.Technology);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void FromHandleTest2()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = new Signature(0x962E1457);
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = new Signature(0x962E1457);
 
-                profile.WriteTag(TagSignature.Technology, expected);
+            profile.WriteTag(TagSignature.Technology, expected);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<Signature>(TagSignature.Technology);
+            // Act
+            // implicit call to FromHandle
+            var actual = profile.ReadTag<Signature>(TagSignature.Technology);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
     }
 }

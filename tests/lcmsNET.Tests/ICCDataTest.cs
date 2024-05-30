@@ -146,7 +146,7 @@ namespace lcmsNET.Tests
         public void StringOperatorTestNotAscii()
         {
             // Arrange
-            var bytes = new byte[] { 12, 96, 14, 2 };
+            byte[] bytes = [12, 96, 14, 2];
 
             // Act
             var target = new ICCData(bytes);
@@ -159,13 +159,13 @@ namespace lcmsNET.Tests
         public void ByteArrayOperatorTest()
         {
             // Arrange
-            var expected = new byte[] { 12, 96, 14, 2 };
+            byte[] expected = [12, 96, 14, 2];
 
             // Act
             var target = new ICCData(expected);
 
             // Assert
-            var actual = (byte[])target;
+            byte[] actual = (byte[])target;
             Assert.AreEqual(expected, actual);
         }
 
@@ -186,86 +186,78 @@ namespace lcmsNET.Tests
         public void FromHandleTestAscii()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = "fromhandletestascii";
-                var iccData = new ICCData(expected);
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = "fromhandletestascii";
+            var iccData = new ICCData(expected);
 
-                // do not use TagSignature.Data as this is not supported
-                profile.WriteTag(TagSignature.Ps2CRD0, iccData);
+            // do not use TagSignature.Data as this is not supported
+            profile.WriteTag(TagSignature.Ps2CRD0, iccData);
 
-                // Act
-                // implicit call to FromHandle
-                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
+            // Act
+            // implicit call to FromHandle
+            var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
 
-                // Assert
-                var actual = (string)iccData2;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            var actual = (string)iccData2;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void FromHandleTestAscii2()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = "fromhandletestascii2";
-                var iccData = new ICCData(expected);
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = "fromhandletestascii2";
+            var iccData = new ICCData(expected);
 
-                // do not use TagSignature.Data as this is not supported
-                profile.WriteTag(TagSignature.Ps2CRD1, iccData);
+            // do not use TagSignature.Data as this is not supported
+            profile.WriteTag(TagSignature.Ps2CRD1, iccData);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = (string)profile.ReadTag<ICCData>(TagSignature.Ps2CRD1);
+            // Act
+            // implicit call to FromHandle
+            var actual = (string)profile.ReadTag<ICCData>(TagSignature.Ps2CRD1);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void FromHandleTestBinary()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
-                var iccData = new ICCData(expected);
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
+            var iccData = new ICCData(expected);
 
-                // do not use TagSignature.Data as this is not supported
-                profile.WriteTag(TagSignature.Ps2CRD2, iccData);
+            // do not use TagSignature.Data as this is not supported
+            profile.WriteTag(TagSignature.Ps2CRD2, iccData);
 
-                // Act
-                // implicit call to FromHandle
-                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD2);
+            // Act
+            // implicit call to FromHandle
+            var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD2);
 
-                // Assert
-                var actual = (byte[])iccData2;
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            var actual = (byte[])iccData2;
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void FromHandleTestBinary2()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
-                var iccData = new ICCData(expected);
+            using var profile = Profile.CreatePlaceholder(null);
+            var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
+            var iccData = new ICCData(expected);
 
-                // do not use TagSignature.Data as this is not supported
-                profile.WriteTag(TagSignature.Ps2CRD3, iccData);
+            // do not use TagSignature.Data as this is not supported
+            profile.WriteTag(TagSignature.Ps2CRD3, iccData);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = (byte[])profile.ReadTag<ICCData>(TagSignature.Ps2CRD3);
+            // Act
+            // implicit call to FromHandle
+            var actual = (byte[])profile.ReadTag<ICCData>(TagSignature.Ps2CRD3);
 
-                // Assert
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

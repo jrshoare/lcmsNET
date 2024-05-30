@@ -78,7 +78,7 @@ namespace lcmsNET.Tests
         public void ConstructorTest()
         {
             // Arrange
-            byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
             // Act
             var target = new ColorantOrder(expected);
@@ -113,7 +113,7 @@ namespace lcmsNET.Tests
         public void ByteArrayOperatorTest()
         {
             // Arrange
-            byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
             // Act
             var target = new ColorantOrder(expected);
@@ -127,7 +127,7 @@ namespace lcmsNET.Tests
         public void ColorantOrderOperatorTest()
         {
             // Arrange
-            byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
             // Act
             var target = (ColorantOrder)expected;
@@ -142,19 +142,17 @@ namespace lcmsNET.Tests
         public void FromHandleTest()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                byte[] expected = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            using var profile = Profile.CreatePlaceholder(null);
+            byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-                profile.WriteTag(TagSignature.ColorantOrder, (ColorantOrder)expected);
+            profile.WriteTag(TagSignature.ColorantOrder, (ColorantOrder)expected);
 
-                // Act
-                // implicit call to FromHandle
-                byte[] actual = profile.ReadTag<ColorantOrder>(TagSignature.ColorantOrder);
+            // Act
+            // implicit call to FromHandle
+            byte[] actual = profile.ReadTag<ColorantOrder>(TagSignature.ColorantOrder);
 
-                // Assert
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

@@ -84,17 +84,15 @@ namespace lcmsNET.Tests
             double gamma = 1.0;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            for (ushort i = 0; i < ushort.MaxValue; i++)
             {
-                for (ushort i = 0; i < ushort.MaxValue; i++)
-                {
-                    float f = i / 65535.0f;
-                    float actual = toneCurve.Evaluate(f);
+                float f = i / 65535.0f;
+                float actual = toneCurve.Evaluate(f);
 
-                    // Assert
-                    Assert.AreEqual(f, actual, 1 / 65535.0f);
-                }
+                // Assert
+                Assert.AreEqual(f, actual, 1 / 65535.0f);
             }
         }
 
@@ -107,16 +105,14 @@ namespace lcmsNET.Tests
             double gamma = 1.0;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            for (ushort i = 0; i < ushort.MaxValue; i++)
             {
-                for (ushort i = 0; i < ushort.MaxValue; i++)
-                {
-                    ushort actual = toneCurve.Evaluate(i);
+                ushort actual = toneCurve.Evaluate(i);
 
-                    // Assert
-                    Assert.AreEqual(i, actual);
-                }
+                // Assert
+                Assert.AreEqual(i, actual);
             }
         }
 
@@ -127,15 +123,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
             int type = 4;
-            double[] parameters = new double[] { 2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045 };
+            double[] parameters = [2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildParametric(context, type, parameters))
-            {
-                // Assert
-                Assert.IsNotNull(toneCurve);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildParametric(context, type, parameters);
+
+            // Assert
+            Assert.IsNotNull(toneCurve);
         }
 
         [TestMethod()]
@@ -147,12 +142,11 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                // Assert
-                Assert.IsNotNull(toneCurve);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+
+            // Assert
+            Assert.IsNotNull(toneCurve);
         }
 
         [TestMethod()]
@@ -161,25 +155,23 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            float[] sampled = new float[] { 0.0f, 1.0f };
+            float[] sampled = [0.0f, 1.0f];
             GCHandle hSampled = GCHandle.Alloc(sampled, GCHandleType.Pinned);
             IntPtr ptrSampled = hSampled.AddrOfPinnedObject();
 
             try
             {
-                CurveSegment[] segments = new CurveSegment[]
-                {
-                    new CurveSegment
-                    {
+                CurveSegment[] segments =
+                [
+                    new() {
                         x0 = -1e22f,
                         x1 = 1.0f,
                         type = 6,
-                        parameters = new double[10] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         nGridPoints = 0,
                         sampledPoints = IntPtr.Zero
                     },
-                    new CurveSegment
-                    {
+                    new() {
                         x0 = 0.0f,
                         x1 = 1.0f,
                         type = 0,
@@ -187,24 +179,22 @@ namespace lcmsNET.Tests
                         nGridPoints = 2,
                         sampledPoints = ptrSampled
                     },
-                    new CurveSegment
-                    {
+                    new() {
                         x0 = 1.0f,
                         x1 = -1e22f,
                         type = 6,
-                        parameters = new double[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                         nGridPoints = 0,
                         sampledPoints = IntPtr.Zero
                     }
-                };
+                ];
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var toneCurve = ToneCurve.BuildSegmented(context, segments))
-                {
-                    // Assert
-                    Assert.IsNotNull(toneCurve);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var toneCurve = ToneCurve.BuildSegmented(context, segments);
+
+                // Assert
+                Assert.IsNotNull(toneCurve);
             }
             finally
             {
@@ -218,15 +208,14 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            ushort[] values = new ushort[] { 0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff };
+            ushort[] values = [0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildTabulated(context, values))
-            {
-                // Assert
-                Assert.IsNotNull(toneCurve);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildTabulated(context, values);
+
+            // Assert
+            Assert.IsNotNull(toneCurve);
         }
 
         [TestMethod()]
@@ -244,12 +233,11 @@ namespace lcmsNET.Tests
             }
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildTabulated(context, values))
-            {
-                // Assert
-                Assert.IsNotNull(toneCurve);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildTabulated(context, values);
+
+            // Assert
+            Assert.IsNotNull(toneCurve);
         }
 
         [TestMethod()]
@@ -261,13 +249,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            using (var duplicate = toneCurve.Duplicate())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            using var duplicate = toneCurve.Duplicate();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -279,13 +266,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            using (var duplicate = toneCurve.Reverse())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            using var duplicate = toneCurve.Reverse();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -297,13 +283,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            using (var duplicate = toneCurve.Reverse(4096))
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            using var duplicate = toneCurve.Reverse(4096);
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
@@ -315,14 +300,13 @@ namespace lcmsNET.Tests
             double gamma = 3.0;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var forward = ToneCurve.BuildGamma(context, gamma))
-            using (var reverse = ToneCurve.BuildGamma(context, gamma))
-            using (var joined = forward.Join(context, reverse, 256))
-            {
-                // Assert
-                Assert.IsNotNull(joined);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var forward = ToneCurve.BuildGamma(context, gamma);
+            using var reverse = ToneCurve.BuildGamma(context, gamma);
+            using var joined = forward.Join(context, reverse, 256);
+
+            // Assert
+            Assert.IsNotNull(joined);
         }
 
         [TestMethod()]
@@ -331,16 +315,14 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            ushort[] values = new ushort[] { 0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff };
+            ushort[] values = [0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff];
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildTabulated(context, values))
-            {
-                var smoothed = toneCurve.Smooth(1.0);
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildTabulated(context, values);
+            var smoothed = toneCurve.Smooth(1.0);
 
-                // Assert
-            }
+            // Assert
         }
 
         [TestMethod()]
@@ -352,14 +334,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                var isMultiSegment = toneCurve.IsMultisegment;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            var isMultiSegment = toneCurve.IsMultisegment;
 
-                // Assert
-                Assert.IsFalse(isMultiSegment);
-            }
+            // Assert
+            Assert.IsFalse(isMultiSegment);
         }
 
         [TestMethod()]
@@ -371,14 +351,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                var isLinear = toneCurve.IsLinear;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            var isLinear = toneCurve.IsLinear;
 
-                // Assert
-                Assert.IsFalse(isLinear);
-            }
+            // Assert
+            Assert.IsFalse(isLinear);
         }
 
         [TestMethod()]
@@ -390,14 +368,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                var isMonotonic = toneCurve.IsMonotonic;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            var isMonotonic = toneCurve.IsMonotonic;
 
-                // Assert
-                Assert.IsTrue(isMonotonic);
-            }
+            // Assert
+            Assert.IsTrue(isMonotonic);
         }
 
         [TestMethod()]
@@ -409,14 +385,12 @@ namespace lcmsNET.Tests
             double gamma = 2.2;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                var isDescending = toneCurve.IsDescending;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            var isDescending = toneCurve.IsDescending;
 
-                // Assert
-                Assert.IsFalse(isDescending);
-            }
+            // Assert
+            Assert.IsFalse(isDescending);
         }
 
         [TestMethod()]
@@ -429,14 +403,12 @@ namespace lcmsNET.Tests
             double precision = 0.01;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, expected))
-            {
-                var actual = toneCurve.EstimateGamma(precision);
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, expected);
+            var actual = toneCurve.EstimateGamma(precision);
 
-                // Assert
-                Assert.AreEqual(expected, actual, precision);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual, precision);
         }
 
         [TestMethod()]
@@ -449,14 +421,12 @@ namespace lcmsNET.Tests
             uint notExpected = 0;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                var actual = toneCurve.EstimatedTableEntries;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            var actual = toneCurve.EstimatedTableEntries;
 
-                // Assert
-                Assert.AreNotEqual(notExpected, actual);
-            }
+            // Assert
+            Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
@@ -469,14 +439,12 @@ namespace lcmsNET.Tests
             IntPtr notExpected = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, gamma))
-            {
-                IntPtr actual = toneCurve.EstimatedTable;
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            IntPtr actual = toneCurve.EstimatedTable;
 
-                // Assert
-                Assert.AreNotEqual(notExpected, actual);
-            }
+            // Assert
+            Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
@@ -486,21 +454,18 @@ namespace lcmsNET.Tests
             double expected = 2.2;
             double precision = 0.01;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var toneCurve = ToneCurve.BuildGamma(null, expected))
             {
-                using (var toneCurve = ToneCurve.BuildGamma(null, expected))
-                {
-                    profile.WriteTag(TagSignature.RedTRC, toneCurve);
-                }
-
-                // Act
-                using (var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
-                {
-                    // Assert
-                    var actual = roToneCurve.EstimateGamma(precision);
-                    Assert.AreEqual(expected, actual, precision);
-                }
+                profile.WriteTag(TagSignature.RedTRC, toneCurve);
             }
+
+            // Act
+            using var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC);
+
+            // Assert
+            var actual = roToneCurve.EstimateGamma(precision);
+            Assert.AreEqual(expected, actual, precision);
         }
 
         [TestMethod()]
@@ -510,21 +475,18 @@ namespace lcmsNET.Tests
             double expected = 2.2;
             double precision = 0.01;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var toneCurve = ToneCurve.BuildGamma(null, expected))
             {
-                using (var toneCurve = ToneCurve.BuildGamma(null, expected))
-                {
-                    profile.WriteTag(TagSignature.RedTRC, toneCurve);
-                }
-
-                // Act
-                using (var toneCurve2 = profile.ReadTag<ToneCurve>(TagSignature.RedTRC))
-                {
-                    // Assert
-                    var actual = toneCurve2.EstimateGamma(precision);
-                    Assert.AreEqual(expected, actual, precision);
-                }
+                profile.WriteTag(TagSignature.RedTRC, toneCurve);
             }
+
+            // Act
+            using var toneCurve2 = profile.ReadTag<ToneCurve>(TagSignature.RedTRC);
+
+            // Assert
+            var actual = toneCurve2.EstimateGamma(precision);
+            Assert.AreEqual(expected, actual, precision);
         }
 
         [TestMethod()]

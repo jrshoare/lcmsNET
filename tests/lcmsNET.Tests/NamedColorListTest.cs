@@ -79,11 +79,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var ncl = NamedColorList.Create(null, 0, 4, "prefix", "suffix"))
-            {
-                // Assert
-                Assert.IsNotNull(ncl);
-            }
+            using var ncl = NamedColorList.Create(null, 0, 4, "prefix", "suffix");
+
+            // Assert
+            Assert.IsNotNull(ncl);
         }
 
         [TestMethod()]
@@ -92,11 +91,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var ncl = NamedColorList.Create(null, 0, 4, null, "suffix"))
-            {
-                // Assert
-                Assert.IsNotNull(ncl);
-            }
+            using var ncl = NamedColorList.Create(null, 0, 4, null, "suffix");
+
+            // Assert
+            Assert.IsNotNull(ncl);
         }
 
         [TestMethod()]
@@ -105,11 +103,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var ncl = NamedColorList.Create(null, 0, 4, "prefix", null))
-            {
-                // Assert
-                Assert.IsNotNull(ncl);
-            }
+            using var ncl = NamedColorList.Create(null, 0, 4, "prefix", null);
+
+            // Assert
+            Assert.IsNotNull(ncl);
         }
 
         [TestMethod()]
@@ -118,30 +115,27 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
-            using (var duplicate = ncl.Duplicate())
-            {
-                // Assert
-                Assert.IsNotNull(duplicate);
-            }
+            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
+            using var duplicate = ncl.Duplicate();
+
+            // Assert
+            Assert.IsNotNull(duplicate);
         }
 
         [TestMethod()]
         public void AddTest()
         {
             // Arrange
-            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
-            {
-                ushort[] pcs = new ushort[3] { 1, 1, 1 };
-                ushort[] colorant = new ushort[16];
-                colorant[0] = colorant[1] = colorant[2] = 1;
+            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
+            ushort[] pcs = new ushort[3] { 1, 1, 1 };
+            ushort[] colorant = new ushort[16];
+            colorant[0] = colorant[1] = colorant[2] = 1;
 
-                // Act
-                bool added = ncl.Add("#1", pcs, colorant);
+            // Act
+            bool added = ncl.Add("#1", pcs, colorant);
 
-                // Assert
-                Assert.IsTrue(added);
-            }
+            // Assert
+            Assert.IsTrue(added);
         }
 
         [TestMethod()]
@@ -150,23 +144,21 @@ namespace lcmsNET.Tests
             // Arrange
             uint expected = 256;
 
-            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
+            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
+            for (uint i = 0; i < expected; i++)
             {
-                for (uint i = 0; i < expected; i++)
-                {
-                    ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
-                    ushort[] colorant = new ushort[16];
-                    colorant[0] = colorant[1] = colorant[2] = (ushort)i;
+                ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
+                ushort[] colorant = new ushort[16];
+                colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                    bool added = ncl.Add($"#{i}", pcs, colorant);
-                }
-
-                // Act
-                uint actual = ncl.Count;
-
-                // Assert
-                Assert.AreEqual(expected, actual);
+                bool added = ncl.Add($"#{i}", pcs, colorant);
             }
+
+            // Act
+            uint actual = ncl.Count;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -175,14 +167,13 @@ namespace lcmsNET.Tests
             // Arrange
             uint expected = 0;
 
-            using (var ncl = NamedColorList.Create(null, 256, 3, null, null))
-            {
-                // Act
-                var actual = ncl.Count;
+            using var ncl = NamedColorList.Create(null, 256, 3, null, null);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            var actual = ncl.Count;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -191,23 +182,21 @@ namespace lcmsNET.Tests
             // Arrange
             int expected = 23;
 
-            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
+            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
+            for (uint i = 0; i < 256; i++)
             {
-                for (uint i = 0; i < 256; i++)
-                {
-                    ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
-                    ushort[] colorant = new ushort[16];
-                    colorant[0] = colorant[1] = colorant[2] = (ushort)i;
+                ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
+                ushort[] colorant = new ushort[16];
+                colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                    bool added = ncl.Add($"#{i}", pcs, colorant);
-                }
-
-                // Act
-                int actual = ncl[$"#{expected}"];
-
-                // Assert
-                Assert.AreEqual(expected, actual);
+                bool added = ncl.Add($"#{i}", pcs, colorant);
             }
+
+            // Act
+            int actual = ncl[$"#{expected}"];
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
@@ -216,14 +205,13 @@ namespace lcmsNET.Tests
             // Arrange
             int expected = -1;
 
-            using (var ncl = NamedColorList.Create(null, 256, 3, null, null))
-            {
-                // Act
-                int actual = ncl["notfound"];
+            using var ncl = NamedColorList.Create(null, 256, 3, null, null);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            int actual = ncl["notfound"];
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -235,31 +223,29 @@ namespace lcmsNET.Tests
             uint expectedNColor = 42;
             string expectedName = $"#{expectedNColor}";
 
-            using (var ncl = NamedColorList.Create(null, 256, 3, expectedPrefix, expectedSuffix))
+            using var ncl = NamedColorList.Create(null, 256, 3, expectedPrefix, expectedSuffix);
+            for (uint i = 0; i < 256; i++)
             {
-                for (uint i = 0; i < 256; i++)
-                {
-                    ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
-                    ushort[] colorant = new ushort[16];
-                    colorant[0] = colorant[1] = colorant[2] = (ushort)i;
-
-                    // Act
-                    bool added = ncl.Add($"#{i}", pcs, colorant);
-                }
+                ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
+                ushort[] colorant = new ushort[16];
+                colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
                 // Act
-                bool getInfo = ncl.GetInfo(expectedNColor, out string actualName, out string actualPrefix, out string actualSuffix,
-                        out ushort[] actualPcs, out ushort[] actualColorant);
+                bool added = ncl.Add($"#{i}", pcs, colorant);
+            }
 
-                // Assert
-                Assert.AreEqual(expectedName, actualName);
-                Assert.AreEqual(expectedPrefix, actualPrefix);
-                Assert.AreEqual(expectedSuffix, actualSuffix);
-                for (ushort i = 0; i < 3; i++)
-                {
-                    Assert.AreEqual(expectedNColor, actualPcs[i]);
-                    Assert.AreEqual(expectedNColor, actualColorant[i]);
-                }
+            // Act
+            bool getInfo = ncl.GetInfo(expectedNColor, out string actualName, out string actualPrefix, out string actualSuffix,
+                    out ushort[] actualPcs, out ushort[] actualColorant);
+
+            // Assert
+            Assert.AreEqual(expectedName, actualName);
+            Assert.AreEqual(expectedPrefix, actualPrefix);
+            Assert.AreEqual(expectedSuffix, actualSuffix);
+            for (ushort i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(expectedNColor, actualPcs[i]);
+                Assert.AreEqual(expectedNColor, actualColorant[i]);
             }
         }
 
@@ -269,31 +255,28 @@ namespace lcmsNET.Tests
             // Arrange
             int expected = 23;
 
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
             {
-                using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
+                for (uint i = 0; i < 256; i++)
                 {
-                    for (uint i = 0; i < 256; i++)
-                    {
-                        ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
-                        ushort[] colorant = new ushort[16];
-                        colorant[0] = colorant[1] = colorant[2] = (ushort)i;
+                    ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
+                    ushort[] colorant = new ushort[16];
+                    colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                        bool added = ncl.Add($"#{i}", pcs, colorant);
-                    }
-
-                    profile.WriteTag(TagSignature.NamedColor2, ncl);
+                    bool added = ncl.Add($"#{i}", pcs, colorant);
                 }
 
-                // Act
-                // implicit call to FromHandle
-                using (var roNcl = profile.ReadTag<NamedColorList>(TagSignature.NamedColor2))
-                {
-                    // Assert
-                    int actual = roNcl[$"#{expected}"];
-                    Assert.AreEqual(expected, actual);
-                }
+                profile.WriteTag(TagSignature.NamedColor2, ncl);
             }
+
+            // Act
+            // implicit call to FromHandle
+            using var roNcl = profile.ReadTag<NamedColorList>(TagSignature.NamedColor2);
+
+            // Assert
+            int actual = roNcl[$"#{expected}"];
+            Assert.AreEqual(expected, actual);
         }
     }
 }

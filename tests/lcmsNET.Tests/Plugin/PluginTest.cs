@@ -83,7 +83,7 @@ namespace lcmsNET.Tests.Plugin
             // Arrange
             const TagSignature SignaturelNET = (TagSignature)0x6C4E4554;  // 'lNET'
 
-            PluginTag tag = new PluginTag
+            PluginTag tag = new()
             {
                 Base = new PluginBase
                 {
@@ -146,7 +146,7 @@ namespace lcmsNET.Tests.Plugin
             // ensure delegates are not garbage collected from managed code
             var decide = new DecideType(Decide);
 
-            PluginTag tag = new PluginTag
+            PluginTag tag = new()
             {
                 Base = new PluginBase
                 {
@@ -174,23 +174,21 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(tag, plugin, false);
             try
             {
-                using (var context = Context.Create(plugin, IntPtr.Zero))
-                using (var profile = Profile.CreatePlaceholder(context))
+                using var context = Context.Create(plugin, IntPtr.Zero);
+                using var profile = Profile.CreatePlaceholder(context);
+                using (var mlu = MultiLocalizedUnicode.Create(context))
                 {
-                    using (var mlu = MultiLocalizedUnicode.Create(context))
-                    {
-                        mlu.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, expected);
-                        bool written = profile.WriteTag(SignaturelNET, mlu);
-                        Assert.IsTrue(written);
-                    }
+                    mlu.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, expected);
+                    bool written = profile.WriteTag(SignaturelNET, mlu);
+                    Assert.IsTrue(written);
+                }
 
-                    using (var mlu = profile.ReadTag<MultiLocalizedUnicode>(SignaturelNET))
-                    {
-                        var actual = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
+                using (var mlu = profile.ReadTag<MultiLocalizedUnicode>(SignaturelNET))
+                {
+                    var actual = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
 
-                        // Assert
-                        Assert.AreEqual(expected, actual);
-                    }
+                    // Assert
+                    Assert.AreEqual(expected, actual);
                 }
             }
             finally
@@ -203,11 +201,9 @@ namespace lcmsNET.Tests.Plugin
             {
                 TestContext.WriteLine($"iccVersion: {iccVersion}, data: 0x{data:X}");
 
-                using (var mlu = MultiLocalizedUnicode.FromHandle(data))
-                {
-                    var text = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
-                    TestContext.WriteLine($"text: {text}");
-                }
+                using var mlu = MultiLocalizedUnicode.FromHandle(data);
+                var text = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
+                TestContext.WriteLine($"text: {text}");
 
                 return TagTypeSignature.Text;
             }
@@ -220,7 +216,7 @@ namespace lcmsNET.Tests.Plugin
             const TagSignature SigInt = (TagSignature)0x74747448;  // 'tttH'
             const TagTypeSignature SigIntType = (TagTypeSignature)0x74747448;  // 'tttH'
 
-            PluginTag tag = new PluginTag
+            PluginTag tag = new()
             {
                 Base = new PluginBase
                 {
@@ -250,7 +246,7 @@ namespace lcmsNET.Tests.Plugin
             var duplicate = new TagTypeDuplicate(Duplicate);
             var free = new TagTypeFree(Free);
 
-            PluginTagType tagType = new PluginTagType
+            PluginTagType tagType = new()
             {
                 Base = new PluginBase
                 {
@@ -322,28 +318,26 @@ namespace lcmsNET.Tests.Plugin
             {
                 TestContext.WriteLine($"Read(self: {self}, io: 0x{io:X}, out nItems, tagSize: {tagSize})");
 
-                using (var context = Context.FromHandle(self.ContextID))
-                using (var iohandler = IOHandler.FromHandle(io))
+                using var context = Context.FromHandle(self.ContextID);
+                using var iohandler = IOHandler.FromHandle(io);
+                nItems = 1;
+                IntPtr ptr = Memory.Malloc(context, sizeof(uint));
+                if (ptr == IntPtr.Zero) return IntPtr.Zero;
+
+                // unsafe, but faster...
+                unsafe
                 {
-                    nItems = 1;
-                    IntPtr ptr = Memory.Malloc(context, sizeof(uint));
-                    if (ptr == IntPtr.Zero) return IntPtr.Zero;
-
-                    // unsafe, but faster...
-                    unsafe
-                    {
-                        if (!iohandler.Read(ref *(uint*)ptr)) return IntPtr.Zero;
-                    }
-
-                    // - or -
-                    // verifiable, but slower...
-
-                    //uint[] arr = new uint[1];
-                    //if (!iohandler.Read(ref arr[0])) return IntPtr.Zero;
-                    //Marshal.Copy((int[])(object)arr, 0, ptr, 1);
-
-                    return ptr;
+                    if (!iohandler.Read(ref *(uint*)ptr)) return IntPtr.Zero;
                 }
+
+                // - or -
+                // verifiable, but slower...
+
+                //uint[] arr = new uint[1];
+                //if (!iohandler.Read(ref arr[0])) return IntPtr.Zero;
+                //Marshal.Copy((int[])(object)arr, 0, ptr, 1);
+
+                return ptr;
             }
 
             // uses the i/o handler to write a single 'uint' read from unmanaged memory 'ptr'
@@ -351,21 +345,19 @@ namespace lcmsNET.Tests.Plugin
             {
                 TestContext.WriteLine($"Write(self: {self}, io: 0x{io:X}, ptr: 0x{ptr:X}, nItems: {nItems})");
 
-                using (var iohandler = IOHandler.FromHandle(io))
+                using var iohandler = IOHandler.FromHandle(io);
+                // unsafe, but faster...
+                unsafe
                 {
-                    // unsafe, but faster...
-                    unsafe
-                    {
-                        return iohandler.Write(*(uint*)ptr) ? 1 : 0;
-                    }
-
-                    // - or -
-                    // verifiable, but slower...
-
-                    //uint[] arr = new uint[1];
-                    //Marshal.Copy(ptr, (int[])(object)arr, 0, 1);
-                    //return iohandler.Write(arr[0]) ? 1 : 0;
+                    return iohandler.Write(*(uint*)ptr) ? 1 : 0;
                 }
+
+                // - or -
+                // verifiable, but slower...
+
+                //uint[] arr = new uint[1];
+                //Marshal.Copy(ptr, (int[])(object)arr, 0, 1);
+                //return iohandler.Write(arr[0]) ? 1 : 0;
             }
 
             // duplicates the unmanaged memory 'ptr' into a new block of size 'n x sizeof(uint)'
@@ -373,10 +365,8 @@ namespace lcmsNET.Tests.Plugin
             {
                 TestContext.WriteLine($"Duplicate(self: {self}, ptr: 0x{ptr:X}, n: {n})");
 
-                using (var context = Context.FromHandle(self.ContextID))
-                {
-                    return Memory.Duplicate(context, ptr, n * sizeof(uint));
-                }
+                using var context = Context.FromHandle(self.ContextID);
+                return Memory.Duplicate(context, ptr, n * sizeof(uint));
             }
 
             // frees the unmanaged memory 'ptr'
@@ -384,10 +374,8 @@ namespace lcmsNET.Tests.Plugin
             {
                 TestContext.WriteLine($"Free(self: {self}, ptr: 0x{ptr:X})");
 
-                using (var context = Context.FromHandle(self.ContextID))
-                {
-                    Memory.Free(context, ptr);
-                }
+                using var context = Context.FromHandle(self.ContextID);
+                Memory.Free(context, ptr);
             }
 
             void HandleError(IntPtr contextID, int errorCode, string errorText)
@@ -408,7 +396,7 @@ namespace lcmsNET.Tests.Plugin
             var nonContextualMalloc = new MemoryNonContextualMalloc(NonContextualMalloc);
             var nonContextualFree = new MemoryNonContextualFree(NonContextualFree);
 
-            PluginMemoryHandler memoryHandler = new PluginMemoryHandler
+            PluginMemoryHandler memoryHandler = new()
             {
                 Base = new PluginBase
                 {
@@ -434,16 +422,14 @@ namespace lcmsNET.Tests.Plugin
             // Act
             try
             {
-                using (var context = Context.Create(memoryHandlerPlugin, IntPtr.Zero))
-                {
-                    // Assert
-                    IntPtr mallocPtr = Memory.Malloc(context, 0x200);
-                    Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
+                using var context = Context.Create(memoryHandlerPlugin, IntPtr.Zero);
+                // Assert
+                IntPtr mallocPtr = Memory.Malloc(context, 0x200);
+                Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
 
-                    IntPtr reallocPtr = Memory.Realloc(context, mallocPtr, 0x300);
-                    Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
-                    Memory.Free(context, reallocPtr);
-                }
+                IntPtr reallocPtr = Memory.Realloc(context, mallocPtr, 0x300);
+                Assert.AreNotEqual(IntPtr.Zero, mallocPtr);
+                Memory.Free(context, reallocPtr);
             }
             finally
             {
@@ -519,7 +505,7 @@ namespace lcmsNET.Tests.Plugin
             IntPtr fake3D16Ptr = Marshal.GetFunctionPointerForDelegate(fake3D16);
             var factory = new InterpolatorsFactory(Factory);
 
-            PluginInterpolation interpolation = new PluginInterpolation
+            PluginInterpolation interpolation = new()
             {
                 Base = new PluginBase
                 {
@@ -538,28 +524,21 @@ namespace lcmsNET.Tests.Plugin
             // Act
             try
             {
-                using (var context = Context.Create(interpolationPlugin, IntPtr.Zero))
-                {
-                    // a straight line
-                    float[] tabulated = new float[]
-                    {
-                        0.0f, 0.10f, 0.20f, 0.30f, 0.40f, 0.50f, 0.60f, 0.70f, 0.80f, 0.90f, 1.00f
-                    };
+                using var context = Context.Create(interpolationPlugin, IntPtr.Zero);
+                // a straight line
+                float[] tabulated = [0.0f, 0.10f, 0.20f, 0.30f, 0.40f, 0.50f, 0.60f, 0.70f, 0.80f, 0.90f, 1.00f];
 
-                    using (var toneCurve = ToneCurve.BuildTabulated(context, tabulated))
-                    {
-                        // Assert
-                        // do some interpolations with the plug-in
-                        var actual = toneCurve.Evaluate(0.1f);
-                        Assert.AreEqual(0.10f, actual, float.Epsilon);
-                        actual = toneCurve.Evaluate(0.13f);
-                        Assert.AreEqual(0.10f, actual, float.Epsilon);
-                        actual = toneCurve.Evaluate(0.55f);
-                        Assert.AreEqual(0.50f, actual, float.Epsilon);
-                        actual = toneCurve.Evaluate(0.9999f);
-                        Assert.AreEqual(0.90f, actual, float.Epsilon);
-                    }
-                }
+                using var toneCurve = ToneCurve.BuildTabulated(context, tabulated);
+                // Assert
+                // do some interpolations with the plug-in
+                var actual = toneCurve.Evaluate(0.1f);
+                Assert.AreEqual(0.10f, actual, float.Epsilon);
+                actual = toneCurve.Evaluate(0.13f);
+                Assert.AreEqual(0.10f, actual, float.Epsilon);
+                actual = toneCurve.Evaluate(0.55f);
+                Assert.AreEqual(0.50f, actual, float.Epsilon);
+                actual = toneCurve.Evaluate(0.9999f);
+                Assert.AreEqual(0.90f, actual, float.Epsilon);
             }
             finally
             {
@@ -656,7 +635,7 @@ namespace lcmsNET.Tests.Plugin
             IntPtr fake3D16Ptr = Marshal.GetFunctionPointerForDelegate(fake3D16);
             var factory = new InterpolatorsFactory(Factory);
 
-            PluginInterpolation interpolation = new PluginInterpolation
+            PluginInterpolation interpolation = new()
             {
                 Base = new PluginBase
                 {
@@ -675,11 +654,10 @@ namespace lcmsNET.Tests.Plugin
             // Act
             try
             {
-                using (var context = Context.Create(interpolationPlugin, IntPtr.Zero))
-                using (var pipeline = Pipeline.Create(context, 3, 3))
+                using var context = Context.Create(interpolationPlugin, IntPtr.Zero);
+                using var pipeline = Pipeline.Create(context, 3, 3);
+                ushort[] identity =
                 {
-                    ushort[] identity =
-                    {
                        0,       0,       0,
                        0,       0,       0xffff,
                        0,       0xffff,  0,
@@ -690,27 +668,24 @@ namespace lcmsNET.Tests.Plugin
                        0xffff,  0xffff,  0xffff
                     };
 
-                    using (var clut = Stage.Create(context, 2, 3, 3, identity))
-                    {
-                        pipeline.Insert(clut, StageLoc.At_Begin);
+                using var clut = Stage.Create(context, 2, 3, 3, identity);
+                pipeline.Insert(clut, StageLoc.At_Begin);
 
-                        // do some interpolations with the plugin
-                        ushort[] input = new ushort[] { 0, 0, 0 };
-                        ushort[] output = pipeline.Evaluate(input);
+                // do some interpolations with the plugin
+                ushort[] input = new ushort[] { 0, 0, 0 };
+                ushort[] output = pipeline.Evaluate(input);
 
-                        // Assert
-                        Assert.AreEqual((ushort)(0xFFFF - 0), output[0]);
-                        Assert.AreEqual((ushort)(0xFFFF - 0), output[1]);
-                        Assert.AreEqual((ushort)(0xFFFF - 0), output[2]);
+                // Assert
+                Assert.AreEqual((ushort)(0xFFFF - 0), output[0]);
+                Assert.AreEqual((ushort)(0xFFFF - 0), output[1]);
+                Assert.AreEqual((ushort)(0xFFFF - 0), output[2]);
 
-                        input[0] = 0x1234; input[1] = 0x5678; input[2] = 0x9ABC;
-                        output = pipeline.Evaluate(input);
+                input[0] = 0x1234; input[1] = 0x5678; input[2] = 0x9ABC;
+                output = pipeline.Evaluate(input);
 
-                        Assert.AreEqual((ushort)(0xFFFF - 0x9ABC), output[0]);
-                        Assert.AreEqual((ushort)(0xFFFF - 0x5678), output[1]);
-                        Assert.AreEqual((ushort)(0xFFFF - 0x1234), output[2]);
-                    }
-                }
+                Assert.AreEqual((ushort)(0xFFFF - 0x9ABC), output[0]);
+                Assert.AreEqual((ushort)(0xFFFF - 0x5678), output[1]);
+                Assert.AreEqual((ushort)(0xFFFF - 0x1234), output[2]);
             }
             finally
             {
@@ -870,88 +845,76 @@ namespace lcmsNET.Tests.Plugin
             IntPtr curveSample2Plugin = Marshal.AllocHGlobal(rawsize);
             Marshal.StructureToPtr(curveSample2, curveSample2Plugin, false);
 
-            using (var ctx = Context.Create(curveSamplePlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
-            {
-                cpy.RegisterPlugins(curveSample2Plugin);
-                cpy2.RegisterPlugins(rec709Plugin);
+            using var ctx = Context.Create(curveSamplePlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            cpy.RegisterPlugins(curveSample2Plugin);
+            cpy2.RegisterPlugins(rec709Plugin);
 
-                double[] scale = { 1.0 };
+            double[] scale = { 1.0 };
 
-                // Act
-                using (var sinus = ToneCurve.BuildParametric(cpy, TYPE_SIN, scale))
-                using (var cosinus = ToneCurve.BuildParametric(cpy, TYPE_COS, scale))
-                using (var tangent = ToneCurve.BuildParametric(cpy, TYPE_TAN, scale))
-                using (var reverse_sinus = sinus.Reverse())
-                using (var reverse_cosinus = cosinus.Reverse())
-                {
-                    // Assert
-                    var actual = sinus.Evaluate(0.1f);
-                    Assert.AreEqual(Math.Sin(0.1 * Math.PI), actual, 0.001);
-                    actual = sinus.Evaluate(0.6f);
-                    Assert.AreEqual(Math.Sin(0.6 * Math.PI), actual, 0.001);
-                    actual = sinus.Evaluate(0.9f);
-                    Assert.AreEqual(Math.Sin(0.9 * Math.PI), actual, 0.001);
+            // Act
+            using var sinus = ToneCurve.BuildParametric(cpy, TYPE_SIN, scale);
+            using var cosinus = ToneCurve.BuildParametric(cpy, TYPE_COS, scale);
+            using var tangent = ToneCurve.BuildParametric(cpy, TYPE_TAN, scale);
+            using var reverse_sinus = sinus.Reverse();
+            using var reverse_cosinus = cosinus.Reverse();
+            // Assert
+            var actual = sinus.Evaluate(0.1f);
+            Assert.AreEqual(Math.Sin(0.1 * Math.PI), actual, 0.001);
+            actual = sinus.Evaluate(0.6f);
+            Assert.AreEqual(Math.Sin(0.6 * Math.PI), actual, 0.001);
+            actual = sinus.Evaluate(0.9f);
+            Assert.AreEqual(Math.Sin(0.9 * Math.PI), actual, 0.001);
 
-                    actual = cosinus.Evaluate(0.1f);
-                    Assert.AreEqual(Math.Cos(0.1 * Math.PI), actual, 0.001);
-                    actual = cosinus.Evaluate(0.6f);
-                    Assert.AreEqual(Math.Cos(0.6 * Math.PI), actual, 0.001);
-                    actual = cosinus.Evaluate(0.9f);
-                    Assert.AreEqual(Math.Cos(0.9 * Math.PI), actual, 0.001);
+            actual = cosinus.Evaluate(0.1f);
+            Assert.AreEqual(Math.Cos(0.1 * Math.PI), actual, 0.001);
+            actual = cosinus.Evaluate(0.6f);
+            Assert.AreEqual(Math.Cos(0.6 * Math.PI), actual, 0.001);
+            actual = cosinus.Evaluate(0.9f);
+            Assert.AreEqual(Math.Cos(0.9 * Math.PI), actual, 0.001);
 
-                    actual = tangent.Evaluate(0.1f);
-                    Assert.AreEqual(Math.Tan(0.1 * Math.PI), actual, 0.001);
-                    actual = tangent.Evaluate(0.6f);
-                    Assert.AreEqual(Math.Tan(0.6 * Math.PI), actual, 0.001);
-                    actual = tangent.Evaluate(0.9f);
-                    Assert.AreEqual(Math.Tan(0.9 * Math.PI), actual, 0.001);
+            actual = tangent.Evaluate(0.1f);
+            Assert.AreEqual(Math.Tan(0.1 * Math.PI), actual, 0.001);
+            actual = tangent.Evaluate(0.6f);
+            Assert.AreEqual(Math.Tan(0.6 * Math.PI), actual, 0.001);
+            actual = tangent.Evaluate(0.9f);
+            Assert.AreEqual(Math.Tan(0.9 * Math.PI), actual, 0.001);
 
-                    actual = reverse_sinus.Evaluate(0.1f);
-                    Assert.AreEqual(Math.Asin(0.1) / Math.PI, actual, 0.001);
-                    actual = reverse_sinus.Evaluate(0.6f);
-                    Assert.AreEqual(Math.Asin(0.6) / Math.PI, actual, 0.001);
-                    actual = reverse_sinus.Evaluate(0.9f);
-                    Assert.AreEqual(Math.Asin(0.9) / Math.PI, actual, 0.001);
+            actual = reverse_sinus.Evaluate(0.1f);
+            Assert.AreEqual(Math.Asin(0.1) / Math.PI, actual, 0.001);
+            actual = reverse_sinus.Evaluate(0.6f);
+            Assert.AreEqual(Math.Asin(0.6) / Math.PI, actual, 0.001);
+            actual = reverse_sinus.Evaluate(0.9f);
+            Assert.AreEqual(Math.Asin(0.9) / Math.PI, actual, 0.001);
 
-                    actual = reverse_cosinus.Evaluate(0.1f);
-                    Assert.AreEqual(Math.Acos(0.1) / Math.PI, actual, 0.001);
-                    actual = reverse_cosinus.Evaluate(0.6f);
-                    Assert.AreEqual(Math.Acos(0.6) / Math.PI, actual, 0.001);
-                    actual = reverse_cosinus.Evaluate(0.9f);
-                    Assert.AreEqual(Math.Acos(0.9) / Math.PI, actual, 0.001);
-                }
-            }
+            actual = reverse_cosinus.Evaluate(0.1f);
+            Assert.AreEqual(Math.Acos(0.1) / Math.PI, actual, 0.001);
+            actual = reverse_cosinus.Evaluate(0.6f);
+            Assert.AreEqual(Math.Acos(0.6) / Math.PI, actual, 0.001);
+            actual = reverse_cosinus.Evaluate(0.9f);
+            Assert.AreEqual(Math.Acos(0.9) / Math.PI, actual, 0.001);
 
             double MyFns(int Type, double[] Params, double R)
             {
-                switch (Type)
+                return Type switch
                 {
-                    case TYPE_SIN:
-                        return Params[0] * Math.Sin(R * Math.PI);
-                    case -TYPE_SIN:
-                        return Math.Asin(R) / (Math.PI * Params[0]);
-                    case TYPE_COS:
-                        return Params[0] * Math.Cos(R * Math.PI);
-                    case -TYPE_COS:
-                        return Math.Acos(R) / (Math.PI * Params[0]);
-                    default:
-                        return -1.0;
-                }
+                    TYPE_SIN => Params[0] * Math.Sin(R * Math.PI),
+                    -TYPE_SIN => Math.Asin(R) / (Math.PI * Params[0]),
+                    TYPE_COS => Params[0] * Math.Cos(R * Math.PI),
+                    -TYPE_COS => Math.Acos(R) / (Math.PI * Params[0]),
+                    _ => -1.0,
+                };
             }
 
             double MyFns2(int Type, double[] Params, double R)
             {
-                switch (Type)
+                return Type switch
                 {
-                    case TYPE_TAN:
-                        return Params[0] * Math.Tan(R * Math.PI);
-                    case -TYPE_TAN:
-                        return Math.Atan(R) / (Math.PI * Params[0]);
-                    default:
-                        return -1.0;
-                }
+                    TYPE_TAN => Params[0] * Math.Tan(R * Math.PI),
+                    -TYPE_TAN => Math.Atan(R) / (Math.PI * Params[0]),
+                    _ => -1.0,
+                };
             }
 
             double Rec709Math(int Type, double[] Params, double R)
@@ -984,7 +947,7 @@ namespace lcmsNET.Tests.Plugin
             var myFormatterFactory = new FormatterFactory(MyFormatterFactory);
             var myFormatterFactory2 = new FormatterFactory(MyFormatterFactory2);
 
-            PluginFormatters formattersSample = new PluginFormatters
+            PluginFormatters formattersSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1000,7 +963,7 @@ namespace lcmsNET.Tests.Plugin
             IntPtr formattersSamplePlugin = Marshal.AllocHGlobal(rawsize);
             Marshal.StructureToPtr(formattersSample, formattersSamplePlugin, false);
 
-            PluginFormatters formattersSample2 = new PluginFormatters
+            PluginFormatters formattersSample2 = new()
             {
                 Base = new PluginBase
                 {
@@ -1017,31 +980,29 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(formattersSample2, formattersSample2Plugin, false);
 
             // Act
-            using (var ctx = Context.Create(formattersSamplePlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
+            using var ctx = Context.Create(formattersSamplePlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            cpy.RegisterPlugins(formattersSample2Plugin);
+
+            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using (var transform = Transform.Create(cpy2, null, TYPE_RGB_565,
+                    null, TYPE_RGB_565, Intent.Perceptual, CmsFlags.NullTransform))
             {
-                cpy.RegisterPlugins(formattersSample2Plugin);
+                byte[] stream = { 0xFF, 0xFF, 0x34, 0x12, 0x00, 0x00, 0xDD, 0x33 };
+                byte[] result = new byte[stream.Length];
 
-                using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
-                using (var transform = Transform.Create(cpy2, null, TYPE_RGB_565,
-                        null, TYPE_RGB_565, Intent.Perceptual, CmsFlags.NullTransform))
+                transform.DoTransform(stream, result, 4);
+
+                // Assert
+                for (int i = 0; i < stream.Length; i++)
                 {
-                    byte[] stream = { 0xFF, 0xFF, 0x34, 0x12, 0x00, 0x00, 0xDD, 0x33 };
-                    byte[] result = new byte[stream.Length];
-
-                    transform.DoTransform(stream, result, 4);
-
-                    // Assert
-                    for (int i = 0; i < stream.Length; i++)
-                    {
-                        Assert.AreEqual(stream[i], result[i]);
-                    }
+                    Assert.AreEqual(stream[i], result[i]);
                 }
             }
 
             Formatter MyFormatterFactory(uint Type, FormatterDirection Dir, uint dwFlags)
             {
-                Formatter result = new Formatter
+                Formatter result = new()
                 {
                     Fmt = IntPtr.Zero
                 };
@@ -1058,7 +1019,7 @@ namespace lcmsNET.Tests.Plugin
 
             Formatter MyFormatterFactory2(uint Type, FormatterDirection Dir, uint dwFlags)
             {
-                Formatter result = new Formatter
+                Formatter result = new()
                 {
                     Fmt = IntPtr.Zero
                 };
@@ -1123,7 +1084,7 @@ namespace lcmsNET.Tests.Plugin
             const uint INTENT_DECEPTIVE = 300;
             var myIntent = new IntentFn(MyNewIntent);
 
-            PluginIntent intentSample = new PluginIntent
+            PluginIntent intentSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1144,30 +1105,26 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(intentSample, intentSamplePlugin, false);
 
             // Act
-            using (var ctx = Context.Create(intentSamplePlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
-            using (var linear1 = ToneCurve.BuildGamma(cpy2, 3.0))
-            using (var linear2 = ToneCurve.BuildGamma(cpy2, 1.0))
-            using (var h1 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear1 }))
-            using (var h2 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear2 }))
+            using var ctx = Context.Create(intentSamplePlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            using var linear1 = ToneCurve.BuildGamma(cpy2, 3.0);
+            using var linear2 = ToneCurve.BuildGamma(cpy2, 1.0);
+            using var h1 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear1 });
+            using var h2 = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, new ToneCurve[] { linear2 });
+            using var xform = Transform.Create(cpy2, h1, Cms.TYPE_GRAY_8, h2, Cms.TYPE_GRAY_8, (Intent)INTENT_DECEPTIVE, CmsFlags.None);
+            byte[] inBuffer = [10, 20, 30, 40];
+            byte[] outBuffer = new byte[inBuffer.Length];
+
+            xform.DoTransform(inBuffer, outBuffer, inBuffer.Length);
+
+            // Assert
+            for (var i = 0; i < inBuffer.Length; i++)
             {
-                using (var xform = Transform.Create(cpy2, h1, Cms.TYPE_GRAY_8, h2, Cms.TYPE_GRAY_8, (Intent)INTENT_DECEPTIVE, CmsFlags.None))
-                {
-                    byte[] inBuffer = new byte[] { 10, 20, 30, 40 };
-                    byte[] outBuffer = new byte[inBuffer.Length];
-
-                    xform.DoTransform(inBuffer, outBuffer, inBuffer.Length);
-
-                    // Assert
-                    for (var i = 0; i < inBuffer.Length; i++)
-                    {
-                        Assert.AreEqual(inBuffer[i], outBuffer[i]);
-                    }
-                }
+                Assert.AreEqual(inBuffer[i], outBuffer[i]);
             }
 
-            IntPtr MyNewIntent(IntPtr contextID,
+            static IntPtr MyNewIntent(IntPtr contextID,
                 uint nProfiles,
                 IntPtr intents,             // uint[]
                 IntPtr hProfiles,           // IntPtr[]
@@ -1219,7 +1176,7 @@ namespace lcmsNET.Tests.Plugin
             var read = new TagTypeRead(NegateRead);
             var write = new TagTypeWrite(NegateWrite);
 
-            PluginMultiProcessElement mpeSample = new PluginMultiProcessElement
+            PluginMultiProcessElement mpeSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1243,55 +1200,51 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(mpeSample, mpePlugin, false);
 
             // Act
-            using (var ctx = Context.Create(mpePlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using var ctx = Context.Create(mpePlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            byte[] data = null;
+
+            using (var profile = Profile.CreatePlaceholder(cpy2))
             {
-                byte[] data = null;
-
-                using (var profile = Profile.CreatePlaceholder(cpy2))
+                using (var pipe = Pipeline.Create(cpy2, 3, 3))
                 {
-                    using (var pipe = Pipeline.Create(cpy2, 3, 3))
-                    {
-                        pipe.Insert(Stage.FromHandle(StageAllocNegate(cpy2.Handle)), StageLoc.At_Begin);
+                    pipe.Insert(Stage.FromHandle(StageAllocNegate(cpy2.Handle)), StageLoc.At_Begin);
 
-                        float[] In = new float[] { 0.3f, 0.2f, 0.9f };
-                        var actual = pipe.Evaluate(In);
+                    float[] In = [0.3f, 0.2f, 0.9f];
+                    var actual = pipe.Evaluate(In);
 
-                        // Assert
-                        Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
-                        Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
-                        Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
+                    // Assert
+                    Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
+                    Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
+                    Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
 
-                        profile.WriteTag(TagSignature.DToB3, pipe);
-                    }
-
-                    profile.Save(null, out uint bytesNeeded);
-                    data = new byte[bytesNeeded];
-                    profile.Save(data, out bytesNeeded);
+                    profile.WriteTag(TagSignature.DToB3, pipe);
                 }
 
-                using (var profile2 = Profile.Open(data))
-                {
-                    // unsupported stage in global context
-                    var expected = IntPtr.Zero;
-                    var actual = profile2.ReadTag(TagSignature.DToB3);
-                    Assert.AreEqual(expected, actual);
-                }
+                profile.Save(null, out uint bytesNeeded);
+                data = new byte[bytesNeeded];
+                profile.Save(data, out bytesNeeded);
+            }
 
-                using (var profile3 = Profile.Open(cpy2, data))
-                {
-                    using (var pipe2 = profile3.ReadTag<Pipeline>(TagSignature.DToB3))
-                    {
-                        float[] In = new float[] { 0.3f, 0.2f, 0.9f };
-                        var actual = pipe2.Evaluate(In);
+            using (var profile2 = Profile.Open(data))
+            {
+                // unsupported stage in global context
+                var expected = IntPtr.Zero;
+                var actual = profile2.ReadTag(TagSignature.DToB3);
+                Assert.AreEqual(expected, actual);
+            }
 
-                        // Assert
-                        Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
-                        Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
-                        Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
-                    }
-                }
+            using var profile3 = Profile.Open(cpy2, data);
+            using (var pipe2 = profile3.ReadTag<Pipeline>(TagSignature.DToB3))
+            {
+                float[] In = [0.3f, 0.2f, 0.9f];
+                var actual = pipe2.Evaluate(In);
+
+                // Assert
+                Assert.AreEqual(1.0 - In[0], actual[0], 0.001);
+                Assert.AreEqual(1.0 - In[1], actual[1], 0.001);
+                Assert.AreEqual(1.0 - In[2], actual[2], 0.001);
             }
 
             void EvaluateNegate(IntPtr In, IntPtr Out, IntPtr mpe)
@@ -1309,11 +1262,9 @@ namespace lcmsNET.Tests.Plugin
 
             IntPtr StageAllocNegate(IntPtr contextID)
             {
-                using (var context = Context.FromHandle(contextID))
-                {
-                    return Stage.AllocPlaceholder(context, (StageSignature)SigNegateType, 3, 3,
-                            EvaluateNegate, null, null, IntPtr.Zero).Release();
-                }
+                using var context = Context.FromHandle(contextID);
+                return Stage.AllocPlaceholder(context, (StageSignature)SigNegateType, 3, 3,
+                        EvaluateNegate, null, null, IntPtr.Zero).Release();
             }
 
             IntPtr NegateRead(in TagTypeHandler self, IntPtr io, out uint nItems, uint tagSize)
@@ -1332,11 +1283,9 @@ namespace lcmsNET.Tests.Plugin
 
             int NegateWrite(in TagTypeHandler self, IntPtr io, IntPtr ptr, uint nItems)
             {
-                using (var iohandler = IOHandler.FromHandle(io))
-                {
-                    const ushort chans = 3;
-                    return iohandler.Write(chans) ? 1 : 0;
-                }
+                using var iohandler = IOHandler.FromHandle(io);
+                const ushort chans = 3;
+                return iohandler.Write(chans) ? 1 : 0;
             }
         }
 
@@ -1346,7 +1295,7 @@ namespace lcmsNET.Tests.Plugin
             // Arrange
             var optimize = new OptimizeFn(MyOptimize);
 
-            PluginOptimization optimizationSample = new PluginOptimization
+            PluginOptimization optimizationSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1363,25 +1312,22 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(optimizationSample, optimizationPlugin, false);
 
             // Act
-            using (var ctx = Context.Create(optimizationPlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using var ctx = Context.Create(optimizationPlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+            using (var profile = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, [linear]))
+            using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
             {
-                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
-                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
-                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
-                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                byte[] In = [120, 20, 30, 40];
+                byte[] Out = new byte[In.Length];
+
+                xform.DoTransform(In, Out, In.Length);
+
+                // Assert
+                for (int i = 0; i < In.Length; i++)
                 {
-                    byte[] In = new byte[] { 120, 20, 30, 40 };
-                    byte[] Out = new byte[In.Length];
-
-                    xform.DoTransform(In, Out, In.Length);
-
-                    // Assert
-                    for (int i = 0; i < In.Length; i++)
-                    {
-                        Assert.AreEqual(In[i], Out[i]);
-                    }
+                    Assert.AreEqual(In[i], Out[i]);
                 }
             }
 
@@ -1401,26 +1347,22 @@ namespace lcmsNET.Tests.Plugin
                 unsafe
                 {
                     IntPtr *pLut = (IntPtr *)lut.ToPointer();
-                    using (var pipeline = Pipeline.FromHandle(pLut[0]))
+                    using var pipeline = Pipeline.FromHandle(pLut[0]);
+                    foreach (var stage in pipeline)
                     {
-                        foreach (var stage in pipeline)
-                        {
-                            if (stage.StageType != StageSignature.CurveSetElemType) return 0;
+                        if (stage.StageType != StageSignature.CurveSetElemType) return 0;
 
-                            StageToneCurveData *data = (StageToneCurveData *)stage.Data;
-                            if (data->nCurves != 1) return 0;
-                            IntPtr* theCurves = (IntPtr*)data->TheCurves;
-                            using (var toneCurve = ToneCurve.FromHandle(theCurves[0]))
-                            {
-                                if (toneCurve.EstimateGamma(0.1) > 1.0) return 0;
-                            }
-                        }
-
-                        uint* flags = (uint*)dwFlags.ToPointer();
-                        *flags |= (uint)CmsFlags.NoCache;
-
-                        pipeline.SetOptimizationParameters(FastEvaluteCurves, IntPtr.Zero, null, null);
+                        StageToneCurveData* data = (StageToneCurveData*)stage.Data;
+                        if (data->nCurves != 1) return 0;
+                        IntPtr* theCurves = (IntPtr*)data->TheCurves;
+                        using var toneCurve = ToneCurve.FromHandle(theCurves[0]);
+                        if (toneCurve.EstimateGamma(0.1) > 1.0) return 0;
                     }
+
+                    uint* flags = (uint*)dwFlags.ToPointer();
+                    *flags |= (uint)CmsFlags.NoCache;
+
+                    pipeline.SetOptimizationParameters(FastEvaluteCurves, IntPtr.Zero, null, null);
                 }
 
                 return 1;
@@ -1441,7 +1383,7 @@ namespace lcmsNET.Tests.Plugin
             // Arrange
             var factory = new TransformFactory(MyTransformFactory);
 
-            PluginTransform transformSample = new PluginTransform
+            PluginTransform transformSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1464,10 +1406,10 @@ namespace lcmsNET.Tests.Plugin
             {
                 using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
                 using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
-                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
+                        ColorSpaceSignature.GrayData, [linear]))
                 using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
                 {
-                    byte[] In = new byte[] { 10, 20, 30, 40 };
+                    byte[] In = [10, 20, 30, 40];
                     byte[] Out = new byte[In.Length];
 
                     xform.DoTransform(In, Out, In.Length);
@@ -1541,26 +1483,21 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(transformSample, transformPlugin, false);
 
             // Act
-            using (var ctx = Context.Create(transformPlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using var ctx = Context.Create(transformPlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            using var linear = ToneCurve.BuildGamma(cpy2, 1.0);
+            using var profile = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, [linear]);
+            using var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None);
+            byte[] In = [10, 20, 30, 40];
+            byte[] Out = new byte[In.Length];
+
+            xform.DoTransform(In, Out, In.Length);
+
+            // Assert
+            for (int i = 0; i < In.Length; i++)
             {
-                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
-                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
-                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
-                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
-                {
-                    byte[] In = new byte[] { 10, 20, 30, 40 };
-                    byte[] Out = new byte[In.Length];
-
-                    xform.DoTransform(In, Out, In.Length);
-
-                    // Assert
-                    for (int i = 0; i < In.Length; i++)
-                    {
-                        Assert.AreEqual((byte)42, Out[i]);
-                    }
-                }
+                Assert.AreEqual((byte)42, Out[i]);
             }
 
             // only works for gray8 as output and always returns '42'
@@ -1604,7 +1541,7 @@ namespace lcmsNET.Tests.Plugin
             var locker = new LockMutexFn(MyLockMutex);
             var unlocker = new UnlockMutexFn(MyUnlockMutex);
 
-            PluginMutex mutexSample = new PluginMutex
+            PluginMutex mutexSample = new()
             {
                 Base = new PluginBase
                 {
@@ -1624,25 +1561,22 @@ namespace lcmsNET.Tests.Plugin
             Marshal.StructureToPtr(mutexSample, mutexPlugin, false);
 
             // Act
-            using (var ctx = Context.Create(mutexPlugin, IntPtr.Zero))
-            using (var cpy = ctx.Duplicate(IntPtr.Zero))
-            using (var cpy2 = cpy.Duplicate(IntPtr.Zero))
+            using var ctx = Context.Create(mutexPlugin, IntPtr.Zero);
+            using var cpy = ctx.Duplicate(IntPtr.Zero);
+            using var cpy2 = cpy.Duplicate(IntPtr.Zero);
+            using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
+            using (var profile = Profile.CreateLinearizationDeviceLink(cpy2, ColorSpaceSignature.GrayData, [linear]))
+            using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
             {
-                using (var linear = ToneCurve.BuildGamma(cpy2, 1.0))
-                using (var profile = Profile.CreateLinearizationDeviceLink(cpy2,
-                        ColorSpaceSignature.GrayData, new ToneCurve[] { linear }))
-                using (var xform = Transform.Create(cpy2, profile, Cms.TYPE_GRAY_8, profile, Cms.TYPE_GRAY_8, Intent.Perceptual, CmsFlags.None))
+                byte[] In = [10, 20, 30, 40];
+                byte[] Out = new byte[In.Length];
+
+                xform.DoTransform(In, Out, In.Length);
+
+                // Assert
+                for (int i = 0; i < In.Length; i++)
                 {
-                    byte[] In = new byte[] { 10, 20, 30, 40 };
-                    byte[] Out = new byte[In.Length];
-
-                    xform.DoTransform(In, Out, In.Length);
-
-                    // Assert
-                    for (int i = 0; i < In.Length; i++)
-                    {
-                        Assert.AreEqual(In[i], Out[i]);
-                    }
+                    Assert.AreEqual(In[i], Out[i]);
                 }
             }
 

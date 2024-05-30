@@ -82,22 +82,18 @@ namespace lcmsNET.Tests
         /// </summary>
         /// <param name="resourceName"></param>
         /// <param name="path"></param>
-        private void Save(string resourceName, string path)
+        private static void Save(string resourceName, string path)
         {
             var thisExe = Assembly.GetExecutingAssembly();
             var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                using (var fs = File.Create(path))
-                {
-                    s.CopyTo(fs);
-                }
-            }
+            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
+            using var fs = File.Create(path);
+            s.CopyTo(fs);
         }
 
-        private MemoryStream Save(string resourceName)
+        private static MemoryStream Save(string resourceName)
         {
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new();
             var thisExe = Assembly.GetExecutingAssembly();
             var assemblyName = new AssemblyName(thisExe.FullName);
             using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
@@ -128,12 +124,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -150,21 +145,18 @@ namespace lcmsNET.Tests
                 Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
             };
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
-            {
-                ToneCurve[] transferFunction = new ToneCurve[]
-                {
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 2.19921875);
+            ToneCurve[] transferFunction =
+            [
                     toneCurve, toneCurve, toneCurve
-                };
+            ];
 
-                // Act
-                using (var profile = Profile.CreateRGB(whitePoint, primaries, transferFunction))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            // Act
+            using var profile = Profile.CreateRGB(whitePoint, primaries, transferFunction);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -174,27 +166,25 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
             CIExyY whitePoint = Colorimetric.D50_xyY;
-            CIExyYTRIPLE primaries = new CIExyYTRIPLE
+            CIExyYTRIPLE primaries = new()
             {
                 Red = new CIExyY { x = 0.64, y = 0.33, Y = 1 },
                 Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
                 Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
             };
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
-            {
-                ToneCurve[] transferFunction = new ToneCurve[]
-                {
-                    toneCurve, toneCurve, toneCurve
-                };
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 2.19921875);
+            ToneCurve[] transferFunction =
+            [
+                toneCurve, toneCurve, toneCurve
+            ];
 
-                // Act
-                using (var profile = Profile.CreateRGB(context, whitePoint, primaries, transferFunction))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
+            // Act
+            using (var profile = Profile.CreateRGB(context, whitePoint, primaries, transferFunction))
+            {
+                // Assert
+                Assert.IsNotNull(profile);
             }
         }
 
@@ -206,16 +196,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             CIExyY whitePoint = Colorimetric.D50_xyY;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
-            {
-                // Act
-                using (var profile = Profile.CreateGray(whitePoint, toneCurve))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 2.19921875);
+
+            // Act
+            using var profile = Profile.CreateGray(whitePoint, toneCurve);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -226,16 +214,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             CIExyY whitePoint = Colorimetric.D50_xyY;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 2.19921875))
-            {
-                // Act
-                using (var profile = Profile.CreateGray(context, whitePoint, toneCurve))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 2.19921875);
+
+            // Act
+            using var profile = Profile.CreateGray(context, whitePoint, toneCurve);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -244,24 +230,20 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            CIExyY whitePoint = Colorimetric.D50_xyY;
             ColorSpaceSignature space = ColorSpaceSignature.CmykData;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 3.0))
-            {
-                ToneCurve[] transferFunction = new ToneCurve[]
-                {
-                    toneCurve, toneCurve, toneCurve, toneCurve
-                };
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 3.0);
+            ToneCurve[] transferFunction =
+            [
+                toneCurve, toneCurve, toneCurve, toneCurve
+            ];
 
-                // Act
-                using (var profile = Profile.CreateLinearizationDeviceLink(space, transferFunction))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            // Act
+            using var profile = Profile.CreateLinearizationDeviceLink(space, transferFunction);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -273,21 +255,18 @@ namespace lcmsNET.Tests
             CIExyY whitePoint = Colorimetric.D50_xyY;
             ColorSpaceSignature space = ColorSpaceSignature.CmykData;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var toneCurve = ToneCurve.BuildGamma(context, 3.0))
-            {
-                ToneCurve[] transferFunction = new ToneCurve[]
-                {
-                    toneCurve, toneCurve, toneCurve, toneCurve
-                };
+            using var context = Context.Create(plugin, userData);
+            using var toneCurve = ToneCurve.BuildGamma(context, 3.0);
+            ToneCurve[] transferFunction =
+            [
+                toneCurve, toneCurve, toneCurve, toneCurve
+            ];
 
-                // Act
-                using (var profile = Profile.CreateLinearizationDeviceLink(context, space, transferFunction))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            // Act
+            using var profile = Profile.CreateLinearizationDeviceLink(context, space, transferFunction);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -296,11 +275,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -311,12 +289,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
 // At the time of writing these tests are excluded because an i/o exception occurs at runtime
@@ -398,15 +375,14 @@ namespace lcmsNET.Tests
                 Save(".Resources.Lab.icc", labpath);
 
                 // Act
-                using (var srgb = Profile.Open(srgbpath, "r"))
-                using (var lab = Profile.Open(labpath, "r"))
-                using (var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None))
-                using (var profile = Profile.CreateDeviceLink(transform, 3.4, CmsFlags.None))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
+                using var srgb = Profile.Open(srgbpath, "r");
+                using var lab = Profile.Open(labpath, "r");
+                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+                using var profile = Profile.CreateDeviceLink(transform, 3.4, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(profile);
             }
             finally
             {
@@ -420,11 +396,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.CreateLab2(Colorimetric.D50_xyY))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateLab2(Colorimetric.D50_xyY);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -435,12 +410,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateLab2(context, Colorimetric.D50_xyY))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateLab2(context, Colorimetric.D50_xyY);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -449,11 +423,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.CreateLab4(Colorimetric.D50_xyY))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateLab4(Colorimetric.D50_xyY);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -464,12 +437,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateLab4(context, Colorimetric.D50_xyY))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateLab4(context, Colorimetric.D50_xyY);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -478,11 +450,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.CreateXYZ())
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateXYZ();
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -493,12 +464,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateXYZ(context))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateXYZ(context);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -507,11 +477,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.Create_sRGB())
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.Create_sRGB();
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -522,12 +491,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.Create_sRGB(context))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.Create_sRGB(context);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -536,11 +504,10 @@ namespace lcmsNET.Tests
             // Arrange
 
             // Act
-            using (var profile = Profile.CreateNull())
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateNull();
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -551,12 +518,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateNull(context))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateNull(context);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -568,11 +534,10 @@ namespace lcmsNET.Tests
             int tempSrc = 5000, tempDest = 5000;
 
             // Act
-            using (var profile = Profile.CreateBCHSWabstract(nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var profile = Profile.CreateBCHSWabstract(nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -586,12 +551,11 @@ namespace lcmsNET.Tests
             int tempSrc = 5000, tempDest = 5000;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateBCHSWabstract(context, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateBCHSWabstract(context, nLutPoints, bright, contrast, hue, saturation, tempSrc, tempDest);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -629,11 +593,10 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
+                using var profile = Profile.Open(srgbpath, "r");
+
+                // Assert
+                Assert.IsNotNull(profile);
             }
             finally
             {
@@ -656,12 +619,11 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var profile = Profile.Open(context, srgbpath, "r"))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var profile = Profile.Open(context, srgbpath, "r");
+
+                // Assert
+                Assert.IsNotNull(profile);
             }
             finally
             {
@@ -673,15 +635,13 @@ namespace lcmsNET.Tests
         public void OpenTest3()
         {
             // Arrange
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
-            {
-                // Act
-                using (var profile = Profile.Open(ms.GetBuffer()))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+
+            // Act
+            using var profile = Profile.Open(ms.GetBuffer());
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -691,16 +651,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
-            {
-                // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var profile = Profile.Open(context, ms.GetBuffer()))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
-            }
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+
+            // Act
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.Open(context, ms.GetBuffer());
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -718,13 +676,12 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var context = Context.Create(plugin, userData))
-                using (var iohandler = IOHandler.Open(context, srgbpath, "r"))
-                using (var profile = Profile.Open(context, iohandler))
-                {
-                    // Assert
-                    Assert.IsNotNull(profile);
-                }
+                using var context = Context.Create(plugin, userData);
+                using var iohandler = IOHandler.Open(context, srgbpath, "r");
+                using var profile = Profile.Open(context, iohandler);
+
+                // Assert
+                Assert.IsNotNull(profile);
             }
             finally
             {
@@ -740,13 +697,12 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var iohandler = IOHandler.Open(context))
-            using (var profile = Profile.Open(context, iohandler, true))
-            {
-                // Assert
-                Assert.IsNotNull(profile);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var iohandler = IOHandler.Open(context);
+            using var profile = Profile.Open(context, iohandler, true);
+
+            // Assert
+            Assert.IsNotNull(profile);
         }
 
         [TestMethod()]
@@ -762,15 +718,13 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    var savepath = Path.Combine(tempPath, "saved.icc");
-                    bool saved = profile.Save(savepath);
+                using var profile = Profile.Open(srgbpath, "r");
+                var savepath = Path.Combine(tempPath, "saved.icc");
+                bool saved = profile.Save(savepath);
 
-                    // Assert
-                    Assert.IsTrue(saved);
-                    Assert.IsTrue(File.Exists(savepath));
-                }
+                // Assert
+                Assert.IsTrue(saved);
+                Assert.IsTrue(File.Exists(savepath));
             }
             finally
             {
@@ -782,43 +736,36 @@ namespace lcmsNET.Tests
         public void SaveTest2()
         {
             // Arrange
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
-            {
-                byte[] memory = ms.GetBuffer();
-                using (var srcProfile = Profile.Open(memory))
-                {
-                    uint expected = (uint)(memory.Length + 1); // add 1 for '\0' termination
-                    byte[] destProfile = new byte[expected];
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+            byte[] memory = ms.GetBuffer();
+            using var srcProfile = Profile.Open(memory);
+            uint expected = (uint)(memory.Length + 1); // add 1 for '\0' termination
+            byte[] destProfile = new byte[expected];
 
-                    // Act
-                    var result = srcProfile.Save(destProfile, out uint actual);
+            // Act
+            var result = srcProfile.Save(destProfile, out uint actual);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void SaveTest3()
         {
             // Arrange
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
-            {
-                byte[] memory = ms.GetBuffer();
-                using (var profile = Profile.Open(memory))
-                {
-                    // oddly the method returns the size of the profile ignoring
-                    // the fact that it always terminates with `\0`
-                    uint expected = (uint)memory.Length;
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+            byte[] memory = ms.GetBuffer();
+            using var profile = Profile.Open(memory);
 
-                    // Act
-                    var result = profile.Save(null, out uint actual);
+            // oddly the method returns the size of the profile ignoring
+            // the fact that it always terminates with `\0`
+            uint expected = (uint)memory.Length;
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-            }
+            // Act
+            var result = profile.Save(null, out uint actual);
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -834,15 +781,13 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var profile = Profile.Open(srgbpath, "r"))
-                using (var iohandler = IOHandler.Open(null))
-                {
-                    var bytesToWrite = profile.Save((IOHandler)null);
-                    var bytesWritten = profile.Save(iohandler);
+                using var profile = Profile.Open(srgbpath, "r");
+                using var iohandler = IOHandler.Open(null);
+                var bytesToWrite = profile.Save((IOHandler)null);
+                var bytesWritten = profile.Save(iohandler);
 
-                    // Assert
-                    Assert.AreEqual(bytesToWrite, bytesWritten);
-                }
+                // Assert
+                Assert.AreEqual(bytesToWrite, bytesWritten);
             }
             finally
             {
@@ -865,14 +810,12 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var expected = Context.Create(plugin, userData))
-                using (var profile = Profile.Open(expected, srgbpath, "r"))
-                {
-                    var actual = profile.Context;
+                using var expected = Context.Create(plugin, userData);
+                using var profile = Profile.Open(expected, srgbpath, "r");
+                var actual = profile.Context;
 
-                    // Assert
-                    Assert.AreSame(expected, actual);
-                }
+                // Assert
+                Assert.AreSame(expected, actual);
             }
             finally
             {
@@ -894,13 +837,11 @@ namespace lcmsNET.Tests
                 Save(".Resources.sRGB.icc", srgbpath);
 
                 // Act
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    var actual = profile.ColorSpace;
+                using var profile = Profile.Open(srgbpath, "r");
+                var actual = profile.ColorSpace;
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -917,15 +858,13 @@ namespace lcmsNET.Tests
             var expected = ColorSpaceSignature.CmykData;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.ColorSpace = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.ColorSpace = expected;
 
-                // Assert
-                var actual = profile.ColorSpace;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            var actual = profile.ColorSpace;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -941,14 +880,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    var actual = profile.PCS;
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Act
+                var actual = profile.PCS;
+
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -969,15 +907,14 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    profile.PCS = expected;
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    var actual = profile.PCS;
-                    Assert.AreEqual(expected, actual);
-                }
+                // Act
+                profile.PCS = expected;
+
+                // Assert
+                var actual = profile.PCS;
+                Assert.AreEqual(expected, actual);
             }
             finally
             {
@@ -991,17 +928,15 @@ namespace lcmsNET.Tests
             // Arrange
             var expected = "sRGB IEC61966-2.1";
 
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+            byte[] memory = ms.GetBuffer();
+            using (var profile = Profile.Open(memory))
             {
-                byte[] memory = ms.GetBuffer();
-                using (var profile = Profile.Open(memory))
-                {
-                    // Act
-                    var actual = profile.GetProfileInfo(InfoType.Description, "en", "US");
+                // Act
+                var actual = profile.GetProfileInfo(InfoType.Description, "en", "US");
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
+                // Assert
+                Assert.AreEqual(expected, actual);
             }
         }
 
@@ -1011,18 +946,15 @@ namespace lcmsNET.Tests
             // Arrange
             var expected = "sRGB IEC61966-2.1";
 
-            using (MemoryStream ms = Save(".Resources.sRGB.icc"))
-            {
-                byte[] memory = ms.GetBuffer();
-                using (var profile = Profile.Open(memory))
-                {
-                    // Act
-                    var actual = profile.GetProfileInfoASCII(InfoType.Description, "en", "US");
+            using MemoryStream ms = Save(".Resources.sRGB.icc");
+            byte[] memory = ms.GetBuffer();
+            using var profile = Profile.Open(memory);
 
-                    // Assert
-                    Assert.AreEqual(expected, actual);
-                }
-            }
+            // Act
+            var actual = profile.GetProfileInfoASCII(InfoType.Description, "en", "US");
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1038,14 +970,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    bool detected = profile.DetectBlackPoint(out CIEXYZ blackPoint, intent);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsTrue(detected);
-                }
+                // Act
+                bool detected = profile.DetectBlackPoint(out CIEXYZ blackPoint, intent);
+
+                // Assert
+                Assert.IsTrue(detected);
             }
             finally
             {
@@ -1066,14 +997,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "D50_XYZ.icc");
                 Save(".Resources.D50_XYZ.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    bool detected = profile.DetectDestinationBlackPoint(out CIEXYZ blackPoint, intent);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsTrue(detected);
-                }
+                // Act
+                bool detected = profile.DetectDestinationBlackPoint(out CIEXYZ blackPoint, intent);
+
+                // Assert
+                Assert.IsTrue(detected);
             }
             finally
             {
@@ -1089,17 +1019,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             double expected = 0.0;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.DeviceClass = ProfileClassSignature.Output;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.DeviceClass = ProfileClassSignature.Output;
 
-                // Act
-                double actual = profile.TotalAreaCoverage;
+            // Act
+            double actual = profile.TotalAreaCoverage;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1110,17 +1038,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             var expected = ProfileClassSignature.Abstract;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.DeviceClass = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.DeviceClass = expected;
 
-                // Act
-                var actual = profile.DeviceClass;
+            // Act
+            var actual = profile.DeviceClass;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1131,16 +1057,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             var expected = ProfileClassSignature.Display;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.DeviceClass = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.DeviceClass;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.DeviceClass = expected;
+
+            // Assert
+            var actual = profile.DeviceClass;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1152,17 +1077,16 @@ namespace lcmsNET.Tests
             var notExpected = DateTime.MinValue;
             DateTime now = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                bool obtained = profile.GetHeaderCreationDateTime(out DateTime actual);
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.IsTrue(obtained);
-                Assert.AreNotEqual(notExpected, actual);
-                Assert.IsTrue(actual >= now);
-            }
+            // Act
+            bool obtained = profile.GetHeaderCreationDateTime(out DateTime actual);
+
+            // Assert
+            Assert.IsTrue(obtained);
+            Assert.AreNotEqual(notExpected, actual);
+            Assert.IsTrue(actual >= now);
         }
 
         [TestMethod()]
@@ -1173,17 +1097,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x2;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.HeaderFlags = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.HeaderFlags = expected;
 
-                // Act
-                var actual = profile.HeaderFlags;
+            // Act
+            var actual = profile.HeaderFlags;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1194,16 +1116,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x1;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.HeaderFlags = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.HeaderFlags;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.HeaderFlags = expected;
+
+            // Assert
+            var actual = profile.HeaderFlags;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1214,17 +1135,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x54657374; // 'Test'
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.HeaderManufacturer = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.HeaderManufacturer = expected;
 
-                // Act
-                var actual = profile.HeaderManufacturer;
+            // Act
+            var actual = profile.HeaderManufacturer;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1235,16 +1154,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x54657374; // 'Test'
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.HeaderManufacturer = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.HeaderManufacturer;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.HeaderManufacturer = expected;
+
+            // Assert
+            var actual = profile.HeaderManufacturer;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1255,17 +1173,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x6D6F646C; // 'modl'
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.HeaderModel = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.HeaderModel = expected;
 
-                // Act
-                var actual = profile.HeaderModel;
+            // Act
+            var actual = profile.HeaderModel;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1276,16 +1192,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x6D6F646C; // 'modl'
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.HeaderModel = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.HeaderModel;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.HeaderModel = expected;
+
+            // Assert
+            var actual = profile.HeaderModel;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1296,17 +1211,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             DeviceAttributes expected = DeviceAttributes.Reflective | DeviceAttributes.Matte;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.HeaderAttributes = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.HeaderAttributes = expected;
 
-                // Act
-                var actual = profile.HeaderAttributes;
+            // Act
+            var actual = profile.HeaderAttributes;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1317,16 +1230,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             DeviceAttributes expected = DeviceAttributes.Transparency;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.HeaderAttributes = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.HeaderAttributes;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.HeaderAttributes = expected;
+
+            // Assert
+            var actual = profile.HeaderAttributes;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1337,17 +1249,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             double expected = 4.3;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.Version = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.Version = expected;
 
-                // Act
-                var actual = profile.Version;
+            // Act
+            var actual = profile.Version;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1358,16 +1268,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             double expected = 4.3;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.Version = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.Version;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.Version = expected;
+
+            // Assert
+            var actual = profile.Version;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1378,17 +1287,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x4000000;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                profile.EncodedICCVersion = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
+            profile.EncodedICCVersion = expected;
 
-                // Act
-                var actual = profile.EncodedICCVersion;
+            // Act
+            var actual = profile.EncodedICCVersion;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1399,16 +1306,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             uint expected = 0x4000000;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.EncodedICCVersion = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                var actual = profile.EncodedICCVersion;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.EncodedICCVersion = expected;
+
+            // Assert
+            var actual = profile.EncodedICCVersion;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1418,15 +1324,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                bool isMatrixShaper = profile.IsMatrixShaper;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.IsFalse(isMatrixShaper);
-            }
+            // Act
+            bool isMatrixShaper = profile.IsMatrixShaper;
+
+            // Assert
+            Assert.IsFalse(isMatrixShaper);
         }
 
         [TestMethod()]
@@ -1438,15 +1343,14 @@ namespace lcmsNET.Tests
             Intent intent = Intent.RelativeColorimetric;
             UsedDirection usedDirection = UsedDirection.AsInput;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                bool isCLUT = profile.IsCLUT(intent, usedDirection);
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.IsFalse(isCLUT);
-            }
+            // Act
+            bool isCLUT = profile.IsCLUT(intent, usedDirection);
+
+            // Assert
+            Assert.IsFalse(isCLUT);
         }
 
         [TestMethod()]
@@ -1457,15 +1361,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             int expected = 0;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                int actual = profile.TagCount;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            int actual = profile.TagCount;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1480,14 +1383,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
+                using var profile = Profile.Open(srgbpath, "r");
+
+                // Act
+                for (int i = 0; i < profile.TagCount; i++)
                 {
-                    // Act
-                    for (int i = 0; i < profile.TagCount; i++)
-                    {
-                        TagSignature tag = profile.GetTag(Convert.ToUInt32(i));
-                        TestContext.WriteLine($"tag: 0x{tag:X}");
-                    }
+                    TagSignature tag = profile.GetTag(Convert.ToUInt32(i));
+                    TestContext.WriteLine($"tag: 0x{tag:X}");
                 }
             }
             finally
@@ -1508,12 +1410,11 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    bool hasTag = profile.HasTag(TagSignature.MediaWhitePoint);
-                    Assert.IsTrue(hasTag);
-                }
+                using var profile = Profile.Open(srgbpath, "r");
+
+                // Act
+                bool hasTag = profile.HasTag(TagSignature.MediaWhitePoint);
+                Assert.IsTrue(hasTag);
             }
             finally
             {
@@ -1534,14 +1435,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    IntPtr actual = profile.ReadTag(TagSignature.MediaWhitePoint);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.AreNotEqual(notExpected, actual);
-                }
+                // Act
+                IntPtr actual = profile.ReadTag(TagSignature.MediaWhitePoint);
+
+                // Assert
+                Assert.AreNotEqual(notExpected, actual);
             }
             finally
             {
@@ -1552,50 +1452,45 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void ReadTagTTest()
         {
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            CIEXYZTRIPLE expected = new() 
             {
-                var expected = new CIEXYZTRIPLE
-                {
-                    Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                    Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
-                    Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
-                };
+                Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
+            };
 
-                profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
+            profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
 
-                // Act
-                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
+            // Act
+            var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void ReadTagTMissingMethodTest()
         {
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+            using var profile = Profile.CreatePlaceholder(null);
+            CIEXYZ expected = new()  { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-                profile.WriteTag(TagSignature.BlueColorant, expected);
+            profile.WriteTag(TagSignature.BlueColorant, expected);
 
-                // Act & Assert
-                var actual = Assert.ThrowsException<MissingMethodException>(
-                        () => profile.ReadTag<TestCIEXYZ>(TagSignature.BlueColorant));
-            }
+            // Act & Assert
+            var actual = Assert.ThrowsException<MissingMethodException>(
+                    () => profile.ReadTag<TestCIEXYZ>(TagSignature.BlueColorant));
         }
 
         [TestMethod()]
         public void ReadTagTTagNotFound()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder())
-            {
-                // Act & Assert
-                var actual = Assert.ThrowsException<LcmsNETException>(
-                        () => profile.ReadTag<Dict>(TagSignature.Meta));
-            }
+            using var profile = Profile.CreatePlaceholder();
+
+            // Act & Assert
+            var actual = Assert.ThrowsException<LcmsNETException>(
+                    () => profile.ReadTag<Dict>(TagSignature.Meta));
         }
 
         [TestMethod()]
@@ -1611,17 +1506,16 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    IntPtr actual = profile.ReadTag(TagSignature.BlueColorant);
-                    CIEXYZ bXYZ = Marshal.PtrToStructure<CIEXYZ>(actual);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.AreNotEqual(notExpected, bXYZ.X);
-                    Assert.AreNotEqual(notExpected, bXYZ.Y);
-                    Assert.AreNotEqual(notExpected, bXYZ.Z);
-                }
+                // Act
+                IntPtr actual = profile.ReadTag(TagSignature.BlueColorant);
+                CIEXYZ bXYZ = Marshal.PtrToStructure<CIEXYZ>(actual);
+
+                // Assert
+                Assert.AreNotEqual(notExpected, bXYZ.X);
+                Assert.AreNotEqual(notExpected, bXYZ.Y);
+                Assert.AreNotEqual(notExpected, bXYZ.Z);
             }
             finally
             {
@@ -1635,23 +1529,20 @@ namespace lcmsNET.Tests
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            IntPtr notExpected = IntPtr.Zero;
 
             try
             {
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    var whitePoint = profile.ReadTag<CIEXYZ>(TagSignature.MediaWhitePoint);
+                using var profile = Profile.Open(srgbpath, "r");
+                var whitePoint = profile.ReadTag<CIEXYZ>(TagSignature.MediaWhitePoint);
 
-                    // Act
-                    bool written = profile.WriteTag(TagSignature.MediaWhitePoint, whitePoint);
+                // Act
+                bool written = profile.WriteTag(TagSignature.MediaWhitePoint, whitePoint);
 
-                    // Assert
-                    Assert.IsTrue(written);
-                }
+                // Assert
+                Assert.IsTrue(written);
             }
             finally
             {
@@ -1662,45 +1553,41 @@ namespace lcmsNET.Tests
         [TestMethod()]
         public void WriteTagTest2()
         {
-            using (var profile = Profile.CreatePlaceholder(null))
+            using var profile = Profile.CreatePlaceholder(null);
+            CIEXYZTRIPLE expected = new()
             {
-                var expected = new CIEXYZTRIPLE
-                {
-                    Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                    Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
-                    Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
-                };
+                Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
+                Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
+                Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
+            };
 
-                profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
+            profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
 
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
+            // Act
+            // implicit call to FromHandle
+            var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
         public void WriteTagTest3()
         {
             // Arrange
-            using (var profile = Profile.CreatePlaceholder(null))
-            {
-                var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
-                var iccData = new ICCData(expected);
+            using var profile = Profile.CreatePlaceholder(null);
+            byte[] expected = [17, 99, 0, 253, 122, 19];
+            var iccData = new ICCData(expected);
 
-                // do not use TagSignature.Data as this is not supported
-                profile.WriteTag(TagSignature.Ps2CRD0, iccData);
+            // do not use TagSignature.Data as this is not supported
+            profile.WriteTag(TagSignature.Ps2CRD0, iccData);
 
-                // Act
-                var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
+            // Act
+            var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
 
-                // Assert
-                var actual = (byte[])iccData2;
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            var actual = (byte[])iccData2;
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1710,15 +1597,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
-            {
-                // Act
-                bool linked = profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0);
 
-                // Assert
-                Assert.IsTrue(linked);
-            }
+            // Act
+            bool linked = profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
+
+            // Assert
+            Assert.IsTrue(linked);
         }
 
         [TestMethod()]
@@ -1729,18 +1615,16 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             TagSignature expected = TagSignature.AToB0;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0))
-            {
-                TagSignature tag = TagSignature.AToB1;
-                profile.LinkTag(tag, expected);
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreateInkLimitingDeviceLink(context, ColorSpaceSignature.CmykData, 150.0);
+            TagSignature tag = TagSignature.AToB1;
+            profile.LinkTag(tag, expected);
 
-                // Act
-                TagSignature actual = profile.TagLinkedTo(tag);
+            // Act
+            TagSignature actual = profile.TagLinkedTo(tag);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1751,15 +1635,14 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             Intent expected = Intent.Perceptual;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                Intent actual = profile.HeaderRenderingIntent;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            Intent actual = profile.HeaderRenderingIntent;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1770,16 +1653,15 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
             Intent expected = Intent.AbsoluteColorimetric;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                profile.HeaderRenderingIntent = expected;
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Intent actual = profile.HeaderRenderingIntent;
-                Assert.AreEqual(expected, actual);
-            }
+            // Act
+            profile.HeaderRenderingIntent = expected;
+
+            // Assert
+            Intent actual = profile.HeaderRenderingIntent;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -1789,15 +1671,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var profile = Profile.CreatePlaceholder(context))
-            {
-                // Act
-                bool supported = profile.IsIntentSupported(Intent.Perceptual, UsedDirection.AsInput);
+            using var context = Context.Create(plugin, userData);
+            using var profile = Profile.CreatePlaceholder(context);
 
-                // Assert
-                Assert.IsFalse(supported);
-            }
+            // Act
+            bool supported = profile.IsIntentSupported(Intent.Perceptual, UsedDirection.AsInput);
+
+            // Assert
+            Assert.IsFalse(supported);
         }
 
         [TestMethod()]
@@ -1812,14 +1693,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    bool computed = profile.ComputeMD5();
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsTrue(computed);
-                }
+                // Act
+                bool computed = profile.ComputeMD5();
+
+                // Assert
+                Assert.IsTrue(computed);
             }
             finally
             {
@@ -1839,15 +1719,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    profile.ComputeMD5();
+                using var profile = Profile.Open(srgbpath, "r");
+                profile.ComputeMD5();
 
-                    // Act
-                    byte[] profileID = profile.HeaderProfileID;
+                // Act
+                byte[] profileID = profile.HeaderProfileID;
 
-                    // Assert
-                }
+                // Assert
             }
             finally
             {
@@ -1867,16 +1745,14 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    profile.ComputeMD5();
-                    byte[] profileID = profile.HeaderProfileID;
+                using var profile = Profile.Open(srgbpath, "r");
+                profile.ComputeMD5();
+                byte[] profileID = profile.HeaderProfileID;
 
-                    // Act
-                    profile.HeaderProfileID = profileID;
+                // Act
+                profile.HeaderProfileID = profileID;
 
-                    // Assert
-                }
+                // Assert
             }
             finally
             {
@@ -1896,14 +1772,13 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    var iohandler = profile.IOHandler;
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsNotNull(iohandler);
-                }
+                // Act
+                var iohandler = profile.IOHandler;
+
+                // Assert
+                Assert.IsNotNull(iohandler);
             }
             finally
             {
@@ -1924,16 +1799,15 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var iohandler = IOHandler.Open(context))
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    uint actual = profile.GetPostScriptColorResource(context, PostScriptResourceType.ColorRenderingDictionary, Intent.RelativeColorimetric, CmsFlags.None, iohandler);
+                using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+                using var iohandler = IOHandler.Open(context);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.AreNotEqual(notExpected, actual);
-                }
+                // Act
+                uint actual = profile.GetPostScriptColorResource(context, PostScriptResourceType.ColorRenderingDictionary, Intent.RelativeColorimetric, CmsFlags.None, iohandler);
+
+                // Assert
+                Assert.AreNotEqual(notExpected, actual);
             }
             finally
             {
@@ -1954,16 +1828,15 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    byte[] actual = profile.GetPostScriptColorSpaceArray(context, Intent.RelativeColorimetric, CmsFlags.None);
+                using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsNotNull(actual);
-                    Assert.AreNotEqual(notExpected, actual.Length);
-                }
+                // Act
+                byte[] actual = profile.GetPostScriptColorSpaceArray(context, Intent.RelativeColorimetric, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(actual);
+                Assert.AreNotEqual(notExpected, actual.Length);
             }
             finally
             {
@@ -1984,16 +1857,15 @@ namespace lcmsNET.Tests
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
                 Save(".Resources.sRGB.icc", srgbpath);
 
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var profile = Profile.Open(srgbpath, "r"))
-                {
-                    // Act
-                    byte[] actual = profile.GetPostScriptColorRenderingDictionary(context, Intent.AbsoluteColorimetric, CmsFlags.None);
+                using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+                using var profile = Profile.Open(srgbpath, "r");
 
-                    // Assert
-                    Assert.IsNotNull(actual);
-                    Assert.AreNotEqual(notExpected, actual.Length);
-                }
+                // Act
+                byte[] actual = profile.GetPostScriptColorRenderingDictionary(context, Intent.AbsoluteColorimetric, CmsFlags.None);
+
+                // Assert
+                Assert.IsNotNull(actual);
+                Assert.AreNotEqual(notExpected, actual.Length);
             }
             finally
             {
@@ -2003,18 +1875,16 @@ namespace lcmsNET.Tests
 
         private static Profile CreateRGBGamma(double gamma)
         {
-            CIExyY D65 = new CIExyY { x = 0.3127, y = 0.3290, Y = 1.0 };
-            CIExyYTRIPLE Rec709Primaries = new CIExyYTRIPLE
+            CIExyY D65 = new() { x = 0.3127, y = 0.3290, Y = 1.0 };
+            CIExyYTRIPLE Rec709Primaries = new()
             {
                 Red   = new CIExyY { x = 0.6400, y = 0.3300, Y = 1.0 },
                 Green = new CIExyY { x = 0.3000, y = 0.6000, Y = 1.0 },
                 Blue  = new CIExyY { x = 0.1500, y = 0.0600, Y = 1.0 }
             };
 
-            using (var toneCurve = ToneCurve.BuildGamma(null, gamma))
-            {
-                return Profile.CreateRGB(D65, Rec709Primaries, new ToneCurve[] { toneCurve, toneCurve, toneCurve });
-            }
+            using var toneCurve = ToneCurve.BuildGamma(null, gamma);
+            return Profile.CreateRGB(D65, Rec709Primaries, [toneCurve, toneCurve, toneCurve]);
         }
 
         [TestMethod()]
@@ -2024,12 +1894,10 @@ namespace lcmsNET.Tests
             {
                 const double threshold = 0.01;
                 double expected = 1.0;
-                using (var profile = CreateRGBGamma(expected))
-                {
-                    var actual = profile.DetectRGBGamma(threshold);
+                using var profile = CreateRGBGamma(expected);
+                var actual = profile.DetectRGBGamma(threshold);
 
-                    Assert.IsTrue(Math.Abs(actual - expected) <= 0.1);
-                }
+                Assert.IsTrue(Math.Abs(actual - expected) <= 0.1);
             }
             catch (EntryPointNotFoundException)
             {

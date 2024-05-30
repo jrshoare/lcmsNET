@@ -82,12 +82,11 @@ namespace lcmsNET.Tests
             IntPtr userData = IntPtr.Zero;
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var gbd = GamutBoundaryDescriptor.Create(context))
-            {
-                // Assert
-                Assert.IsNotNull(gbd);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var gbd = GamutBoundaryDescriptor.Create(context);
+
+            // Assert
+            Assert.IsNotNull(gbd);
         }
 
         [TestMethod()]
@@ -96,17 +95,16 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            CIELab lab = new CIELab { L = 99.3, a = 12.6, b = 14.2 };
+            CIELab lab = new() { L = 99.3, a = 12.6, b = 14.2 };
 
-            using (var context = Context.Create(plugin, userData))
-            using (var gbd = GamutBoundaryDescriptor.Create(context))
-            {
-                // Act
-                bool added = gbd.AddPoint(lab);
+            using var context = Context.Create(plugin, userData);
+            using var gbd = GamutBoundaryDescriptor.Create(context);
 
-                // Assert
-                Assert.IsTrue(added);
-            }
+            // Act
+            bool added = gbd.AddPoint(lab);
+
+            // Assert
+            Assert.IsTrue(added);
         }
 
         [TestMethod()]
@@ -116,15 +114,14 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var gbd = GamutBoundaryDescriptor.Create(context))
-            {
-                // Act
-                bool computed = gbd.Compute();
+            using var context = Context.Create(plugin, userData);
+            using var gbd = GamutBoundaryDescriptor.Create(context);
 
-                // Assert
-                Assert.IsTrue(computed);
-            }
+            // Act
+            bool computed = gbd.Compute();
+
+            // Assert
+            Assert.IsTrue(computed);
         }
 
         [TestMethod()]
@@ -134,36 +131,35 @@ namespace lcmsNET.Tests
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
 
-            using (var context = Context.Create(plugin, userData))
-            using (var gbd = GamutBoundaryDescriptor.Create(context))
-            {
-                CIELab add = new CIELab { };
-                for (int L = 0; L <= 100; L += 10)
-                    for (int a = -128; a <= 128; a += 5)
-                        for (int b = -128; b <= 128; b+= 5)
-                        {
-                            add.L = L;
-                            add.a = a;
-                            add.b = b;
-                            gbd.AddPoint(add);
-                        }
+            using var context = Context.Create(plugin, userData);
+            using var gbd = GamutBoundaryDescriptor.Create(context);
 
-                gbd.Compute();
+            CIELab add = new();
+            for (int L = 0; L <= 100; L += 10)
+                for (int a = -128; a <= 128; a += 5)
+                    for (int b = -128; b <= 128; b += 5)
+                    {
+                        add.L = L;
+                        add.a = a;
+                        add.b = b;
+                        gbd.AddPoint(add);
+                    }
 
-                // Act
-                CIELab check = new CIELab { };
-                for (int L = 10; L <= 90; L += 25)
-                    for (int a = -120; a <= 120; a += 25)
-                        for (int b = -120; b <= 120; b += 25)
-                        {
-                            check.L = L;
-                            check.a = a;
-                            check.b = b;
+            gbd.Compute();
 
-                            // Assert
-                            Assert.IsTrue(gbd.CheckPoint(check));
-                        }
-            }
+            // Act
+            CIELab check = new();
+            for (int L = 10; L <= 90; L += 25)
+                for (int a = -120; a <= 120; a += 25)
+                    for (int b = -120; b <= 120; b += 25)
+                    {
+                        check.L = L;
+                        check.a = a;
+                        check.b = b;
+
+                        // Assert
+                        Assert.IsTrue(gbd.CheckPoint(check));
+                    }
         }
     }
 }

@@ -79,30 +79,28 @@ namespace lcmsNET.Tests
         {
             // Arrange
             int type = 4;
-            double[] parameters = new double[] { 2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045 };
+            double[] parameters = [2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045];
             double gamma = 2.2;
             uint nItems = 0;
             string languageCode = "en";
             string countryCode = "US";
             string text = "constructor";
 
-            using (var expectedUcr = ToneCurve.BuildParametric(null, type, parameters))
-            using (var expectedBg = ToneCurve.BuildGamma(null, gamma))
-            using (var expectedDesc = MultiLocalizedUnicode.Create(null, nItems))
-            {
-                expectedDesc.SetASCII(languageCode, countryCode, text);
+            using var expectedUcr = ToneCurve.BuildParametric(null, type, parameters);
+            using var expectedBg = ToneCurve.BuildGamma(null, gamma);
+            using var expectedDesc = MultiLocalizedUnicode.Create(null, nItems);
+            expectedDesc.SetASCII(languageCode, countryCode, text);
 
-                // Act
-                var target = new UcrBg(expectedUcr, expectedBg, expectedDesc);
-                var actualUcr = target.Ucr;
-                var actualBg = target.Bg;
-                var actualDesc = target.Desc;
+            // Act
+            var target = new UcrBg(expectedUcr, expectedBg, expectedDesc);
+            var actualUcr = target.Ucr;
+            var actualBg = target.Bg;
+            var actualDesc = target.Desc;
 
-                // Assert
-                Assert.AreSame(expectedUcr, actualUcr);
-                Assert.AreSame(expectedBg, actualBg);
-                Assert.AreSame(expectedDesc, actualDesc);
-            }
+            // Assert
+            Assert.AreSame(expectedUcr, actualUcr);
+            Assert.AreSame(expectedBg, actualBg);
+            Assert.AreSame(expectedDesc, actualDesc);
         }
 
         [TestMethod()]
@@ -114,31 +112,29 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expectedText = "from-handle";
 
-            using (var ucr = ToneCurve.BuildGamma(null, gammaUcr))
-            using (var bg = ToneCurve.BuildGamma(null, gammaBg))
-            using (var desc = MultiLocalizedUnicode.Create(null))
+            using var ucr = ToneCurve.BuildGamma(null, gammaUcr);
+            using var bg = ToneCurve.BuildGamma(null, gammaBg);
+            using var desc = MultiLocalizedUnicode.Create(null);
+            desc.SetASCII(languageCode, countryCode, expectedText);
+
+            var target = new UcrBg(ucr, bg, desc);
+            using (var profile = Profile.CreatePlaceholder(null))
             {
-                desc.SetASCII(languageCode, countryCode, expectedText);
+                profile.WriteTag(TagSignature.UcrBg, target);
 
-                var target = new UcrBg(ucr, bg, desc);
-                using (var profile = Profile.CreatePlaceholder(null))
-                {
-                    profile.WriteTag(TagSignature.UcrBg, target);
+                // Act
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
+                var actualUcr = actual.Ucr;
+                var actualBg = actual.Bg;
+                var actualDesc = actual.Desc;
 
-                    // Act
-                    // implicit call to FromHandle
-                    var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
-                    var actualUcr = actual.Ucr;
-                    var actualBg = actual.Bg;
-                    var actualDesc = actual.Desc;
-
-                    // Assert
-                    Assert.IsNotNull(actualUcr);
-                    Assert.IsNotNull(actualBg);
-                    Assert.IsNotNull(actualDesc);
-                    var actualText = actualDesc.GetASCII(languageCode, countryCode);
-                    Assert.AreEqual(expectedText, actualText);
-                }
+                // Assert
+                Assert.IsNotNull(actualUcr);
+                Assert.IsNotNull(actualBg);
+                Assert.IsNotNull(actualDesc);
+                var actualText = actualDesc.GetASCII(languageCode, countryCode);
+                Assert.AreEqual(expectedText, actualText);
             }
         }
 
@@ -151,30 +147,28 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expectedText = "read-tag";
 
-            using (var ucr = ToneCurve.BuildGamma(null, gammaUcr))
-            using (var bg = ToneCurve.BuildGamma(null, gammaBg))
-            using (var desc = MultiLocalizedUnicode.Create(null))
+            using var ucr = ToneCurve.BuildGamma(null, gammaUcr);
+            using var bg = ToneCurve.BuildGamma(null, gammaBg);
+            using var desc = MultiLocalizedUnicode.Create(null);
+            desc.SetASCII(languageCode, countryCode, expectedText);
+
+            var target = new UcrBg(ucr, bg, desc);
+            using (var profile = Profile.CreatePlaceholder(null))
             {
-                desc.SetASCII(languageCode, countryCode, expectedText);
+                profile.WriteTag(TagSignature.UcrBg, target);
 
-                var target = new UcrBg(ucr, bg, desc);
-                using (var profile = Profile.CreatePlaceholder(null))
-                {
-                    profile.WriteTag(TagSignature.UcrBg, target);
+                // Act
+                var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
+                var actualUcr = actual.Ucr;
+                var actualBg = actual.Bg;
+                var actualDesc = actual.Desc;
 
-                    // Act
-                    var actual = profile.ReadTag<UcrBg>(TagSignature.UcrBg);
-                    var actualUcr = actual.Ucr;
-                    var actualBg = actual.Bg;
-                    var actualDesc = actual.Desc;
-
-                    // Assert
-                    Assert.IsNotNull(actualUcr);
-                    Assert.IsNotNull(actualBg);
-                    Assert.IsNotNull(actualDesc);
-                    var actualText = actualDesc.GetASCII(languageCode, countryCode);
-                    Assert.AreEqual(expectedText, actualText);
-                }
+                // Assert
+                Assert.IsNotNull(actualUcr);
+                Assert.IsNotNull(actualBg);
+                Assert.IsNotNull(actualDesc);
+                var actualText = actualDesc.GetASCII(languageCode, countryCode);
+                Assert.AreEqual(expectedText, actualText);
             }
         }
     }

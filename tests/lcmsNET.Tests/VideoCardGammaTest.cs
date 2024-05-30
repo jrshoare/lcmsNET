@@ -79,23 +79,21 @@ namespace lcmsNET.Tests
         {
             // Arrange
             int type = 5;
-            double[] parameters = new double[] { 0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0 };
+            double[] parameters = [0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0];
 
-            using (var expectedRed = ToneCurve.BuildParametric(null, type, parameters))
-            using (var expectedGreen = ToneCurve.BuildParametric(null, type, parameters))
-            using (var expectedBlue = ToneCurve.BuildParametric(null, type, parameters))
-            {
-                // Act
-                var target = new VideoCardGamma(expectedRed, expectedGreen, expectedBlue);
-                var actualRed = target.Red;
-                var actualGreen = target.Green;
-                var actualBlue = target.Blue;
+            using var expectedRed = ToneCurve.BuildParametric(null, type, parameters);
+            using var expectedGreen = ToneCurve.BuildParametric(null, type, parameters);
+            using var expectedBlue = ToneCurve.BuildParametric(null, type, parameters);
+            // Act
+            var target = new VideoCardGamma(expectedRed, expectedGreen, expectedBlue);
+            var actualRed = target.Red;
+            var actualGreen = target.Green;
+            var actualBlue = target.Blue;
 
-                // Assert
-                Assert.AreSame(expectedRed, actualRed);
-                Assert.AreSame(expectedGreen, actualGreen);
-                Assert.AreSame(expectedBlue, actualBlue);
-            }
+            // Assert
+            Assert.AreSame(expectedRed, actualRed);
+            Assert.AreSame(expectedGreen, actualGreen);
+            Assert.AreSame(expectedBlue, actualBlue);
         }
 
         [TestMethod()]
@@ -103,30 +101,28 @@ namespace lcmsNET.Tests
         {
             // Arrange
             int type = 5;
-            double[] parameters = new double[] { 0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0 };
+            double[] parameters = [0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0];
 
-            using (var red = ToneCurve.BuildParametric(null, type, parameters))
-            using (var green = ToneCurve.BuildParametric(null, type, parameters))
-            using (var blue = ToneCurve.BuildParametric(null, type, parameters))
+            using var red = ToneCurve.BuildParametric(null, type, parameters);
+            using var green = ToneCurve.BuildParametric(null, type, parameters);
+            using var blue = ToneCurve.BuildParametric(null, type, parameters);
+            var target = new VideoCardGamma(red, green, blue);
+
+            using (var profile = Profile.CreatePlaceholder(null))
             {
-                var target = new VideoCardGamma(red, green, blue);
+                profile.WriteTag(TagSignature.Vcgt, target);
 
-                using (var profile = Profile.CreatePlaceholder(null))
-                {
-                    profile.WriteTag(TagSignature.Vcgt, target);
+                // Act
+                // implicit call to FromHandle
+                var actual = profile.ReadTag<VideoCardGamma>(TagSignature.Vcgt);
+                var actualRed = actual.Red;
+                var actualGreen = actual.Green;
+                var actualBlue = actual.Blue;
 
-                    // Act
-                    // implicit call to FromHandle
-                    var actual = profile.ReadTag<VideoCardGamma>(TagSignature.Vcgt);
-                    var actualRed = actual.Red;
-                    var actualGreen = actual.Green;
-                    var actualBlue = actual.Blue;
-
-                    // Assert
-                    Assert.IsNotNull(actualRed);
-                    Assert.IsNotNull(actualGreen);
-                    Assert.IsNotNull(actualBlue);
-                }
+                // Assert
+                Assert.IsNotNull(actualRed);
+                Assert.IsNotNull(actualGreen);
+                Assert.IsNotNull(actualBlue);
             }
         }
 
@@ -135,29 +131,27 @@ namespace lcmsNET.Tests
         {
             // Arrange
             int type = 5;
-            double[] parameters = new double[] { 0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0 };
+            double[] parameters = [0.45, Math.Pow(1.099, 1.0 / 0.45), 0.0, 4.5, 0.018, -0.099, 0.0];
 
-            using (var red = ToneCurve.BuildParametric(null, type, parameters))
-            using (var green = ToneCurve.BuildParametric(null, type, parameters))
-            using (var blue = ToneCurve.BuildParametric(null, type, parameters))
+            using var red = ToneCurve.BuildParametric(null, type, parameters);
+            using var green = ToneCurve.BuildParametric(null, type, parameters);
+            using var blue = ToneCurve.BuildParametric(null, type, parameters);
+            var target = new VideoCardGamma(red, green, blue);
+
+            using (var profile = Profile.CreatePlaceholder(null))
             {
-                var target = new VideoCardGamma(red, green, blue);
+                profile.WriteTag(TagSignature.Vcgt, target);
 
-                using (var profile = Profile.CreatePlaceholder(null))
-                {
-                    profile.WriteTag(TagSignature.Vcgt, target);
+                // Act
+                var actual = profile.ReadTag<VideoCardGamma>(TagSignature.Vcgt);
+                var actualRed = actual.Red;
+                var actualGreen = actual.Green;
+                var actualBlue = actual.Blue;
 
-                    // Act
-                    var actual = profile.ReadTag<VideoCardGamma>(TagSignature.Vcgt);
-                    var actualRed = actual.Red;
-                    var actualGreen = actual.Green;
-                    var actualBlue = actual.Blue;
-
-                    // Assert
-                    Assert.IsNotNull(actualRed);
-                    Assert.IsNotNull(actualGreen);
-                    Assert.IsNotNull(actualBlue);
-                }
+                // Assert
+                Assert.IsNotNull(actualRed);
+                Assert.IsNotNull(actualGreen);
+                Assert.IsNotNull(actualBlue);
             }
         }
     }

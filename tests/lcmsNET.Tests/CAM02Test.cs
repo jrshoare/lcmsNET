@@ -80,7 +80,7 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new ViewingConditions
+            ViewingConditions conditions = new()
             {
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
@@ -90,12 +90,11 @@ namespace lcmsNET.Tests
             };
 
             // Act
-            using (var context = Context.Create(plugin, userData))
-            using (var cam02 = CAM02.Create(context, conditions))
-            {
-                // Assert
-                Assert.IsNotNull(cam02);
-            }
+            using var context = Context.Create(plugin, userData);
+            using var cam02 = CAM02.Create(context, conditions);
+
+            // Assert
+            Assert.IsNotNull(cam02);
         }
 
         [TestMethod()]
@@ -104,7 +103,7 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new ViewingConditions
+            ViewingConditions conditions = new()
             {
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
@@ -114,21 +113,20 @@ namespace lcmsNET.Tests
             };
             CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using (var context = Context.Create(plugin, userData))
-            using (var cam02 = CAM02.Create(context, conditions))
-            {
-                // Act
-                cam02.Forward(xyz, out JCh jch);
+            using var context = Context.Create(plugin, userData);
+            using var cam02 = CAM02.Create(context, conditions);
 
-                // Assert
-            }
+            // Act
+            cam02.Forward(xyz, out JCh jch);
+
+            // Assert
         }
 
         [TestMethod()]
         public void ForwardTestDisposed()
         {
             // Arrange
-            ViewingConditions conditions = new ViewingConditions
+            ViewingConditions conditions = new()
             {
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
@@ -138,14 +136,13 @@ namespace lcmsNET.Tests
             };
             CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using (var cam02 = CAM02.Create(null, conditions))
-            {
-                // Act
-                cam02.Dispose();
+            using var cam02 = CAM02.Create(null, conditions);
 
-                // Assert
-                Assert.ThrowsException<ObjectDisposedException>(() => cam02.Forward(xyz, out JCh jch));
-            }
+            // Act
+            cam02.Dispose();
+
+            // Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => cam02.Forward(xyz, out JCh jch));
         }
 
         [TestMethod()]
@@ -154,7 +151,7 @@ namespace lcmsNET.Tests
             // Arrange
             IntPtr plugin = IntPtr.Zero;
             IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new ViewingConditions
+            ViewingConditions conditions = new()
             {
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
@@ -162,25 +159,23 @@ namespace lcmsNET.Tests
                 surround = Surround.Dark,
                 D_value = 0.75
             };
-            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+            CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using (var context = Context.Create(plugin, userData))
-            using (var cam02 = CAM02.Create(context, conditions))
-            {
-                cam02.Forward(xyz, out JCh jch);
+            using var context = Context.Create(plugin, userData);
+            using var cam02 = CAM02.Create(context, conditions);
+            cam02.Forward(xyz, out JCh jch);
 
-                // Act
-                cam02.Reverse(jch, out CIEXYZ xyz2);
+            // Act
+            cam02.Reverse(jch, out CIEXYZ xyz2);
 
-                // Assert
-            }
+            // Assert
         }
 
         [TestMethod()]
         public void ReverseTestDisposed()
         {
             // Arrange
-            ViewingConditions conditions = new ViewingConditions
+            ViewingConditions conditions = new()
             {
                 whitePoint = Colorimetric.D50_XYZ,
                 Yb = 1.0,
@@ -188,18 +183,16 @@ namespace lcmsNET.Tests
                 surround = Surround.Dark,
                 D_value = 0.75
             };
-            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
+            CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using (var cam02 = CAM02.Create(null, conditions))
-            {
-                cam02.Forward(xyz, out JCh jch);
+            using var cam02 = CAM02.Create(null, conditions);
+            cam02.Forward(xyz, out JCh jch);
 
-                // Act
-                cam02.Dispose();
+            // Act
+            cam02.Dispose();
 
-                // Assert
-                Assert.ThrowsException<ObjectDisposedException>(() => cam02.Reverse(jch, out CIEXYZ xyz2));
-            }
+            // Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => cam02.Reverse(jch, out CIEXYZ xyz2));
         }
     }
 }

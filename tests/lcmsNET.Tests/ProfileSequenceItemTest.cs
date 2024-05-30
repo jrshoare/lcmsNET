@@ -81,17 +81,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             uint expected = 0x6A727368;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[1];
-                item.DeviceMfg = expected;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[1];
+            item.DeviceMfg = expected;
 
-                // Act
-                uint actual = item.DeviceMfg;
+            // Act
+            uint actual = item.DeviceMfg;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -101,17 +99,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             uint expected = 0x6A727368;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[0];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[0];
 
-                // Act
-                item.DeviceMfg = expected;
+            // Act
+            item.DeviceMfg = expected;
 
-                // Assert
-                uint actual = item.DeviceMfg;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            uint actual = item.DeviceMfg;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -121,17 +117,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             uint expected = 0x6D6F646C;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[1];
-                item.DeviceModel = expected;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[1];
+            item.DeviceModel = expected;
 
-                // Act
-                uint actual = item.DeviceModel;
+            // Act
+            uint actual = item.DeviceModel;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -141,17 +135,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             uint expected = 0x6D6F646C;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[2];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[2];
 
-                // Act
-                item.DeviceModel = expected;
+            // Act
+            item.DeviceModel = expected;
 
-                // Assert
-                uint actual = item.DeviceModel;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            uint actual = item.DeviceModel;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -161,17 +153,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             DeviceAttributes expected = DeviceAttributes.Transparency | DeviceAttributes.Matte;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[2];
-                item.Attributes = expected;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[2];
+            item.Attributes = expected;
 
-                // Act
-                DeviceAttributes actual = item.Attributes;
+            // Act
+            DeviceAttributes actual = item.Attributes;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -181,17 +171,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             DeviceAttributes expected = DeviceAttributes.Reflective | DeviceAttributes.Matte;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[0];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[0];
 
-                // Act
-                item.Attributes = expected;
+            // Act
+            item.Attributes = expected;
 
-                // Assert
-                DeviceAttributes actual = item.Attributes;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            DeviceAttributes actual = item.Attributes;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -201,17 +189,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             TechnologySignature expected = TechnologySignature.ThermalWaxPrinter;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[2];
-                item.Technology = expected;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[2];
+            item.Technology = expected;
 
-                // Act
-                TechnologySignature actual = item.Technology;
+            // Act
+            TechnologySignature actual = item.Technology;
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -221,17 +207,15 @@ namespace lcmsNET.Tests
             uint nItems = 3;
             TechnologySignature expected = TechnologySignature.ProjectionTelevision;
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[1];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[1];
 
-                // Act
-                item.Technology = expected;
+            // Act
+            item.Technology = expected;
 
-                // Assert
-                TechnologySignature actual = item.Technology;
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            TechnologySignature actual = item.Technology;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -240,20 +224,18 @@ namespace lcmsNET.Tests
             // Arrange
             uint nItems = 3;
 
-            using (var profile = Profile.CreatePlaceholder(null))
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[2];
-                profile.ComputeMD5();
-                byte[] expected = profile.HeaderProfileID;
-                item.ProfileID = expected;
+            using var profile = Profile.CreatePlaceholder(null);
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[2];
+            profile.ComputeMD5();
+            byte[] expected = profile.HeaderProfileID;
+            item.ProfileID = expected;
 
-                // Act
-                byte[] actual = item.ProfileID;
+            // Act
+            byte[] actual = item.ProfileID;
 
-                // Assert
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -262,20 +244,18 @@ namespace lcmsNET.Tests
             // Arrange
             uint nItems = 3;
 
-            using (var profile = Profile.CreatePlaceholder(null))
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            {
-                ProfileSequenceItem item = psd[2];
-                profile.ComputeMD5();
-                byte[] expected = profile.HeaderProfileID;
+            using var profile = Profile.CreatePlaceholder(null);
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            ProfileSequenceItem item = psd[2];
+            profile.ComputeMD5();
+            byte[] expected = profile.HeaderProfileID;
 
-                // Act
-                item.ProfileID = expected;
+            // Act
+            item.ProfileID = expected;
 
-                // Assert
-                byte[] actual = item.ProfileID;
-                CollectionAssert.AreEqual(expected, actual);
-            }
+            // Assert
+            byte[] actual = item.ProfileID;
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -287,19 +267,17 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Manufacturer";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[1];
-                item.Manufacturer = mlu;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[1];
+            item.Manufacturer = mlu;
 
-                // Act
-                string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
+            // Act
+            string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -311,20 +289,18 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Manufacturer";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[0];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[0];
 
-                // Act
-                item.Manufacturer = mlu;
+            // Act
+            item.Manufacturer = mlu;
 
-                // Assert
-                Assert.IsTrue(mlu.IsClosed);
-                string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.IsTrue(mlu.IsClosed);
+            string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -336,19 +312,17 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Model";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[2];
-                item.Model = mlu;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[2];
+            item.Model = mlu;
 
-                // Act
-                string actual = item.Model.GetASCII(languageCode, countryCode);
+            // Act
+            string actual = item.Model.GetASCII(languageCode, countryCode);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -360,20 +334,18 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Model";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[1];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[1];
 
-                // Act
-                item.Model = mlu;
+            // Act
+            item.Model = mlu;
 
-                // Assert
-                Assert.IsTrue(mlu.IsClosed);
-                string actual = item.Model.GetASCII(languageCode, countryCode);
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.IsTrue(mlu.IsClosed);
+            string actual = item.Model.GetASCII(languageCode, countryCode);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -385,19 +357,17 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Description";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[0];
-                item.Description = mlu;
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[0];
+            item.Description = mlu;
 
-                // Act
-                string actual = item.Description.GetASCII(languageCode, countryCode);
+            // Act
+            string actual = item.Description.GetASCII(languageCode, countryCode);
 
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
@@ -409,20 +379,18 @@ namespace lcmsNET.Tests
             string countryCode = "US";
             string expected = "Description";
 
-            using (var psd = ProfileSequenceDescriptor.Create(null, nItems))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 1))
-            {
-                mlu.SetASCII(languageCode, countryCode, expected);
-                ProfileSequenceItem item = psd[2];
+            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var mlu = MultiLocalizedUnicode.Create(null, 1);
+            mlu.SetASCII(languageCode, countryCode, expected);
+            ProfileSequenceItem item = psd[2];
 
-                // Act
-                item.Description = mlu;
+            // Act
+            item.Description = mlu;
 
-                // Assert
-                Assert.IsTrue(mlu.IsClosed);
-                string actual = item.Description.GetASCII(languageCode, countryCode);
-                Assert.AreEqual(expected, actual);
-            }
+            // Assert
+            Assert.IsTrue(mlu.IsClosed);
+            string actual = item.Description.GetASCII(languageCode, countryCode);
+            Assert.AreEqual(expected, actual);
         }
     }
 }
