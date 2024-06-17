@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
@@ -27,89 +28,37 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class ToneCurveTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void EvaluateTest()
+        public void Evaluate_WhenValid_ShouldEvaluateFloatingPointNumber()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 1.0;
+            const float delta = 1 / 65535.0f;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 1.0);
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
             for (ushort i = 0; i < ushort.MaxValue; i++)
             {
                 float f = i / 65535.0f;
-                float actual = toneCurve.Evaluate(f);
+
+                // Act
+                float actual = sut.Evaluate(f);
 
                 // Assert
-                Assert.AreEqual(f, actual, 1 / 65535.0f);
+                Assert.AreEqual(f, actual, delta);
             }
         }
 
         [TestMethod()]
-        public void EvaluateTest2()
+        public void Evaluate_WhenValid_ShouldEvaluate16BitNumber()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 1.0;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 1.0);
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
             for (ushort i = 0; i < ushort.MaxValue; i++)
             {
-                ushort actual = toneCurve.Evaluate(i);
+                // Act
+                ushort actual = sut.Evaluate(i);
 
                 // Assert
                 Assert.AreEqual(i, actual);
@@ -117,426 +66,273 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void BuildParametricTest()
+        public void BuildParametric_WhenInvoked_ShouldReturnParametricCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            int type = 4;
             double[] parameters = [2.4, 1.0 / 1.055, 0.055 / 1.055, 1.0 / 12.92, 0.04045];
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildParametric(context, type, parameters);
+            using var sut = ToneCurve.BuildParametric(context, type: 4, parameters);
 
             // Assert
-            Assert.IsNotNull(toneCurve);
+            Assert.IsNotNull(sut);
         }
 
         [TestMethod()]
-        public void BuildGammaTest()
+        public void BuildGamma_WhenInvoked_ShouldReturnGammaCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Assert
-            Assert.IsNotNull(toneCurve);
+            Assert.IsNotNull(sut);
         }
 
         [TestMethod()]
-        public void BuildSegmentedTest()
+        public void BuildSegmented_WhenInvoked_ShouldReturnSegmentedCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             float[] sampled = [0.0f, 1.0f];
-            GCHandle hSampled = GCHandle.Alloc(sampled, GCHandleType.Pinned);
-            IntPtr ptrSampled = hSampled.AddrOfPinnedObject();
 
-            try
+            MemoryUtils.UsingPinnedMemory(sampled, (pSampled) =>
             {
-                CurveSegment[] segments =
-                [
-                    new() {
-                        x0 = -1e22f,
-                        x1 = 1.0f,
-                        type = 6,
-                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        nGridPoints = 0,
-                        sampledPoints = IntPtr.Zero
-                    },
-                    new() {
-                        x0 = 0.0f,
-                        x1 = 1.0f,
-                        type = 0,
-                        parameters = new double[10],
-                        nGridPoints = 2,
-                        sampledPoints = ptrSampled
-                    },
-                    new() {
-                        x0 = 1.0f,
-                        x1 = -1e22f,
-                        type = 6,
-                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        nGridPoints = 0,
-                        sampledPoints = IntPtr.Zero
-                    }
-                ];
+                CurveSegment[] segments = ToneCurveUtils.CreateCurveSegments(pSampled);
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var toneCurve = ToneCurve.BuildSegmented(context, segments);
+                using var sut = ToneCurve.BuildSegmented(context, segments);
 
                 // Assert
-                Assert.IsNotNull(toneCurve);
-            }
-            finally
-            {
-                hSampled.Free();
-            }
+                Assert.IsNotNull(sut);
+            });
         }
 
         [TestMethod()]
-        public void BuildTabulatedTest()
+        public void BuildTabulated_WhenInvoked_ShouldCreateFromSupplied16BitArray()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             ushort[] values = [0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff];
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildTabulated(context, values);
+            using var sut = ToneCurve.BuildTabulated(context, values);
 
             // Assert
-            Assert.IsNotNull(toneCurve);
+            Assert.IsNotNull(sut);
         }
 
         [TestMethod()]
-        public void BuildTabulatedTest2()
+        public void BuildTabulated_WhenInvoked_ShouldCreateFromSuppliedFloatingPointArray()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            float[] values = new float[1025];
+            using var context = ContextUtils.CreateContext();
             const double gamma = 2.2;
+
+            float[] values = new float[1025];
             for (int i = 0; i <= 1024; i++)
             {
-                double d = i / 1024.0;
-                values[i] = (float)Math.Pow(d, gamma);
+                values[i] = (float)Math.Pow(i / 1024.0, gamma);
             }
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildTabulated(context, values);
+            using var sut = ToneCurve.BuildTabulated(context, values);
 
             // Assert
-            Assert.IsNotNull(toneCurve);
+            Assert.IsNotNull(sut);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            using var duplicate = toneCurve.Duplicate();
+            using var duplicate = sut.Duplicate();
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.AreNotEqual(sut, duplicate);
         }
 
         [TestMethod()]
-        public void ReverseTest()
+        public void Reverse_WhenInvoked_ShouldReturnInverse()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            using var duplicate = toneCurve.Reverse();
+            using var reversed = sut.Reverse();
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.AreNotEqual(sut, reversed);
         }
 
         [TestMethod()]
-        public void ReverseTest2()
+        public void Reverse_WhenInvokedWithNumberOfSamples_ShouldReturnInverseOrTabulatedCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            using var duplicate = toneCurve.Reverse(4096);
+            using var reversed = sut.Reverse(4096);
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.AreNotEqual(sut, reversed);
         }
 
         [TestMethod()]
-        public void JoinTest()
+        public void Join_WhenInvoked_ShouldReturnComposite()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 3.0;
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var forward = ToneCurve.BuildGamma(context, gamma);
-            using var reverse = ToneCurve.BuildGamma(context, gamma);
-            using var joined = forward.Join(context, reverse, 256);
+            using var toneCurve1 = ToneCurve.BuildGamma(context, gamma: 3.0);
+            using var toneCurve2 = ToneCurve.BuildGamma(context, gamma: 3.0);
+            using var sut = toneCurve1.Join(context, toneCurve2, 256);
 
             // Assert
-            Assert.IsNotNull(joined);
+            Assert.IsNotNull(sut);
         }
 
         [TestMethod()]
-        public void SmoothTest()
+        public void Smooth_WhenInvoked_ShouldSmoothCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            ushort[] values = [0, 0, 0, 0, 0, 0x5555, 0x6666, 0x7777, 0x8888, 0x9999, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff];
+            using var context = ContextUtils.CreateContext();
+            ushort[] values = [0, 0xffff];
+            using var sut = ToneCurve.BuildTabulated(context, values);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildTabulated(context, values);
-            var smoothed = toneCurve.Smooth(1.0);
+            var smoothed = sut.Smooth(1.0);
 
             // Assert
+            Assert.IsTrue(smoothed);
         }
 
         [TestMethod()]
-        public void IsMultisegmentTest()
+        public void IsMultiSegment_WhenSingleSegment_ShouldReturnFalse()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            var isMultiSegment = toneCurve.IsMultisegment;
+            var isMultiSegment = sut.IsMultisegment;
 
             // Assert
             Assert.IsFalse(isMultiSegment);
         }
 
         [TestMethod()]
-        public void IsLinearTest()
+        public void IsLinear_WhenNonLinear_ShouldReturnFalse()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            var isLinear = toneCurve.IsLinear;
+            var isLinear = sut.IsLinear;
 
             // Assert
             Assert.IsFalse(isLinear);
         }
 
         [TestMethod()]
-        public void IsMonotonicTest()
+        public void IsMonotonic_WhenIsMonotonic_ShouldReturnTrue()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            var isMonotonic = toneCurve.IsMonotonic;
+            var isMonotonic = sut.IsMonotonic;
 
             // Assert
             Assert.IsTrue(isMonotonic);
         }
 
         [TestMethod()]
-        public void IsDescendingTest()
+        public void IsDescending_WhenNotDescending_ShouldReturnFalse()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            var isDescending = toneCurve.IsDescending;
+            var isDescending = sut.IsDescending;
 
             // Assert
             Assert.IsFalse(isDescending);
         }
 
         [TestMethod()]
-        public void EstimateGammaTest()
+        public void EstimateGamma_WhenInvoked_ShouldEstimateApparentGammaOfCurve()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             double expected = 2.2;
+            using var sut = ToneCurve.BuildGamma(context, gamma: expected);
             double precision = 0.01;
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, expected);
-            var actual = toneCurve.EstimateGamma(precision);
+            var actual = sut.EstimateGamma(precision);
 
             // Assert
             Assert.AreEqual(expected, actual, precision);
         }
 
         [TestMethod()]
-        public void EstimatedTableEntriesTest()
+        public void EstimatedTableEntries_WhenInvokedForGammaCurve_ShouldBeNonZero()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
             uint notExpected = 0;
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            var actual = toneCurve.EstimatedTableEntries;
+            var actual = sut.EstimatedTableEntries;
 
             // Assert
             Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
-        public void EstimatedTableTest()
+        public void EstimatedTable_WhenInvokedForGamma_ShouldBeNonZeroPointer()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            double gamma = 2.2;
+            using var context = ContextUtils.CreateContext();
+            using var sut = ToneCurve.BuildGamma(context, gamma: 2.2);
             IntPtr notExpected = IntPtr.Zero;
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, gamma);
-            IntPtr actual = toneCurve.EstimatedTable;
+            IntPtr actual = sut.EstimatedTable;
 
             // Assert
             Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
-        public void FromHandleTest()
+        public void GetCurveSegment_WhenInvoked_ShouldGetCurveSegmentAtIndex()
         {
             // Arrange
-            double expected = 2.2;
-            double precision = 0.01;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var toneCurve = ToneCurve.BuildGamma(null, expected))
-            {
-                profile.WriteTag(TagSignature.RedTRC, toneCurve);
-            }
-
-            // Act
-            using var roToneCurve = profile.ReadTag<ToneCurve>(TagSignature.RedTRC);
-
-            // Assert
-            var actual = roToneCurve.EstimateGamma(precision);
-            Assert.AreEqual(expected, actual, precision);
-        }
-
-        [TestMethod()]
-        public void ReadTagTest()
-        {
-            // Arrange
-            double expected = 2.2;
-            double precision = 0.01;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var toneCurve = ToneCurve.BuildGamma(null, expected))
-            {
-                profile.WriteTag(TagSignature.RedTRC, toneCurve);
-            }
-
-            // Act
-            using var toneCurve2 = profile.ReadTag<ToneCurve>(TagSignature.RedTRC);
-
-            // Assert
-            var actual = toneCurve2.EstimateGamma(precision);
-            Assert.AreEqual(expected, actual, precision);
-        }
-
-        [TestMethod()]
-        public void GetCurveSegmentTest()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             float[] sampled = [0.0f, 1.0f];
-            GCHandle hSampled = GCHandle.Alloc(sampled, GCHandleType.Pinned);
-            IntPtr ptrSampled = hSampled.AddrOfPinnedObject();
-            int segmentIndex = 1;
 
-            try
+            MemoryUtils.UsingPinnedMemory(sampled, (pSampled) =>
             {
-                CurveSegment[] segments =
-                [
-                    new CurveSegment
-                    {
-                        x0 = -1e22f,
-                        x1 = 1.0f,
-                        type = 6,
-                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        nGridPoints = 0,
-                        sampledPoints = IntPtr.Zero
-                    },
-                    new CurveSegment
-                    {
-                        x0 = 0.0f,
-                        x1 = 1.0f,
-                        type = 0,
-                        parameters = new double[10],
-                        nGridPoints = 2,
-                        sampledPoints = ptrSampled
-                    },
-                    new CurveSegment
-                    {
-                        x0 = 1.0f,
-                        x1 = -1e22f,
-                        type = 6,
-                        parameters = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        nGridPoints = 0,
-                        sampledPoints = IntPtr.Zero
-                    }
-                ];
+                CurveSegment[] segments = ToneCurveUtils.CreateCurveSegments(pSampled);
+                using var sut = ToneCurve.BuildSegmented(context, segments);
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var toneCurve = ToneCurve.BuildSegmented(context, segments);
-                CurveSegment curveSegment = toneCurve.GetCurveSegment(segmentIndex);
+                CurveSegment curveSegment = sut.GetCurveSegment(segmentIndex: 1);
                 var x0 = curveSegment.x0;
                 var x1 = curveSegment.x1;
                 var type = curveSegment.type;
@@ -545,31 +341,23 @@ namespace lcmsNET.Tests
                 var sampledPoints = curveSegment.sampledPoints;
 
                 // Assert
-                Assert.AreEqual(segments[segmentIndex].x0, x0);
-                Assert.AreEqual(segments[segmentIndex].x1, x1);
-                Assert.AreEqual(segments[segmentIndex].type, type);
-                CollectionAssert.AreEqual(segments[segmentIndex].parameters, parameters);
-                Assert.AreEqual(segments[segmentIndex].nGridPoints, nGridPoints);
+                Assert.AreEqual(segments[1].x0, x0);
+                Assert.AreEqual(segments[1].x1, x1);
+                Assert.AreEqual(segments[1].type, type);
+                CollectionAssert.AreEqual(segments[1].parameters, parameters);
+                Assert.AreEqual(segments[1].nGridPoints, nGridPoints);
                 if (type == 0)
                 {
                     unsafe
                     {
-                        float *points = (float*)sampledPoints.ToPointer();
+                        float* points = (float*)sampledPoints.ToPointer();
                         for (var i = 0; i < nGridPoints; i++)
                         {
                             Assert.AreEqual(sampled[i], points[i]);
                         }
                     }
                 }
-            }
-            catch (EntryPointNotFoundException)
-            {
-                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
-            }
-            finally
-            {
-                hSampled.Free();
-            }
+            });
         }
     }
 }

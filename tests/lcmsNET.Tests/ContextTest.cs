@@ -19,8 +19,10 @@
 // SOFTWARE.
 
 using lcmsNET.Plugin;
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
@@ -46,80 +48,56 @@ namespace lcmsNET.Tests
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
             // Act
-            using var context = Context.Create(plugin, userData);
+            using var sut = ContextUtils.CreateContext();
 
             // Assert
-            Assert.IsNotNull(context);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            IntPtr userData = Constants.Context.UserData;
+            using var sut = ContextUtils.CreateContext();
+            sut.Dispose();
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var duplicate = context.Duplicate(userData);
-
-            // Assert
-            Assert.IsNotNull(duplicate);
-            Assert.AreNotSame(duplicate, context);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate(userData));
         }
 
         [TestMethod()]
-        public void GetUserDataTest()
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
+            IntPtr userData = Constants.Context.UserData;
+            using var sut = ContextUtils.CreateContext();
+
+            // Act
+            using var duplicate = sut.Duplicate(userData);
+
+            // Assert
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void UserData_WhenGetting_ShouldReturnDataUsedToInstantiate()
+        {
+            // Arrange
+            IntPtr plugin = Constants.Context.Plugin;
             byte[] bytes = [0xff, 0xaa, 0xdd, 0xee];
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             IntPtr expected = handle.AddrOfPinnedObject();
             try
             {
-                using var context = Context.Create(plugin, expected);
+                using var sut = Context.Create(plugin, expected);
 
                 // Act
-                IntPtr actual = context.UserData;
+                IntPtr actual = sut.UserData;
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -131,26 +109,10 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetUserDataTest2()
+        public void UserData_WhenDisposed_ShouldReturnZeroIntPtr()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr expected = IntPtr.Zero;
-
-            using var context = Context.Create(plugin, expected);
-
-            // Act
-            IntPtr actual = context.UserData;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void GetUserDataTestDisposed()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
+            IntPtr plugin = Constants.Context.Plugin;
             byte[] bytes = [0xff, 0xaa, 0xdd, 0xee];
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
             IntPtr userData = handle.AddrOfPinnedObject();
@@ -160,11 +122,11 @@ namespace lcmsNET.Tests
             IntPtr expected = IntPtr.Zero;
             try
             {
-                using var context = Context.Create(plugin, userData);
-                context.Dispose();
+                using var sut = Context.Create(plugin, userData);
+                sut.Dispose();
 
                 // Act
-                IntPtr actual = context.UserData;
+                IntPtr actual = sut.UserData;
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -176,68 +138,36 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void IDTest()
+        public void ID_WhenGetting_ShouldReturnNonZeroIntPtr()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
             IntPtr notExpected = IntPtr.Zero;
+            using var sut = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            IntPtr actual = context.ID;
+            IntPtr actual = sut.ID;
 
             // Assert
             Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
-        public void RegisterPluginsTest()
+        public void RegisterPlugins_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             try
             {
                 // Arrange
-                IntPtr plugin = IntPtr.Zero;
-                IntPtr userData = IntPtr.Zero;
+                using var sut = ContextUtils.CreateContext();
+                sut.Dispose();
 
-                // Act
-                using var context = Context.Create(plugin, userData);
-                PluginTag tag = new PluginTag
-                {
-                    Base = new PluginBase
-                    {
-                        Magic = Cms.PluginMagicNumber,
-                        ExpectedVersion = (uint)Cms.EncodedCMMVersion,    // >= 2.8
-                        Type = PluginType.Tag,
-                        Next = IntPtr.Zero
-                    },
-                    Signature = (TagSignature)0x696e6b63,   // 'inkc'
-                    Descriptor = new TagDescriptor
-                    {
-                        ElemCount = 1,
-                        nSupportedTypes = 1,
-                        SupportedTypes = new TagTypeSignature[TagDescriptor.MAX_TYPES_IN_LCMS_PLUGIN],
-                        Decider = IntPtr.Zero
-                    }
-                };
+                var tag = PluginTagUtils.CreatePluginTag();
                 tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;
 
-                int rawsize = Marshal.SizeOf(tag);
-                IntPtr buffer = Marshal.AllocHGlobal(rawsize);
-                Marshal.StructureToPtr(tag, buffer, false);
-                try
+                MemoryUtils.UsingMemoryFor(tag, (plugin) =>
                 {
-                    var registered = context.RegisterPlugins(buffer);
-
-                    // Assert
-                    Assert.IsTrue(registered);
-                }
-                finally
-                {
-                    context.UnregisterPlugins();
-                    Marshal.DestroyStructure(buffer, typeof(PluginTag));
-                    Marshal.FreeHGlobal(buffer);
-                }
+                    // Act & Assert
+                    Assert.ThrowsException<ObjectDisposedException>(() => sut.RegisterPlugins(plugin));
+                });
             }
             catch (EntryPointNotFoundException)
             {
@@ -246,39 +176,65 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void UnregisterPluginsTest()
+        public void RegisterPlugins_WhenInvoked_ShouldSucceed()
         {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            try
+            {
+                // Arrange
+                using var sut = ContextUtils.CreateContext();
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            context.UnregisterPlugins();
+                var tag = PluginTagUtils.CreatePluginTag();
+                tag.Descriptor.SupportedTypes[0] = TagTypeSignature.Lut16;
 
-            // Assert
+                MemoryUtils.UsingMemoryFor(tag, (plugin) =>
+                {
+                    // Act
+                    var registered = sut.RegisterPlugins(plugin);
+
+                    // tidy up
+                    sut.UnregisterPlugins();
+
+                    // Assert
+                    Assert.IsTrue(registered);
+                });
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.8 or later.");
+            }
         }
 
         [TestMethod()]
-        public void SetErrorHandlerTest()
+        public void UnregisterPlugins_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var sut = ContextUtils.CreateContext();
+            sut.Dispose();
 
-            using var context = Context.Create(plugin, userData);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.UnregisterPlugins());
+        }
+
+        [TestMethod()]
+        public void UnregisterPlugins_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
 
             // Act
-            context.SetErrorHandler(HandleError);
+            sut.UnregisterPlugins();
+        }
 
-            TestContext.WriteLine($"context.ID: {context.ID}");
-            // force error to observe output in Test Explorer results window for this test
-            try { Profile.Open(context, @"???", "r"); } catch { }
+        [TestMethod()]
+        public void SetErrorHandler_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            sut.Dispose();
 
-            // restore default error handler
-            context.SetErrorHandler(null);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.SetErrorHandler(HandleError));
 
-            // Assert
             void HandleError(IntPtr contextID, int errorCode, string errorText)
             {
                 TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
@@ -286,56 +242,142 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void AlarmCodesTest()
+        public void SetErrorHandler_WhenError_ShouldInvokeHandler()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            using var context = Context.Create(plugin, userData);
-            ushort[] alarmCodes = [10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678];
+            bool handlerInvoked = false;
+            using var sut = ContextUtils.CreateContext();
 
             // Act
-            context.AlarmCodes = alarmCodes;
-            var values = context.AlarmCodes;
+            sut.SetErrorHandler(HandleError);
+
+            // force error to observe output in Test Explorer results window for this test
+            try { Profile.Open(sut, @"???", "r"); } catch { }
+
+            // restore default error handler
+            sut.SetErrorHandler(null);
 
             // Assert
-            for (int i = 0; i < alarmCodes.Length; i++)
+            Assert.IsTrue(handlerInvoked);
+
+            void HandleError(IntPtr contextID, int errorCode, string errorText)
             {
-                Assert.AreEqual(alarmCodes[i], values[i]);
+                handlerInvoked = true;
+                TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
             }
         }
 
         [TestMethod()]
-        public void AdaptationStateTest()
+        public void AlarmCodes_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            using var context = Context.Create(plugin, userData);
-            double expected = 0.53;
+            using var sut = ContextUtils.CreateContext();
+            ushort[] expected = Constants.Context.AlarmCodes;
 
             // Act
-            context.AdaptationState = expected;
+            sut.AlarmCodes = expected;
+            var actual = sut.AlarmCodes;
 
             // Assert
-            double actual = context.AdaptationState;
-            Assert.AreEqual(expected, actual);
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void SupportedIntentsTest()
+        public void AlarmCodes_WhenGettingDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+            using var sut = ContextUtils.CreateContext();
+            sut.AlarmCodes = Constants.Context.AlarmCodes;
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => { var alarmCode = sut.AlarmCodes; } );
+        }
+
+        [TestMethod()]
+        public void AlarmCodes_WhenSettingDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.AlarmCodes = Constants.Context.AlarmCodes);
+        }
+
+        [TestMethod()]
+        public void AlarmCodes_WhenSettingNullArray_ShouldThrowArgumentException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            ushort[] alarmCodes = null;
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.AlarmCodes = alarmCodes);
+        }
+
+        [TestMethod()]
+        public void AlarmCodes_WhenSettingIncorrectArrayLength_ShouldThrowArgumentException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            ushort[] alarmCodes = [0, 1, 2, 3, 4];
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.AlarmCodes = alarmCodes);
+        }
+
+        [TestMethod()]
+        public void AdaptationState_WhenRoundTripped_ShouldHaveValueSet()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            double expected = 0.53;
+
+            // Act
+            sut.AdaptationState = expected;
+            var actual = sut.AdaptationState;
+
+            // Assert
+            Assert.AreEqual(expected, actual, double.Epsilon);
+        }
+
+        [TestMethod()]
+        public void AdaptationState_WhenGettingDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            sut.AdaptationState = 0.47;
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => { var adaptationState = sut.AdaptationState; });
+        }
+
+        [TestMethod()]
+        public void AdaptationState_WhenSettingDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.AdaptationState = 0.49);
+        }
+
+        [TestMethod()]
+        public void SupportedIntents_WhenInvoked_ShouldReturnNonEmptyCollection()
+        {
+            // Arrange
+            using var sut = ContextUtils.CreateContext();
             try
             {
                 // Act
-                var supportedIntents = context.SupportedIntents;
+                var supportedIntents = sut.SupportedIntents;
 
                 // Assert
                 Assert.IsNotNull(supportedIntents);
+                Assert.AreNotEqual(0, supportedIntents.Count());
 
                 foreach (var (code, description) in supportedIntents)
                 {

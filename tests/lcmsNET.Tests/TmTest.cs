@@ -27,87 +27,33 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class TmTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void ConstructorTest()
+        public void Tm_WhenInstantiatedFromDateTime_ShouldHaveValuesSet()
         {
             // Arrange
-            var year = 2021;
-            var month = 1;
-            var day = 8;
-            var hour = 10;
-            var minute = 4;
-            var second = 32;
             var date = new DateTime(2021, 1, 8, 10, 4, 32);
-
-            // Act
-            var target = new Tm(date);
-            var expectedYear = year - 1900;
-            var expectedMon = month - 1;
-            var expectedMday = day;
-            var expectedHour = hour;
-            var expectedMin = minute;
-            var expectedSec = second;
+            var expectedYear = date.Year - 1900;
+            var expectedMon = date.Month - 1;
+            var expectedMday = date.Day;
+            var expectedHour = date.Hour;
+            var expectedMin = date.Minute;
+            var expectedSec = date.Second;
             var expectedWday = (int)date.DayOfWeek;
             var expectedYday = date.DayOfYear - 1;
 
+            // Act
+            var sut = new Tm(date);
+
             // Assert
-            var actualYear = target.year;
-            var actualMon = target.mon;
-            var actualMday = target.mday;
-            var actualHour = target.hour;
-            var actualMin = target.min;
-            var actualSec = target.sec;
-            var actualWday = target.wday;
-            var actualYday = target.yday;
-            var actualIsdst = target.isdst;
+            var actualYear = sut.year;
+            var actualMon = sut.mon;
+            var actualMday = sut.mday;
+            var actualHour = sut.hour;
+            var actualMin = sut.min;
+            var actualSec = sut.sec;
+            var actualWday = sut.wday;
+            var actualYday = sut.yday;
+            var actualIsdst = sut.isdst;
 
             Assert.AreEqual(expectedYear, actualYear);
             Assert.AreEqual(expectedMon, actualMon);
@@ -121,7 +67,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ConstructorTest2()
+        public void Tm_WhenInstantiatedFromDateTimeNumber_ShouldHaveValuesSet()
         {
             // Arrange
             ushort year = 2021;
@@ -139,8 +85,6 @@ namespace lcmsNET.Tests
                 minutes = BinaryPrimitives.ReverseEndianness(minute),
                 seconds = BinaryPrimitives.ReverseEndianness(second)
             };
-
-            var target = new Tm(date);
             var expectedYear = year - 1900;
             var expectedMon = month - 1;
             var expectedMday = day;
@@ -151,16 +95,19 @@ namespace lcmsNET.Tests
             var expectedYday = -1;
             var expectedIsDst = 0;
 
+            // Act
+            var sut = new Tm(date);
+
             // Assert
-            var actualYear = target.year;
-            var actualMon = target.mon;
-            var actualMday = target.mday;
-            var actualHour = target.hour;
-            var actualMin = target.min;
-            var actualSec = target.sec;
-            var actualWday = target.wday;
-            var actualYday = target.yday;
-            var actualIsDst = target.isdst;
+            var actualYear = sut.year;
+            var actualMon = sut.mon;
+            var actualMday = sut.mday;
+            var actualHour = sut.hour;
+            var actualMin = sut.min;
+            var actualSec = sut.sec;
+            var actualWday = sut.wday;
+            var actualYday = sut.yday;
+            var actualIsDst = sut.isdst;
 
             Assert.AreEqual(expectedYear, actualYear);
             Assert.AreEqual(expectedMon, actualMon);
@@ -174,48 +121,28 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void OperatorDateTimeTest()
+        public void ImplicitOperatorDateTime_WhenInvoked_ShouldConvertToDateTime()
         {
             // Arrange
             var expected = new DateTime(2021, 1, 8, 10, 4, 32);
-            var target = new Tm(expected);
+            var sut = new Tm(expected);
 
             // Act
-            DateTime actual = target;
+            DateTime actual = sut;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
-            using var profile = Profile.CreatePlaceholder(context);
-            var expected = new DateTime(2021, 1, 8, 10, 4, 32);
-            Tm tm = new(expected);
-
-            profile.WriteTag(TagSignature.CalibrationDateTime, tm);
-
-            // Act
-            // implicit call to FromHandle
-            var target = profile.ReadTag<Tm>(TagSignature.CalibrationDateTime);
-            DateTime actual = target;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void OperatorDateTimeNumberTest()
+        public void ImplicitOperatorDateTimeNumber_WhenInvoked_ShouldConvertToDateTimeNumber()
         {
             // Arrange
             var expected = new DateTime(2022, 08, 03, 11, 49, 53);
-            Tm target = new(expected);
+            Tm sut = new(expected);
 
             // Act
-            DateTimeNumber actual = target;
+            DateTimeNumber actual = sut;
 
             // Assert
             Assert.AreEqual(expected.Year, BinaryPrimitives.ReverseEndianness(actual.year));

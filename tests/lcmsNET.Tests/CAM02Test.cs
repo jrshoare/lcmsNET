@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -26,173 +27,109 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class CAM02Test
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new()
-            {
-                whitePoint = Colorimetric.D50_XYZ,
-                Yb = 1.0,
-                La = 0.0,
-                surround = Surround.Dark,
-                D_value = 0.75
-            };
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var cam02 = CAM02.Create(context, conditions);
+            using var sut = CAM02.Create(context, conditions);
 
             // Assert
-            Assert.IsNotNull(cam02);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void ForwardTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new()
-            {
-                whitePoint = Colorimetric.D50_XYZ,
-                Yb = 1.0,
-                La = 0.0,
-                surround = Surround.Dark,
-                D_value = 0.75
-            };
-            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
-
-            using var context = Context.Create(plugin, userData);
-            using var cam02 = CAM02.Create(context, conditions);
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            cam02.Forward(xyz, out JCh jch);
+            using var sut = CAM02.Create(expected, conditions);
+            var actual = sut.Context;
 
             // Assert
+            Assert.AreSame(expected, actual);
         }
 
         [TestMethod()]
-        public void ForwardTestDisposed()
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
         {
             // Arrange
-            ViewingConditions conditions = new()
-            {
-                whitePoint = Colorimetric.D50_XYZ,
-                Yb = 1.0,
-                La = 0.0,
-                surround = Surround.Dark,
-                D_value = 0.75
-            };
-            CIEXYZ xyz = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
-
-            using var cam02 = CAM02.Create(null, conditions);
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
 
             // Act
-            cam02.Dispose();
+            using var sut = CAM02.Create(null, conditions);
+            var actual = sut.Context;
 
             // Assert
-            Assert.ThrowsException<ObjectDisposedException>(() => cam02.Forward(xyz, out JCh jch));
+            Assert.IsNull(actual);
         }
 
         [TestMethod()]
-        public void ReverseTest()
+        public void Forward_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            ViewingConditions conditions = new()
-            {
-                whitePoint = Colorimetric.D50_XYZ,
-                Yb = 1.0,
-                La = 0.0,
-                surround = Surround.Dark,
-                D_value = 0.75
-            };
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
             CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using var context = Context.Create(plugin, userData);
-            using var cam02 = CAM02.Create(context, conditions);
-            cam02.Forward(xyz, out JCh jch);
+            var sut = CAM02.Create(null, conditions);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Forward(xyz, out JCh jch));
+        }
+
+        [TestMethod()]
+        public void Forward_WhenNotDisposed_ShouldEvaluateModelInForwardDirection()
+        {
+            // Arrange
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
+            CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
+
+            using var context = ContextUtils.CreateContext();
+            using var sut = CAM02.Create(context, conditions);
 
             // Act
-            cam02.Reverse(jch, out CIEXYZ xyz2);
+            sut.Forward(xyz, out JCh jch);
 
             // Assert
         }
 
         [TestMethod()]
-        public void ReverseTestDisposed()
+        public void Reverse_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            ViewingConditions conditions = new()
-            {
-                whitePoint = Colorimetric.D50_XYZ,
-                Yb = 1.0,
-                La = 0.0,
-                surround = Surround.Dark,
-                D_value = 0.75
-            };
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
             CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
 
-            using var cam02 = CAM02.Create(null, conditions);
-            cam02.Forward(xyz, out JCh jch);
+            using var sut = CAM02.Create(null, conditions);
+            sut.Forward(xyz, out JCh jch);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Reverse(jch, out CIEXYZ xyz2));
+        }
+
+        [TestMethod()]
+        public void Reverse_WhenNotDisposed_ShouldEvaluateModelInReverseDirection()
+        {
+            // Arrange
+            var conditions = ViewingConditionsUtils.CreateViewingConditions();
+            CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
+
+            using var context = ContextUtils.CreateContext();
+            using var sut = CAM02.Create(context, conditions);
+            sut.Forward(xyz, out JCh jch);
 
             // Act
-            cam02.Dispose();
+            sut.Reverse(jch, out CIEXYZ xyz2);
 
             // Assert
-            Assert.ThrowsException<ObjectDisposedException>(() => cam02.Reverse(jch, out CIEXYZ xyz2));
         }
     }
 }

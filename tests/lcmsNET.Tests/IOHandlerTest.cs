@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
@@ -29,104 +29,37 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class IOHandlerTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
-        /// <summary>
-        /// Extracts the named resource and saves to the specified file path.
-        /// </summary>
-        /// <param name="resourceName"></param>
-        /// <param name="path"></param>
-        private static void Save(string resourceName, string path)
-        {
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
-            using var fs = File.Create(path);
-            s.CopyTo(fs);
-        }
-
         [TestMethod()]
-        public void OpenTest()
+        public void Open_WhenInstantiatedForVoid_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var iohandler = IOHandler.Open(context);
+            using var sut = IOHandler.Open(context);
 
             // Assert
-            Assert.IsNotNull(iohandler);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void OpenTest2()
+        public void Open_WhenInstantiatedFromFile_ShouldHaveValidHandle()
         {
             // Arrange
             var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
             Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
 
             try
             {
                 var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
+                ResourceUtils.Save(".Resources.sRGB.icc", srgbpath);
+                using var context = ContextUtils.CreateContext();
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var iohandler = IOHandler.Open(context, srgbpath, "r");
+                using var sut = IOHandler.Open(context, srgbpath, "r");
 
                 // Assert
-                Assert.IsNotNull(iohandler);
+                Assert.IsFalse(sut.IsInvalid);
             }
             finally
             {
@@ -135,358 +68,319 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod]
-        public void OpenTest3()
+        public void Open_WhenInstantiatedFromMemory_ShouldHaveValidHandle()
         {
             // Arrange
             uint memorySize = 100;
-            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
-
-            try
+            MemoryUtils.UsingMemory((int)memorySize, (hglobal) =>
             {
                 // Act
-                using var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r");
+                using var sut = IOHandler.Open(context: null, hglobal, memorySize, "r");
 
                 // Assert
-                Assert.IsNotNull(iohandler);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(hglobal);
-            }
+                Assert.IsFalse(sut.IsInvalid);
+            });
         }
 
         [TestMethod()]
-        public void ReadByteTest()
+        public void Read_WhenByte_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
-            byte b = 0;
-            bool actual = iohandler.Read(ref b);
+            byte actual = 0;
+            bool result = sut.Read(ref actual);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadUshortTest()
+        public void Read_WhenUShort_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             ushort us = 0;
-            bool actual = iohandler.Read(ref us);
+            bool result = sut.Read(ref us);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadUintTest()
+        public void Read_WhenUInt_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             uint n = 0;
-            bool actual = iohandler.Read(ref n);
+            bool result = sut.Read(ref n);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadUlongTest()
+        public void Read_WhenULong_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             ulong ul = 0;
-            bool actual = iohandler.Read(ref ul);
+            bool result = sut.Read(ref ul);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadFloatTest()
+        public void Read_WhenFloat_ShouldSucceed()
         {
             uint memorySize = 100;
-            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
-            float expectedf = 1.0f;
-            bool expected = true;
-
-            try
+            MemoryUtils.UsingMemory((int)memorySize, (hglobal) =>
             {
-                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "w"))
+                float expectedf = 1.0f;
+                using (var sut = IOHandler.Open(context: null, hglobal, memorySize, "w"))
                 {
-                    iohandler.Write(expectedf);
+                    sut.Write(expectedf);
                 }
 
-                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
+                using (var sut = IOHandler.Open(context: null, hglobal, memorySize, "r"))
                 {
                     // Act
                     float actualf = 0.0f;
-                    bool actual = iohandler.Read(ref actualf);
+                    bool result = sut.Read(ref actualf);
 
                     // Assert
-                    Assert.AreEqual(expected, actual);
+                    Assert.IsTrue(result);
                     Assert.AreEqual(expectedf, actualf);
                 }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(hglobal);
-            }
+            });
         }
 
         [TestMethod()]
-        public void ReadDoubleTest()
+        public void Read_WhenDouble_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             double d = 0.0;
-            bool actual = iohandler.Read(ref d);
+            bool result = sut.Read(ref d);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadXYZTest()
+        public void Read_WhenCIEXYZ_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             CIEXYZ xyz = new();
-            bool actual = iohandler.Read(ref xyz);
+            bool result = sut.Read(ref xyz);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadUshortArrayTest()
+        public void Read_WhenUShortArray_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
 
             // Act
             ushort[] us = new ushort[17];
-            bool actual = iohandler.Read(us);
+            bool result = sut.Read(us);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteByteTest()
+        public void Write_WhenByte_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             byte n = 0x37;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(n);
+            bool result = sut.Write(n);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteUshortTest()
+        public void Write_WhenUShort_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             ushort n = 0x4c57;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(n);
+            bool result = sut.Write(n);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteUintTest()
+        public void Write_WhenUInt_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             uint n = 0xf6e21048;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(n);
+            bool result = sut.Write(n);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteUlongTest()
+        public void Write_WhenULong_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             ulong n = 0xc2d41f6622386d1e;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(n);
+            bool result = sut.Write(n);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteFloatTest()
+        public void Write_WhenFloat_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             float f = 0.3897f;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(f);
+            bool result = sut.Write(f);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteDoubleTest()
+        public void Write_WhenDouble_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             double d = 0.2874502;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(d);
+            bool result = sut.Write(d);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteXYZTest()
+        public void Write_WhenCIEXYZ_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             CIEXYZ xyz = new() { X = 0.8322, Y = 1.0, Z = 0.7765 };
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(xyz);
+            bool result = sut.Write(xyz);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteUshortArrayTest()
+        public void Write_WhenUShortArray_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             ushort[] array = [0x2837, 0x0005, 0x1cdf, 0x4798, 0x2265];
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(array);
+            bool result = sut.Write(array);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadAlignmentTest()
+        public void ReadAlignment_WhenInvoked_ShouldSucceed()
         {
-            using var iohandler = IOHandler.Open(null);
-            bool expected = true;
+            using var sut = IOHandler.Open(null);
             byte b = 0;
-            iohandler.Read(ref b);
+            sut.Read(ref b);
 
             // Act
-            bool actual = iohandler.ReadAlignment();
+            bool result = sut.ReadAlignment();
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void WriteAlignmentTest()
+        public void WriteAlignment_WhenInvoked_ShouldSucceed()
         {
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             byte n = 0x37;
-            bool expected = true;
-            iohandler.Write(n);
+            sut.Write(n);
 
             // Act
-            bool actual = iohandler.WriteAlignment();
+            bool result = sut.WriteAlignment();
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void ReadTagTypeSignatureTest()
+        public void Read_WhenTagTypeSignature_ShouldSucceed()
         {
             // Arrange
             uint memorySize = 100;
-            IntPtr hglobal = Marshal.AllocHGlobal((int)memorySize);
-
-            try
+            MemoryUtils.UsingMemory((int)memorySize, (hglobal) =>
             {
-                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "w"))
+                using (var sut = IOHandler.Open(context: null, hglobal, memorySize, "w"))
                 {
                     TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
-                    iohandler.Write(sig);
+                    sut.Write(sig);
                 }
 
-                using (var iohandler = IOHandler.Open(context: null, hglobal, memorySize, "r"))
+                using (var sut = IOHandler.Open(context: null, hglobal, memorySize, "r"))
                 {
-                    bool expected = true;
-
                     // Act
-                    bool actual = iohandler.Read(out TagTypeSignature sig);
+                    bool result = sut.Read(out TagTypeSignature sig);
 
                     // Assert
-                    Assert.AreEqual(expected, actual);
+                    Assert.IsTrue(result);
                 }
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(hglobal);
-            }
+            });
         }
 
         [TestMethod()]
-        public void WriteTagTypeSignatureTest()
+        public void Write_WhenTagTypeSignature_ShouldSucceed()
         {
             // Arrange
-            using var iohandler = IOHandler.Open(null);
+            using var sut = IOHandler.Open(null);
             TagTypeSignature sig = TagTypeSignature.MultiLocalizedUnicode;
-            bool expected = true;
 
             // Act
-            bool actual = iohandler.Write(sig);
+            bool result = sut.Write(sig);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.IsTrue(result);
         }
     }
 }

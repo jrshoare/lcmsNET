@@ -18,378 +18,163 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class ProfileSequenceItemTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void DeviceMfgGetTest()
+        public void DeviceMfg_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
             uint expected = 0x6A727368;
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[1];
-            item.DeviceMfg = expected;
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+
+            ProfileSequenceItem sut = psd[1];
+            sut.DeviceMfg = expected;
 
             // Act
-            uint actual = item.DeviceMfg;
+            uint actual = sut.DeviceMfg;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void DeviceMfgSetTest()
+        public void DeviceModel_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            uint expected = 0x6A727368;
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[0];
-
-            // Act
-            item.DeviceMfg = expected;
-
-            // Assert
-            uint actual = item.DeviceMfg;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void DeviceModelGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
             uint expected = 0x6D6F646C;
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[1];
-            item.DeviceModel = expected;
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+
+            ProfileSequenceItem sut = psd[1];
+            sut.DeviceModel = expected;
 
             // Act
-            uint actual = item.DeviceModel;
+            uint actual = sut.DeviceModel;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void DeviceModelSetTest()
+        public void Attributes_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            uint expected = 0x6D6F646C;
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[2];
-
-            // Act
-            item.DeviceModel = expected;
-
-            // Assert
-            uint actual = item.DeviceModel;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void AttributesGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
             DeviceAttributes expected = DeviceAttributes.Transparency | DeviceAttributes.Matte;
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[2];
-            item.Attributes = expected;
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+
+            ProfileSequenceItem sut = psd[2];
+            sut.Attributes = expected;
 
             // Act
-            DeviceAttributes actual = item.Attributes;
+            DeviceAttributes actual = sut.Attributes;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void AttributesSetTest()
+        public void Technology_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            DeviceAttributes expected = DeviceAttributes.Reflective | DeviceAttributes.Matte;
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[0];
-
-            // Act
-            item.Attributes = expected;
-
-            // Assert
-            DeviceAttributes actual = item.Attributes;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void TechnologyGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
             TechnologySignature expected = TechnologySignature.ThermalWaxPrinter;
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[2];
-            item.Technology = expected;
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+
+            ProfileSequenceItem sut = psd[2];
+            sut.Technology = expected;
 
             // Act
-            TechnologySignature actual = item.Technology;
+            TechnologySignature actual = sut.Technology;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void TechnologySetTest()
+        public void ProfileID_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            TechnologySignature expected = TechnologySignature.ProjectionTelevision;
+            using var profile = Profile.CreatePlaceholder(context: null);
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[1];
+            ProfileSequenceItem sut = psd[2];
 
-            // Act
-            item.Technology = expected;
-
-            // Assert
-            TechnologySignature actual = item.Technology;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ProfileIDGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[2];
             profile.ComputeMD5();
             byte[] expected = profile.HeaderProfileID;
-            item.ProfileID = expected;
+            sut.ProfileID = expected;
 
             // Act
-            byte[] actual = item.ProfileID;
+            byte[] actual = sut.ProfileID;
 
             // Assert
             CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ProfileIDSetTest()
+        public void Manufacturer_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
+            string expected = "manufacturer";
 
-            using var profile = Profile.CreatePlaceholder(null);
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            ProfileSequenceItem item = psd[2];
-            profile.ComputeMD5();
-            byte[] expected = profile.HeaderProfileID;
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+            MultiLocalizedUnicodeUtils.DisplayName displayName = new(expected);
+            using var mlu = MultiLocalizedUnicodeUtils.CreateAsASCII(displayName);
 
-            // Act
-            item.ProfileID = expected;
-
-            // Assert
-            byte[] actual = item.ProfileID;
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ManufacturerGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Manufacturer";
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[1];
-            item.Manufacturer = mlu;
+            ProfileSequenceItem sut = psd[1];
+            sut.Manufacturer = mlu;
 
             // Act
-            string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
+            string actual = sut.Manufacturer.GetASCII(displayName.LanguageCode, displayName.CountryCode);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ManufacturerSetTest()
+        public void Model_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Manufacturer";
+            string expected = "model";
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[0];
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+            MultiLocalizedUnicodeUtils.DisplayName displayName = new(expected);
+            using var mlu = MultiLocalizedUnicodeUtils.CreateAsASCII(displayName);
 
-            // Act
-            item.Manufacturer = mlu;
-
-            // Assert
-            Assert.IsTrue(mlu.IsClosed);
-            string actual = item.Manufacturer.GetASCII(languageCode, countryCode);
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ModelGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Model";
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[2];
-            item.Model = mlu;
+            ProfileSequenceItem sut = psd[2];
+            sut.Model = mlu;
 
             // Act
-            string actual = item.Model.GetASCII(languageCode, countryCode);
+            string actual = sut.Model.GetASCII(displayName.LanguageCode, displayName.CountryCode);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ModelSetTest()
+        public void Description_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Model";
+            string expected = "description";
 
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[1];
+            using var psd = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+            MultiLocalizedUnicodeUtils.DisplayName displayName = new(expected);
+            using var mlu = MultiLocalizedUnicodeUtils.CreateAsASCII(displayName);
 
-            // Act
-            item.Model = mlu;
-
-            // Assert
-            Assert.IsTrue(mlu.IsClosed);
-            string actual = item.Model.GetASCII(languageCode, countryCode);
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void DescriptionGetTest()
-        {
-            // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Description";
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[0];
-            item.Description = mlu;
+            ProfileSequenceItem sut = psd[0];
+            sut.Description = mlu;
 
             // Act
-            string actual = item.Description.GetASCII(languageCode, countryCode);
+            string actual = sut.Description.GetASCII(displayName.LanguageCode, displayName.CountryCode);
 
             // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void DescriptionSetTest()
-        {
-            // Arrange
-            uint nItems = 3;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "Description";
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var mlu = MultiLocalizedUnicode.Create(null, 1);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            ProfileSequenceItem item = psd[2];
-
-            // Act
-            item.Description = mlu;
-
-            // Assert
-            Assert.IsTrue(mlu.IsClosed);
-            string actual = item.Description.GetASCII(languageCode, countryCode);
             Assert.AreEqual(expected, actual);
         }
     }

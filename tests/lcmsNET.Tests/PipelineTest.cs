@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -27,233 +28,229 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class PipelineTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
+
+            // Act
+            using var sut = Pipeline.Create(context, inputChannels: 3, outputChannels: 3);
+
+            // Assert
+            Assert.IsFalse(sut.IsInvalid);
+        }
+
+        [TestMethod()]
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
+        {
+            // Arrange
+            using var expected = ContextUtils.CreateContext();
+
+            // Act
+            using var sut = Pipeline.Create(expected, inputChannels: 3, outputChannels: 3);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.AreSame(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate());
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 4);
+
+            // Act
+            using var duplicate = sut.Duplicate();
+
+            // Assert
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void Append_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            using var duplicate = sut.Duplicate();
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Append(duplicate));
+        }
+
+        [TestMethod()]
+        public void Append_WhenValid_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 4);
+            using var duplicate = sut.Duplicate();
+
+            // Act
+            bool result = sut.Append(duplicate);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void Evaluate_WhenFloatArrayIsNull_ShouldThrowArgumentException()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+
+            float[] values = null;
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Evaluate(values));
+        }
+
+        [TestMethod()]
+        public void Evaluate_WhenFloatArrayLengthInvalid_ShouldThrowArgumentException()
+        {
+            // Arrange
+            uint inputChannels = 3;
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels: 3);
+
+            float[] values = new float[inputChannels - 1];  // invalid when != no. of input channels
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Evaluate(values));
+        }
+
+        [TestMethod()]
+        public void Evaluate_WhenValidFloatArray_ShouldEvaluatePipeline()
+        {
+            // Arrange
             uint inputChannels = 3;
             uint outputChannels = 3;
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-
-            // Assert
-            Assert.IsNotNull(pipeline);
-        }
-
-        [TestMethod()]
-        public void DuplicateTest()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint inputChannels = 3;
-            uint outputChannels = 4;
-
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            using var duplicate = pipeline.Duplicate();
-
-            // Assert
-            Assert.IsNotNull(duplicate);
-        }
-
-        [TestMethod()]
-        public void AppendTest()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint inputChannels = 3;
-            uint outputChannels = 4;
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline1 = Pipeline.Create(context, inputChannels, outputChannels);
-            using var pipeline2 = pipeline1.Duplicate();
-
-            // Act
-            bool appended = pipeline1.Append(pipeline2);
-
-            // Assert
-            Assert.IsTrue(appended);
-        }
-
-        [TestMethod()]
-        public void EvaluateTest()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
-
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            pipeline.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
+            sut.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
 
             float[] values = [10 / 100.0f, 10 / 100.0f, 0];
 
             // Act
-            float[] result = pipeline.Evaluate(values);
+            float[] result = sut.Evaluate(values);
 
             // Assert
-            Assert.IsNotNull(result);
             Assert.AreEqual((int)outputChannels, result.Length);
         }
 
         [TestMethod()]
-        public void EvaluateTest2()
+        public void Evaluate_WhenUShortArrayIsNull_ShouldThrowArgumentException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
+
+            ushort[] values = null;
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Evaluate(values));
+        }
+
+        [TestMethod()]
+        public void Evaluate_WhenUShortArrayLengthInvalid_ShouldThrowArgumentException()
+        {
+            // Arrange
+            uint inputChannels = 3;
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels: 3);
+
+            ushort[] values = new ushort[inputChannels - 1];  // invalid when != no. of input channels
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Evaluate(values));
+        }
+
+        [TestMethod()]
+        public void Evaluate_WhenValidUShortArray_ShouldEvaluatePipeline()
+        {
+            // Arrange
             uint inputChannels = 3;
             uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
 
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            pipeline.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
+            sut.Insert(stage, StageLoc.At_End);    // stage is not usable after insertion
 
             ushort[] values = [0x1234, 0x5678, 0x9ABC];
 
             // Act
-            ushort[] result = pipeline.Evaluate(values);
+            ushort[] result = sut.Evaluate(values);
 
             // Assert
-            Assert.IsNotNull(result);
             Assert.AreEqual((int)outputChannels, result.Length);
         }
 
         [TestMethod()]
-        public void EvaluateReverseTest()
+        public void EvaluateReverse_WhenArrayIsNull_ShouldThrowArgumentException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
+
+            float[] values = null;
+            float[] hint = [0.1f, 0.1f, 0.1f];
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.EvaluateReverse(values, hint, out bool success));
+        }
+
+        [TestMethod()]
+        public void EvaluateReverse_WhenArrayLengthInvalid_ShouldThrowArgumentException()
+        {
+            // Arrange
+            uint outputChannels = 3;
+            using var sut = Pipeline.Create(context: null, inputChannels: 4, outputChannels);
+
+            float[] values = new float[outputChannels - 1];  // invalid when != no. of output channels
+            float[] hint = [0.1f, 0.1f, 0.1f];
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.EvaluateReverse(values, hint, out bool success));
+        }
+
+        [TestMethod()]
+        public void EvaluateReverse_WhenValidArray_ShouldEvaluatePipelineInReverse()
+        {
+            // Arrange
             uint inputChannels = 4;
             uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,         0,         0,          //  0 0 0 0   = ( 0, 0, 0)
-                0,         0,         0,          //  0 0 0 1   = ( 0, 0, 0)
 
-                0,         0,         0xffff,     //  0 0 1 0   = ( 0, 0, 1)
-                0,         0,         0xffff,     //  0 0 1 1   = ( 0, 0, 1)
-
-                0,         0xffff,    0,          //  0 1 0 0   = ( 0, 1, 0)
-                0,         0xffff,    0,          //  0 1 0 1   = ( 0, 1, 0)
-
-                0,         0xffff,    0xffff,     //  0 1 1 0    = ( 0, 1, 1)
-                0,         0xffff,    0xffff,     //  0 1 1 1    = ( 0, 1, 1)
-
-                0xffff,    0,         0,          //  1 0 0 0    = ( 1, 0, 0)
-                0xffff,    0,         0,          //  1 0 0 1    = ( 1, 0, 0)
-
-                0xffff,    0,         0xffff,     //  1 0 1 0    = ( 1, 0, 1)
-                0xffff,    0,         0xffff,     //  1 0 1 1    = ( 1, 0, 1)
-
-                0xffff,    0xffff,    0,          //  1 1 0 0    = ( 1, 1, 0)
-                0xffff,    0xffff,    0,          //  1 1 0 1    = ( 1, 1, 0)
-
-                0xffff,    0xffff,    0xffff,     //  1 1 1 0    = ( 1, 1, 1)
-                0xffff,    0xffff,    0xffff,     //  1 1 1 1    = ( 1, 1, 1)
-            ];
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            pipeline.Insert(stage, StageLoc.At_Begin);    // stage is not usable after insertion
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table2);
+            sut.Insert(stage, StageLoc.At_Begin);    // stage is not usable after insertion
 
             float[] values = [0, 0, 0];
             float[] hint = [0.1f, 0.1f, 0.1f];
 
             // Act
-            float[] result = pipeline.EvaluateReverse(values, hint, out bool success);
+            float[] result = sut.EvaluateReverse(values, hint, out bool success);
 
             // Assert
             Assert.IsTrue(success);
@@ -261,112 +258,86 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void InsertTest()
+        public void Insert_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
             uint inputChannels = 3;
             uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
 
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            sut.Dispose();
 
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
 
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Insert(stage, StageLoc.At_End));
+        }
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
+        [TestMethod()]
+        public void Insert_WhenValid_ShouldSucceedAndCloseStage()
+        {
+            // Arrange
+            uint inputChannels = 3;
+            uint outputChannels = 3;
+
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
 
             // Act
-            bool inserted = pipeline.Insert(stage, StageLoc.At_End);
+            bool result = sut.Insert(stage, StageLoc.At_End);
 
             // Assert
-            Assert.IsTrue(inserted);
+            Assert.IsTrue(result);
             Assert.IsTrue(stage.IsClosed);    // stage is not usable after insertion
         }
 
         [TestMethod()]
-        public void InputChannelsTest()
+        public void InputChannels_WhenInvoked_ShouldGetNumberOfInputChannels()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
             uint expected = 3;
             uint outputChannels = 4;
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, expected, outputChannels);
+            using var sut = Pipeline.Create(context: null, expected, outputChannels);
 
             // Act
-            uint actual = pipeline.InputChannels;
+            uint actual = sut.InputChannels;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void OutputChannelsTest()
+        public void OutputChannels_WhenInvoked_ShouldGetNumberOfOutputChannels()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
             uint inputChannels = 3;
             uint expected = 4;
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, expected);
+            using var sut = Pipeline.Create(context: null, inputChannels, expected);
 
             // Act
-            uint actual = pipeline.OutputChannels;
+            uint actual = sut.OutputChannels;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void StageCountTest()
+        public void StageCount_WhenInvoked_ShouldGetNumberOfStages()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
             uint inputChannels = 3;
             uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
-
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
             uint expectedBefore = 0, expectedAfter = 1;
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
 
             // Act
-            uint actualBefore = pipeline.StageCount;
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            pipeline.Insert(stage, StageLoc.At_End);
-            uint actualAfter = pipeline.StageCount;
+            uint actualBefore = sut.StageCount;
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
+            sut.Insert(stage, StageLoc.At_End);
+            uint actualAfter = sut.StageCount;
 
             // Assert
             Assert.AreEqual(expectedBefore, actualBefore);
@@ -374,166 +345,131 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void UnlinkTest()
+        public void Unlink_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
 
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            bool inserted = pipeline.Insert(stage, StageLoc.At_End);
-
-            // Act
-            using (Stage unlinkedStage = pipeline.Unlink(StageLoc.At_Begin))
-            {
-                Assert.IsNotNull(unlinkedStage);
-            }
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Unlink(StageLoc.At_Begin));
         }
 
         [TestMethod()]
-        public void UnlinkTestNoStages()
+        public void Unlink_WhenPipelineHasStages_ShouldRemoveAndReturnStage()
         {
             // Arrange
             uint inputChannels = 3;
             uint outputChannels = 3;
 
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
+            sut.Insert(stage, StageLoc.At_End);
+
             // Act
-            using var pipeline = Pipeline.Create(null, inputChannels, outputChannels);
-            using var unlinkedStage = pipeline.Unlink(StageLoc.At_Begin);
+            using Stage unlinkedStage = sut.Unlink(StageLoc.At_Begin);
+
+            // Assert
+            Assert.IsNotNull(unlinkedStage);
+        }
+
+        [TestMethod()]
+        public void Unlink_WhenPipelineHasNoStage_ShouldReturnNull()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+
+            // Act
+            using Stage unlinkedStage = sut.Unlink(StageLoc.At_Begin);
 
             // Assert
             Assert.IsNull(unlinkedStage);
         }
 
         [TestMethod()]
-        public void UnlinkAndDisposeTest()
+        public void UnlinkAndDispose_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.UnlinkAndDispose(StageLoc.At_Begin));
+        }
+
+        [TestMethod()]
+        public void UnlinkAndDispose_WhenPipelineHasStages_ShouldRemoveAndDisposeStage()
+        {
+            // Arrange
             uint inputChannels = 3;
             uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
 
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
-
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
-            bool inserted = pipeline.Insert(stage, StageLoc.At_End);
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels);
+            var stage = StageUtils.CreateStage(inputChannels, outputChannels, Constants.Stage.Table1);
+            sut.Insert(stage, StageLoc.At_End);
             uint expected = 0;
 
             // Act
-            pipeline.UnlinkAndDispose(StageLoc.At_Begin);
+            sut.UnlinkAndDispose(StageLoc.At_Begin);
 
             // Assert
-            var actual = pipeline.StageCount;
+            var actual = sut.StageCount;
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void EnumerateTest()
+        public void GetEnumerator_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
-            pipeline.Insert(Stage.Create(context, inputChannels), StageLoc.At_Begin);
-            pipeline.Insert(Stage.Create(context, inputChannels), StageLoc.At_Begin);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.GetEnumerator());
+        }
+
+        [TestMethod()]
+        public void GetEnumerator_WhenInvoked_ShouldReturnAddedStages()
+        {
+            // Arrange
+            uint inputChannels = 3;
+
+            using var sut = Pipeline.Create(context: null, inputChannels, outputChannels: 3);
+            sut.Insert(Stage.Create(context: null, inputChannels), StageLoc.At_Begin);
+            sut.Insert(Stage.Create(context: null, inputChannels), StageLoc.At_Begin);
             int expected = 2;
 
             // Act
-            var actual = pipeline.Count();
-
-            var list = pipeline.ToArray();
+            var actual = sut.Count();   // use LINQ to enumerate count
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void SetAs8BitsFlagTest()
+        public void SetAs8BitsFlag_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
+            sut.Dispose();
 
-            using var context = Context.Create(plugin, userData);
-            using var pipeline = Pipeline.Create(context, inputChannels, outputChannels);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.SetAs8BitsFlag(true));
+        }
+
+        [TestMethod()]
+        public void SetAs8BitsFlag_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = Pipeline.Create(context: null, inputChannels: 3, outputChannels: 3);
 
             // Act
             // api document states return is TRUE on success, FALSE on error
             // but code at v2.9 returns previous state of flag
-            bool previous = pipeline.SetAs8BitsFlag(true);
+            bool previous = sut.SetAs8BitsFlag(true);
 
             // Assert
             Assert.IsFalse(previous);
-        }
-
-        [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            using var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0);
-            profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
-
-            // Act
-            // implicit call to FromHandle
-            using var roPipeline = profile.ReadTag<Pipeline>(TagSignature.AToB1);
-
-            // Assert
-            Assert.IsNotNull(roPipeline);
-        }
-
-        [TestMethod()]
-        public void ReadTagTest()
-        {
-            // Arrange
-            using var profile = Profile.CreateInkLimitingDeviceLink(ColorSpaceSignature.CmykData, 150.0);
-            profile.LinkTag(TagSignature.AToB1, TagSignature.AToB0);
-
-            // Act
-            using var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB1);
-
-            // Assert
-            Assert.IsNotNull(pipeline);
         }
     }
 }

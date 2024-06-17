@@ -18,195 +18,106 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class MHC2Test
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void WriteTest()
+        public void WriteTag_WhenMHC2_ShouldSucceed()
         {
             // Arrange
-            double[] curve = [0, 0.5, 1.0];
-            double[,] matrix = { { 0.5, 0.1, 0.1, 0.0 }, { 0.0, 1.0, 0.0, 0.0 }, { 0.4, 0.2, 0.4, 0.0 } };
-            double minLuminance = 0.1;
-            double peakLuminance = 100.0;
-            int curveEntries = curve.Length;
-
-            GCHandle hCurve = GCHandle.Alloc(curve, GCHandleType.Pinned);
-            IntPtr pCurve = hCurve.AddrOfPinnedObject();
-            GCHandle hMatrix = GCHandle.Alloc(matrix, GCHandleType.Pinned);
-            IntPtr pMatrix = hMatrix.AddrOfPinnedObject();
-
-            using var profile = Profile.CreatePlaceholder(null);
-            try
+            MemoryUtils.UsingPinnedMemory(Constants.MHC2.Curve, (pCurve) =>
             {
-                int encodedVersion = 2070;
-                // next call throws if less than 2.8
-                try { encodedVersion = Cms.EncodedCMMVersion; } catch { }
-                if (encodedVersion < 2160) throw new LcmsNETException();
-
-                var target = new MHC2
+                MemoryUtils.UsingPinnedMemory(Constants.MHC2.Matrix, (pMatrix) =>
                 {
-                    CurveEntries = curveEntries,
-                    RedCurve = pCurve,
-                    GreenCurve = pCurve,
-                    BlueCurve = pCurve,
-                    MinLuminance = minLuminance,
-                    PeakLuminance = peakLuminance,
-                    XYZ2XYXmatrix = pMatrix
-                };
+                    using var sut = Profile.CreatePlaceholder(context: null);
+                    try
+                    {
+                        int encodedVersion = 2070;
+                        // next call throws if less than 2.8
+                        try { encodedVersion = Cms.EncodedCMMVersion; } catch { }
+                        if (encodedVersion < 2160) throw new LcmsNETException();
 
-                // Act
-                bool written = profile.WriteTag(TagSignature.MHC2, target);
+                        var mhc2 = MHC2Utils.CreateMHC2(pCurve, Constants.MHC2.Curve.Length, pMatrix);
 
-                // Assert
-                Assert.IsTrue(written);
-            }
-            catch (LcmsNETException)
-            {
-                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
-            }
-            finally
-            {
-                hMatrix.Free();
-                hCurve.Free();
-            }
+                        // Act
+                        bool result = sut.WriteTag(TagSignature.MHC2, mhc2);
+
+                        // Assert
+                        Assert.IsTrue(result);
+                    }
+                    catch (LcmsNETException)
+                    {
+                        Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+                    }
+                });
+            });
         }
 
         [TestMethod()]
-        public void ReadTest()
+        public void ReadTag_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            double[] curve = [0, 0.5, 1.0];
-            double[,] matrix = { { 0.5, 0.1, 0.1, 0.0 }, { 0.0, 1.0, 0.0, 0.0 }, { 0.4, 0.2, 0.4, 0.0 } };
-            double minLuminance = 0.1;
-            double peakLuminance = 100.0;
-            int curveEntries = curve.Length;
-
-            GCHandle hCurve = GCHandle.Alloc(curve, GCHandleType.Pinned);
-            IntPtr pCurve = hCurve.AddrOfPinnedObject();
-            GCHandle hMatrix = GCHandle.Alloc(matrix, GCHandleType.Pinned);
-            IntPtr pMatrix = hMatrix.AddrOfPinnedObject();
-
-            using var profile = Profile.CreatePlaceholder(null);
-            try
+            MemoryUtils.UsingPinnedMemory(Constants.MHC2.Curve, (pCurve) =>
             {
-                var target = new MHC2
+                MemoryUtils.UsingPinnedMemory(Constants.MHC2.Matrix, (pMatrix) =>
                 {
-                    CurveEntries = curveEntries,
-                    RedCurve = pCurve,
-                    GreenCurve = pCurve,
-                    BlueCurve = pCurve,
-                    MinLuminance = minLuminance,
-                    PeakLuminance = peakLuminance,
-                    XYZ2XYXmatrix = pMatrix
-                };
+                    using var sut = Profile.CreatePlaceholder(context: null);
+                    try
+                    {
+                        var mhc2 = MHC2Utils.CreateMHC2(pCurve, Constants.MHC2.Curve.Length, pMatrix);
+                        sut.WriteTag(TagSignature.MHC2, mhc2);
 
-                profile.WriteTag(TagSignature.MHC2, target);
+                        // Act
+                        var actual = sut.ReadTag<MHC2>(TagSignature.MHC2);
 
-                // Act
-                var actual = profile.ReadTag<MHC2>(TagSignature.MHC2);
+                        // Assert
+                        var curve = Constants.MHC2.Curve;
+                        Assert.AreEqual(curve.Length, actual.CurveEntries);
+                        Assert.AreEqual(Constants.MHC2.MinLuminance, actual.MinLuminance, double.Epsilon);
+                        Assert.AreEqual(Constants.MHC2.PeakLuminance, actual.PeakLuminance, double.Epsilon);
 
-                // Assert
-                Assert.AreEqual(curveEntries, actual.CurveEntries);
-                Assert.AreNotEqual(IntPtr.Zero, actual.RedCurve);
-                Assert.AreNotEqual(IntPtr.Zero, actual.GreenCurve);
-                Assert.AreNotEqual(IntPtr.Zero, actual.BlueCurve);
-                Assert.AreEqual(minLuminance, actual.MinLuminance, double.Epsilon);
-                Assert.AreEqual(peakLuminance, actual.PeakLuminance, double.Epsilon);
-                Assert.AreNotEqual(IntPtr.Zero, actual.XYZ2XYXmatrix);
+                        AssertEquality(curve, actual.RedCurve, actual.CurveEntries);
+                        AssertEquality(curve, actual.GreenCurve, actual.CurveEntries);
+                        AssertEquality(curve, actual.BlueCurve, actual.CurveEntries);
 
+                        unsafe
+                        {
+                            double* xyz2xyz = (double*)actual.XYZ2XYXmatrix.ToPointer();
+                            int n = 0;
+                            var matrix = Constants.MHC2.Matrix;
+                            for (var i = 0; i < matrix.GetLength(0); i++)
+                                for (var j = 0; j < matrix.GetLength(1); j++)
+                                {
+                                    Assert.AreEqual(matrix[i, j], xyz2xyz[n], double.Epsilon);
+                                    n++;
+                                }
+                        }
+                    }
+                    catch (LcmsNETException)
+                    {
+                        Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+                    }
+                });
+            });
+
+            static void AssertEquality(double[] expected, IntPtr actual, int count)
+            {
                 unsafe
                 {
-                    double* redCurve = (double*)actual.RedCurve.ToPointer();
-                    for (var i = 0; i < actual.CurveEntries; i++)
+                    double* curve = (double*)actual.ToPointer();
+                    for (var i = 0; i < count; i++)
                     {
-                        Assert.AreEqual(curve[i], redCurve[i], double.Epsilon);
+                        Assert.AreEqual(expected[i], curve[i], double.Epsilon);
                     }
-
-                    double* greenCurve = (double*)actual.GreenCurve.ToPointer();
-                    for (var i = 0; i < actual.CurveEntries; i++)
-                    {
-                        Assert.AreEqual(curve[i], redCurve[i], double.Epsilon);
-                    }
-
-                    double* blueCurve = (double*)actual.BlueCurve.ToPointer();
-                    for (var i = 0; i < actual.CurveEntries; i++)
-                    {
-                        Assert.AreEqual(curve[i], redCurve[i], double.Epsilon);
-                    }
-
-                    double* xyz2xyz = (double*)actual.XYZ2XYXmatrix.ToPointer();
-                    int n = 0;
-                    for (var i = 0; i < matrix.GetLength(0); i++)
-                        for (var j = 0; j < matrix.GetLength(1); j++)
-                        {
-                            Assert.AreEqual(matrix[i, j], xyz2xyz[n], double.Epsilon);
-                            n++;
-                        }
                 }
-            }
-            catch (LcmsNETException)
-            {
-                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
-            }
-            finally
-            {
-                hMatrix.Free();
-                hCurve.Free();
             }
         }
     }

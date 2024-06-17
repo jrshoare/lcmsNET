@@ -18,113 +18,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using static lcmsNET.Tests.TestUtils.Constants;
+using System.Text.RegularExpressions;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class IT8Test
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        /// <summary>
-        /// Extracts the named resource and saves to the specified file path.
-        /// </summary>
-        /// <param name="resourceName"></param>
-        /// <param name="path"></param>
-        private static void Save(string resourceName, string path)
-        {
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
-            using var fs = File.Create(path);
-            s.CopyTo(fs);
-        }
-
-        private static MemoryStream Save(string resourceName)
-        {
-            MemoryStream ms = new();
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                s.CopyTo(ms);
-            }
-            return ms;
-        }
-
-        const string NUMBER_OF_FIELDS = "NUMBER_OF_FIELDS";
-        const string NUMBER_OF_SETS = "NUMBER_OF_SETS";
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
             // Arrange
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context);
 
             // Assert
-            Assert.IsNotNull(it8);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void TableCountTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
+        {
+            // Arrange
+            using var expected = ContextUtils.CreateContext();
+
+            // Act
+            using var sut = IT8.Create(expected);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.AreSame(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = IT8.Create(context: null);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void TableCount_WhenEmpty_ShouldHaveDefaultValueOfOne()
         {
             // Arrange
             uint expected = 1; // empty CGATS.17 object has a single table
 
-            using var it8 = IT8.Create(null);
+            using var it8 = IT8.Create(context: null);
 
             // Act
             uint actual = it8.TableCount;
@@ -134,13 +85,13 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void SetTableTest()
+        public void SetTable_WhenOneAddedToEmpty_ShouldHaveTableCountOfTwo()
         {
             // Arrange
             uint expectedCount = 2; // empty CGATS.17 object has a single table and we add 1
             uint nTable = 1;
 
-            using var it8 = IT8.Create(null);
+            using var it8 = IT8.Create(context: null);
 
             // Act
             int currentTable = it8.SetTable(nTable);
@@ -152,11 +103,11 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void SetTableOutOfRangeTest()
+        public void SetTable_WhenEmptyAddingTwoAtOnce_ShouldReturnError()
         {
             // Arrange
             uint nTable = 2; // empty CGATS.17 object has a single table so index two greater (zero-based)
-            int expected = -1; // error returns -1
+            int expected = Constants.IT8.SetTableError;
 
             using var it8 = IT8.Create(null);
 
@@ -168,84 +119,127 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void OpenTest()
+        public void Open_WhenFromFile_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
+                using var context = ContextUtils.CreateContext();
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var it8 = IT8.Open(context, it8path);
+                using var sut = IT8.Open(context, it8Path);
 
                 // Assert
-                Assert.IsNotNull(it8);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                Assert.IsFalse(sut.IsInvalid);
+            });
         }
 
         [TestMethod()]
-        public void OpenTest2()
+        public void Open_WhenFromFileWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            using MemoryStream ms = Save(".Resources.IT8.txt");
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
+            {
+                using var expected = ContextUtils.CreateContext();
+
+                // Act
+                using var sut = IT8.Open(expected, it8Path);
+                var actual = sut.Context;
+
+                // Assert
+                Assert.AreSame(expected, actual);
+            });
+        }
+
+        [TestMethod()]
+        public void Open_WhenFromFileWithNullContext_ShouldHaveNullContext()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
+            {
+                // Act
+                using var sut = IT8.Open(context: null, it8Path);
+                var actual = sut.Context;
+
+                // Assert
+                Assert.IsNull(actual);
+            });
+        }
+
+        [TestMethod()]
+        public void Open_WhenFromMemory_ShouldHaveValidHandle()
+        {
+            // Arrange
+            using MemoryStream ms = ResourceUtils.Save(".Resources.IT8.txt");
 
             // Act
-            using var it8 = IT8.Open(null, ms.GetBuffer());
+            using var sut = IT8.Open(context: null, ms.GetBuffer());
 
             // Assert
-            Assert.IsNotNull(it8);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void SaveTest()
+        public void Open_WhenFromMemoryWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
+            using MemoryStream ms = ResourceUtils.Save(".Resources.IT8.txt");
+            using var expected = ContextUtils.CreateContext();
 
-            try
+            // Act
+            using var sut = IT8.Open(expected, ms.GetBuffer());
+            var actual = sut.Context;
+
+            // Assert
+            Assert.AreSame(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Open_WhenFromMemoryWithNullContext_ShouldHaveNullContext()
+        {
+            // Arrange
+            using MemoryStream ms = ResourceUtils.Save(".Resources.IT8.txt");
+
+            // Act
+            using var sut = IT8.Open(context: null, ms.GetBuffer());
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void Save_WhenToFile_ShouldSucceed()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
+                using var sut = IT8.Open(context: null, it8Path);
+                var tempPath = Path.GetDirectoryName(it8Path);
+                var savePath = Path.Combine(tempPath, "saved.txt");
 
                 // Act
-                using var it8 = IT8.Open(null, it8path);
-                var savepath = Path.Combine(tempPath, "saved.txt");
-                bool saved = it8.Save(savepath);
+                bool result = sut.Save(savePath);
 
                 // Assert
-                Assert.IsTrue(saved);
-                Assert.IsTrue(File.Exists(savepath));
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                Assert.IsTrue(result);
+                Assert.IsTrue(File.Exists(savePath));
+            });
         }
 
         [TestMethod()]
-        public void SaveTest2()
+        public void Save_WhenToMemory_ShouldSucceed()
         {
             // Arrange
-            using MemoryStream ms = Save(".Resources.IT8.txt");
+            using MemoryStream ms = ResourceUtils.Save(".Resources.IT8.txt");
             byte[] memory = ms.GetBuffer();
-            using var it8 = IT8.Open(null, memory);
-            it8.Save(null, out uint expected);
+
+            using var sut = IT8.Open(null, memory);
+            var expected = IT8Utils.BytesNeededToSaveToMemory(sut);
             byte[] mem = new byte[expected];
 
             // Act
-            var result = it8.Save(mem, out uint actual);
+            var result = sut.Save(mem, out uint actual);
 
             // Assert
             Assert.IsTrue(result);
@@ -253,555 +247,400 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void SaveTest3()
+        public void Save_WhenCalculatingMemorySizeNeeded_ShouldReturnNonZero()
         {
             // Arrange
-            using MemoryStream ms = Save(".Resources.IT8.txt");
+            using MemoryStream ms = ResourceUtils.Save(".Resources.IT8.txt");
             byte[] memory = ms.GetBuffer();
-            using var it8 = IT8.Open(null, memory);
+
+            using var sut = IT8.Open(null, memory);
             uint notExpected = 0;
 
             // Act
-            var result = it8.Save(null, out uint actual);
+            var actual = IT8Utils.BytesNeededToSaveToMemory(sut);
 
             // Assert
-            Assert.IsTrue(result);
             Assert.AreNotEqual(notExpected, actual);
         }
 
         [TestMethod()]
-        public void ContextTest()
+        public void SheetType_WhenGetting_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
+                string expected = "ISO28178";   // from Resources/IT8.txt
+                using var it8 = IT8.Open(context: null, it8Path);
 
                 // Act
-                using var expected = Context.Create(plugin, userData);
-                using var it8 = IT8.Open(expected, it8path);
-                var actual = it8.Context;
-
-                // Assert
-                Assert.AreSame(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
-        }
-
-        [TestMethod()]
-        public void SheetTypeGetTest()
-        {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            string expected = "ISO28178";
-
-            try
-            {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                // Act
-                using var it8 = IT8.Open(null, it8path);
                 var actual = it8.SheetType;
 
                 // Assert
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void SheetTypeSetTest()
+        public void SheetType_WhenRoundTripped_ShouldHaveValueSet()
         {
             // Arrange
-            var expected = "SHEET_TYPE";
+            using var sut = IT8.Create(context: null);
 
-            using var it8 = IT8.Create(null);
+            var expected = "sheet_type";
 
             // Act
-            it8.SheetType = expected;
-            string actual = it8.SheetType;
+            sut.SheetType = expected;
+            string actual = sut.SheetType;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void AddCommentTest()
+        public void AddComment_WhenValid_ShouldSucceed()
         {
             // Arrange
-            var comment = "Comment";
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool added = it8.AddComment(comment);
+            bool added = sut.AddComment("comment");
 
             // Assert
             Assert.IsTrue(added);
         }
 
         [TestMethod()]
-        public void SetPropertyTest()
+        public void SetProperty_WhenString_ShouldSucceed()
         {
             // Arrange
-            string name = "Name";
-            string value = "Value";
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool isSet = it8.SetProperty(name, value);
+            bool result = sut.SetProperty(name: "name", value: "value");
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetPropertyDoubleTest()
+        public void SetProperty_WhenDouble_ShouldSucceed()
         {
             // Arrange
-            string name = "Name";
-            double value = 12.345;
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool isSet = it8.SetProperty(name, value);
+            bool result = sut.SetProperty(name: "name", value: 12.345);
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetPropertyHexTest()
+        public void SetProperty_WhenHexConstant_ShouldSucceed()
         {
             // Arrange
-            string name = "Name";
-            uint value = 0x12345;
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool isSet = it8.SetProperty(name, value);
+            bool result = sut.SetProperty(name: "name", value: 0x12345);
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetUncookedPropertyTest()
+        public void SetUncooked_WhenValid_ShouldSucceed()
         {
             // Arrange
-            string name = "Name";
-            string value = "Uncooked";
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool isSet = it8.SetUncookedProperty(name, value);
+            bool result = sut.SetUncookedProperty(name: "name", value: "uncooked");
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetMultiPropertyTest()
+        public void SetProperty_WhenSubProperty_ShouldSucceed()
         {
             // Arrange
-            string key = "Key";
-            string subkey = "Subkey";
-            string value = "Value";
-
-            using var it8 = IT8.Create(null);
+            using var sut = IT8.Create(context: null);
 
             // Act
-            bool isSet = it8.SetProperty(key, subkey, value);
+            bool result = sut.SetProperty(key: "key", subkey: "subkey", value: "value");
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void GetPropertyTest()
+        public void GetProperty_WhenString_ShouldReturnValueSet()
         {
             // Arrange
-            string name = "Name";
-            string expected = "Value";
+            string name = "name";
+            string expected = "value";
 
-            using var it8 = IT8.Create(null);
-            bool isSet = it8.SetProperty(name, expected);
+            using var sut = IT8.Create(context: null);
+            sut.SetProperty(name, expected);
 
             // Act
-            string actual = it8.GetProperty(name);
+            string actual = sut.GetProperty(name);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void GetPropertyDoubleTest()
+        public void GetProperty_WhenDouble_ShouldReturnValueSet()
         {
             // Arrange
-            string name = "Name";
+            string name = "name";
             double expected = 12.345;
 
-            using var it8 = IT8.Create(null);
-            bool isSet = it8.SetProperty(name, expected);
+            using var sut = IT8.Create(context: null);
+            bool isSet = sut.SetProperty(name, expected);
 
             // Act
-            double actual = it8.GetDoubleProperty(name);
+            double actual = sut.GetDoubleProperty(name);
 
             // Assert
             Assert.AreEqual(expected, actual, double.Epsilon);
         }
 
         [TestMethod()]
-        public void PropertiesTest()
+        public void Properties_WhenValidForSavedResource_ShouldHaveNonZeroCount()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
+                using var sut = IT8.Open(context: null, it8Path);
 
                 // Act
-                var actual = it8.Properties;
+                var actual = sut.Properties;
 
                 // Assert
-                Assert.IsNotNull(actual);
                 Assert.AreNotEqual(0, actual.Count());
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void GetPropertiesTest()
+        public void GetProperties_WhenValid_ShouldReturnEnumerableOfSubkeys()
         {
             // Arrange
-            string key = "Key";
-            string subkey = "Subkey";
-            string value = "Value";
+            string key = "key";
+            string expected = "subkey";
 
             using var it8 = IT8.Create(null);
-            bool isSet = it8.SetProperty(key, subkey, value);
+            bool isSet = it8.SetProperty(key, expected, value: "value");
 
             // Act
-            var actual = it8.GetProperties(key);
+            var actual = it8.GetProperties(key)?.FirstOrDefault();
 
             // Assert
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(subkey, actual.First());
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void GetDataRowColTest()
+        public void GetData_WhenRowColumnAsString_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                int row = 10, column = 1;
-                string expected = "PicricAcid_5L";
+                using var sut = IT8.Open(context: null, it8Path);
+                string expected = "PicricAcid_5L";  // from Resources/IT8.txt data row 10 column 1 (zero-based)
 
                 // Act
-                string actual = it8.GetData(row, column);
+                string actual = sut.GetData(row: 10, column: 1);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void GetDataTest()
+        public void GetData_WhenPatchSampleAsString_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                string patch = "A17", sample = "PatchName";
-                string expected = "NeutralRed_M";
+                using var sut = IT8.Open(context: null, it8Path);
+                string expected = "NeutralRed_M";  // from Resources/IT8.txt data with 'PatchName' = 'A17'
 
                 // Act
-                string actual = it8.GetData(patch, sample);
+                string actual = sut.GetData(patch: "A17", sample: "PatchName");
 
                 // Assert
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void GetDoubleDataRowColTest()
+        public void GetDoubleData_WhenRowColumn_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                int row = 16, column = 2;
-                double expected = 15.2;
+                using var sut = IT8.Open(context: null, it8Path);
+                double expected = 15.2; // from Resources/IT8.txt data row 16, column 2 (zero-based)
 
                 // Act
-                double actual = it8.GetDoubleData(row, column);
+                double actual = sut.GetDoubleData(row: 16, column: 2);
 
                 // Assert
-                Assert.AreEqual(expected, actual, double.Epsilon);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                Assert.AreEqual(expected, actual);
+            });
         }
 
         [TestMethod()]
-        public void GetDataDoubleTest()
+        public void GetDoubleData_WhenPatchSample_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                string patch = "A17", sample = "PatchX";
-                double expected = 15.2;
+                using var sut = IT8.Open(context: null, it8Path);
+                double expected = 15.2;  // from Resources/IT8.txt data with 'PatchName' = 'A17'
 
                 // Act
-                double actual = it8.GetDoubleData(patch, sample);
+                double actual = sut.GetDoubleData(patch: "A17", sample: "PatchX");
 
                 // Assert
-                Assert.AreEqual(expected, actual, double.Epsilon);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                Assert.AreEqual(expected, actual);
+            });
         }
 
         [TestMethod()]
-        public void SetDataTest()
+        public void SetData_WhenForRowColumnAsString_ShouldSucceed()
         {
             // Arrange
-            int row = 3, column = 2;
-            string value = "Value";
+            using var sut = IT8.Create(context: null);
 
-            using var it8 = IT8.Create(null);
-            it8.SetProperty(NUMBER_OF_FIELDS, 3);
-            it8.SetProperty(NUMBER_OF_SETS, 4);
+            sut.SetProperty(Constants.IT8.NumberOfFields, 3);   // => data columns
+            sut.SetProperty(Constants.IT8.NumberOfSets, 4); // => data rows
 
             // Act
-            bool isSet = it8.SetData(row, column, value);
+            bool result = sut.SetData(row: 3, column: 2, value: "value");
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetDataTest2()
+        public void SetData_WhenForPatchSample_ShouldSucceed()
         {
             // Arrange
-            string[] sampleNames = new string[] { "SAMPLE_ID", "PatchName", "PatchX", "PatchY" };
-            string[] strValues = new string[] { "A2", "HL" };
-            double[] dblValues = new double[] { 3.1, 2.7 };
+            string[] samples = ["SAMPLE_ID", "PatchName", "PatchX", "PatchY"];
+            string[] strValues = ["A2", "HL"];
+            double[] dblValues = [3.1, 2.7];
             string patch = strValues[0];
 
-            using var it8 = IT8.Create(null);
-            it8.SetProperty(NUMBER_OF_FIELDS, sampleNames.Length);
-            it8.SetProperty(NUMBER_OF_SETS, 1);
+            using var sut = IT8.Create(context: null);
+            sut.SetProperty(Constants.IT8.NumberOfFields, samples.Length);
+            sut.SetProperty(Constants.IT8.NumberOfSets, 1);
 
             int n = 0;
-            foreach (var sampleName in sampleNames)
+            foreach (var sampleName in samples)
             {
-                it8.SetDataFormat(n++, sampleName);
+                sut.SetDataFormat(n++, sampleName);
             }
 
             // Act
-            bool isSet = it8.SetData(patch, sampleNames[0], strValues[0]);
-            isSet = isSet && it8.SetData(patch, sampleNames[1], strValues[1]);
-            isSet = isSet && it8.SetData(patch, sampleNames[2], dblValues[0]);
-            isSet = isSet && it8.SetData(patch, sampleNames[3], dblValues[1]);
+            bool result = sut.SetData(patch, samples[0], strValues[0]);
+            result = result && sut.SetData(patch, samples[1], strValues[1]);
+            result = result && sut.SetData(patch, samples[2], dblValues[0]);
+            result = result && sut.SetData(patch, samples[3], dblValues[1]);
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SetDataDoubleTest()
+        public void SetData_WhenForRowColumnAsDouble_ShouldSucceed()
         {
             // Arrange
-            int row = 0, column = 1;
-            double value = 17.43;
-
-            using var it8 = IT8.Create(null);
-            it8.SetProperty(NUMBER_OF_FIELDS, 3);
-            it8.SetProperty(NUMBER_OF_SETS, 4);
+            using var sut = IT8.Create(context: null);
+            sut.SetProperty(Constants.IT8.NumberOfFields, 3);
+            sut.SetProperty(Constants.IT8.NumberOfSets, 4);
 
             // Act
-            bool isSet = it8.SetData(row, column, value);
+            bool result = sut.SetData(row: 0, column: 1, value: 17.43);
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void FindDataFormatTest()
+        public void FindDataFormat_WhenValidForSavedResource_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                string sample = "SPECTRAL_400";
-                int expected = 8;
+                using var sut = IT8.Open(null, it8Path);
+                int expected = 8;   // from Resources/IT8.txt line 10
 
                 // Act
-                int actual = it8.FindDataFormat(sample);
+                int actual = sut.FindDataFormat(sample: "SPECTRAL_400");
 
                 // Assert
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void SetDataFormatTest()
+        public void SetDataFormat_WhenValid_ShouldSucceed()
         {
             // Arrange
-            int column = 6;
-            string sample = "COLUMN_6";
-
-            using var it8 = IT8.Create(null);
-            it8.SetProperty(NUMBER_OF_FIELDS, 12);
+            using var sut = IT8.Create(context: null);
+            sut.SetProperty(Constants.IT8.NumberOfFields, 12);
 
             // Act
-            bool isSet = it8.SetDataFormat(column, sample);
+            bool result = sut.SetDataFormat(column: 6, sample: "COLUMN_6");
 
             // Assert
-            Assert.IsTrue(isSet);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void SampleNamesTest()
+        public void SampleNames_WhenValidForSavedResource_ShouldReturnNonZeroCount()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
+                using var sut = IT8.Open(context: null, it8Path);
 
                 // Act
-                var actual = it8.SampleNames;
+                var actual = sut.SampleNames?.Count();
 
                 // Assert
-                Assert.IsNotNull(actual);
-                Assert.AreNotEqual(0, actual.Count());
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                Assert.AreNotEqual(0, actual);
+            });
         }
 
         [TestMethod()]
-        public void GetPatchNameTest()
+        public void GetPatchName_WhenValidForSavedResource_ShouldReturnExpectedValue()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.IT8.txt", "it8.txt", (it8Path) =>
             {
-                var it8path = Path.Combine(tempPath, "it8.txt");
-                Save(".Resources.IT8.txt", it8path);
-
-                using var it8 = IT8.Open(null, it8path);
-                int nPatch = 10;
-                string expected = "A11";
+                using var sut = IT8.Open(context: null, it8Path);
+                string expected = "A11";    // from Resources/IT8.txt data row 10 (zero-based)
 
                 // Act
-                string actual = it8.GetPatchName(nPatch);
+                string actual = sut.GetPatchName(nPatch: 10);
 
                 // Assert
                 Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod]
-        public void DoubleFormatTest()
+        public void DoubleFormat_WhenSetValid_ShouldSucceed()
         {
             // Arrange
             using var it8 = IT8.Create(null);
 
             // Act
             it8.DoubleFormat = "%.8g";
-
-            // Assert
         }
     }
 }

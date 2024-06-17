@@ -27,56 +27,8 @@ namespace lcmsNET.Tests.Plugin
     [TestClass()]
     public class VEC3Test
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod]
-        public void InitTest()
+        public void VEC3_WhenInstantiated_ShouldHaveInitialisedElements()
         {
             // Arrange
             double expected_x = 1.0;
@@ -84,7 +36,7 @@ namespace lcmsNET.Tests.Plugin
             double expected_z = 3.0;
 
             // Act
-            VEC3 v = new VEC3(expected_x, expected_y, expected_z);
+            VEC3 v = new(expected_x, expected_y, expected_z);
             double actual_x = v[0];
             double actual_y = v[1];
             double actual_z = v[2];
@@ -96,13 +48,13 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void MinusTest()
+        public void Minus_WhenInvoked_ShouldSubtractValues()
         {
             // Arrange
             double ax = 10.0, ay = 9.0, az = 8.0;
-            VEC3 a = new VEC3(ax, ay, az);
+            VEC3 a = new(ax, ay, az);
             double bx = 9.0, by = 7.0, bz = 5.0;
-            VEC3 b = new VEC3(bx, by, bz);
+            VEC3 b = new(bx, by, bz);
             double expected_x = ax - bx,
                    expected_y = ay - by,
                    expected_z = az - bz;
@@ -120,13 +72,13 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void CrossTest()
+        public void Cross_WhenInvoked_ShouldCalculateCrossVectorProduct()
         {
             // Arrange
             double ax = 2.0, ay = 3.0, az = 4.0;
-            VEC3 a = new VEC3(ax, ay, az);
+            VEC3 a = new(ax, ay, az);
             double bx = 5.0, by = 6.0, bz = 7.0;
-            VEC3 b = new VEC3(bx, by, bz);
+            VEC3 b = new(bx, by, bz);
             double expected_x = (ay * bz) - (az * by),
                    expected_y = (az * bx) - (ax * bz),
                    expected_z = (ax * by) - (ay * bx);
@@ -144,13 +96,13 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void DotTest()
+        public void Dot_WhenInvoked_ShouldCalculateDotScalarProduct()
         {
             // Arrange
             double ax = 2.0, ay = 3.0, az = 4.0;
-            VEC3 a = new VEC3(ax, ay, az);
+            VEC3 a = new(ax, ay, az);
             double bx = 5.0, by = 6.0, bz = 7.0;
-            VEC3 b = new VEC3(bx, by, bz);
+            VEC3 b = new(bx, by, bz);
             double expected = (ax * bx) + (ay * by) + (az * bz);
 
             // Act
@@ -161,11 +113,11 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void LengthTest()
+        public void Length_WhenInvoked_ShouldReturnEuclideanLength()
         {
             // Arrange
             double x = 3.0, y = 4.0, z = 5.0;
-            VEC3 v = new VEC3(x, y, z);
+            VEC3 v = new (x, y, z);
             double expected = Math.Sqrt((x * x) + (y * y) + (z * z));
 
             // Act
@@ -176,13 +128,13 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void DistanceTest()
+        public void Distance_WhenInvoked_ShouldCalculateEuclideanDistanceBetweenPoints()
         {
             // Arrange
             double ax = 2.0, ay = 3.0, az = 4.0;
-            VEC3 a = new VEC3(ax, ay, az);
+            VEC3 a = new(ax, ay, az);
             double bx = 5.0, by = 6.0, bz = 7.0;
-            VEC3 b = new VEC3(bx, by, bz);
+            VEC3 b = new(bx, by, bz);
             VEC3 d = a - b;
             double expected = Math.Sqrt((d[0] * d[0]) + (d[1] * d[1]) + (d[2] * d[2]));
 

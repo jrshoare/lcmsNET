@@ -25,56 +25,8 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class DeltaETest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void DE76Test()
+        public void DE76_WhenInvoked_ShouldComputeDifferenceUsingCIE76Method()
         {
             // Arrange
             CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -82,12 +34,10 @@ namespace lcmsNET.Tests
 
             // Act
             _ = DeltaE.DE76(lab1, lab2);
-
-            // Assert
         }
 
         [TestMethod()]
-        public void CMCTest()
+        public void CMC_WhenInvoked_ShouldComputeDifferenceUsingCMCMethod()
         {
             // Arrange
             CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -97,12 +47,10 @@ namespace lcmsNET.Tests
 
             // Act
             _ = DeltaE.CMC(lab1, lab2, l, c);
-
-            // Assert
         }
 
         [TestMethod()]
-        public void CIEDE2000Test()
+        public void CIEDE2000_WhenInvoked_ShouldComputeDifferenceUsingCIEDE2000Method()
         {
             // Arrange
             CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -110,12 +58,10 @@ namespace lcmsNET.Tests
 
             // Act
             _ = DeltaE.CIEDE2000(lab1, lab2);
-
-            // Assert
         }
 
         [TestMethod()]
-        public void BFDTest()
+        public void BFD_WhenInvoked_ShouldComputeDifferenceUsingBFDMethod()
         {
             // Arrange
             CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -123,12 +69,10 @@ namespace lcmsNET.Tests
 
             // Act
             _ = DeltaE.BFD(lab1, lab2);
-
-            // Assert
         }
 
         [TestMethod()]
-        public void CIE94Test()
+        public void CIE94_WhenInvoked_ShouldComputeDifferenceUsingCIE94Method()
         {
             // Arrange
             CIELab lab1 = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -136,8 +80,6 @@ namespace lcmsNET.Tests
 
             // Act
             _ = DeltaE.CIE94(lab1, lab2);
-
-            // Assert
         }
     }
 }

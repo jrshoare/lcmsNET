@@ -20,6 +20,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 
 namespace lcmsNET.Tests
 {
@@ -44,43 +45,11 @@ namespace lcmsNET.Tests
             }
         }
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void EncodedCMMVersionTest()
+        public void EncodedCMMVersion_WhenGetting_ShouldNotBeZero()
         {
             try
             {
-                // Arrange
-
                 // Act
                 int actual = Cms.EncodedCMMVersion; // >= 2.8
 
@@ -94,12 +63,8 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod]
-        public void ColorspacesTest()
+        public void Formats_WhenGetting_ShouldNotBeZero()
         {
-            // Arrange
-
-            // Act
-
             // Assert
             // TODO: Work out what these values should be and change assertion to AreEqual..
             Assert.AreNotEqual(0u, Cms.TYPE_ALab_8);
@@ -266,9 +231,10 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void SetErrorHandlerTest()
+        public void SetErrorHandler_WhenError_ShouldInvokeHandler()
         {
             // Arrange
+            bool handlerInvoked = false;
 
             // Act
             Cms.SetErrorHandler(HandleError);
@@ -280,87 +246,181 @@ namespace lcmsNET.Tests
             Cms.SetErrorHandler(null);
 
             // Assert
+            Assert.IsTrue(handlerInvoked);
+
             void HandleError(IntPtr contextID, int errorCode, string errorText)
             {
+                handlerInvoked = true;
                 TestContext.WriteLine($"contextID: {contextID}, errorCode: {errorCode}, errorText: '{errorText}'");
             }
         }
 
         [TestMethod()]
-        public void ToColorSpaceSignatureTest()
+        [DataRow(PixelType.Gray, ColorSpaceSignature.GrayData)]
+        [DataRow(PixelType.RGB, ColorSpaceSignature.RgbData)]
+        [DataRow(PixelType.CMY, ColorSpaceSignature.CmyData)]
+        [DataRow(PixelType.CMYK, ColorSpaceSignature.CmykData)]
+        [DataRow(PixelType.YCbCr, ColorSpaceSignature.YCbCrData)]
+        [DataRow(PixelType.YUV, ColorSpaceSignature.LuvData)]
+        [DataRow(PixelType.XYZ, ColorSpaceSignature.XYZData)]
+        [DataRow(PixelType.Lab, ColorSpaceSignature.LabData)]
+        [DataRow(PixelType.YUVK, ColorSpaceSignature.LuvKData)]
+        [DataRow(PixelType.HSV, ColorSpaceSignature.HsvData)]
+        [DataRow(PixelType.HLS, ColorSpaceSignature.HlsData)]
+        [DataRow(PixelType.Yxy, ColorSpaceSignature.YxyData)]
+        [DataRow(PixelType.MCH1, ColorSpaceSignature.MCH1Data)]
+        [DataRow(PixelType.MCH2, ColorSpaceSignature.MCH2Data)]
+        [DataRow(PixelType.MCH3, ColorSpaceSignature.MCH3Data)]
+        [DataRow(PixelType.MCH4, ColorSpaceSignature.MCH4Data)]
+        [DataRow(PixelType.MCH5, ColorSpaceSignature.MCH5Data)]
+        [DataRow(PixelType.MCH6, ColorSpaceSignature.MCH6Data)]
+        [DataRow(PixelType.MCH7, ColorSpaceSignature.MCH7Data)]
+        [DataRow(PixelType.MCH8, ColorSpaceSignature.MCH8Data)]
+        [DataRow(PixelType.MCH9, ColorSpaceSignature.MCH9Data)]
+        [DataRow(PixelType.MCH10, ColorSpaceSignature.MCHAData)]
+        [DataRow(PixelType.MCH11, ColorSpaceSignature.MCHBData)]
+        [DataRow(PixelType.MCH12, ColorSpaceSignature.MCHCData)]
+        [DataRow(PixelType.MCH13, ColorSpaceSignature.MCHDData)]
+        [DataRow(PixelType.MCH14, ColorSpaceSignature.MCHEData)]
+        [DataRow(PixelType.MCH15, ColorSpaceSignature.MCHFData)]
+        [DataRow(PixelType.LabV2, ColorSpaceSignature.LabData)]
+        public void ToColorSpaceSignature_WhenInvoked_ShouldConvertToColorSpaceSignature(PixelType from, ColorSpaceSignature to)
         {
             // Arrange
-            PixelType pixelType = PixelType.RGB;
-            ColorSpaceSignature expected = ColorSpaceSignature.RgbData;
+            ColorSpaceSignature expected = to;
 
             // Act
-            var actual = Cms.ToColorSpaceSignature(pixelType);
+            var actual = Cms.ToColorSpaceSignature(from);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ToPixelTypeTest()
+        [DataRow(ColorSpaceSignature.GrayData, PixelType.Gray)]
+        [DataRow(ColorSpaceSignature.RgbData, PixelType.RGB)]
+        [DataRow(ColorSpaceSignature.CmyData, PixelType.CMY)]
+        [DataRow(ColorSpaceSignature.CmykData, PixelType.CMYK)]
+        [DataRow(ColorSpaceSignature.YCbCrData, PixelType.YCbCr)]
+        [DataRow(ColorSpaceSignature.LuvData, PixelType.YUV)]
+        [DataRow(ColorSpaceSignature.XYZData, PixelType.XYZ)]
+        [DataRow(ColorSpaceSignature.LabData, PixelType.Lab)]
+        [DataRow(ColorSpaceSignature.LuvKData, PixelType.YUVK)]
+        [DataRow(ColorSpaceSignature.HsvData, PixelType.HSV)]
+        [DataRow(ColorSpaceSignature.HlsData, PixelType.HLS)]
+        [DataRow(ColorSpaceSignature.YxyData, PixelType.Yxy)]
+        [DataRow(ColorSpaceSignature.MCH1Data, PixelType.MCH1)]
+        [DataRow(ColorSpaceSignature.MCH2Data, PixelType.MCH2)]
+        [DataRow(ColorSpaceSignature.MCH3Data, PixelType.MCH3)]
+        [DataRow(ColorSpaceSignature.MCH4Data, PixelType.MCH4)]
+        [DataRow(ColorSpaceSignature.MCH5Data, PixelType.MCH5)]
+        [DataRow(ColorSpaceSignature.MCH6Data, PixelType.MCH6)]
+        [DataRow(ColorSpaceSignature.MCH7Data, PixelType.MCH7)]
+        [DataRow(ColorSpaceSignature.MCH8Data, PixelType.MCH8)]
+        [DataRow(ColorSpaceSignature.MCH9Data, PixelType.MCH9)]
+        [DataRow(ColorSpaceSignature.MCHAData, PixelType.MCH10)]
+        [DataRow(ColorSpaceSignature.MCHBData, PixelType.MCH11)]
+        [DataRow(ColorSpaceSignature.MCHCData, PixelType.MCH12)]
+        [DataRow(ColorSpaceSignature.MCHDData, PixelType.MCH13)]
+        [DataRow(ColorSpaceSignature.MCHEData, PixelType.MCH14)]
+        [DataRow(ColorSpaceSignature.MCHFData, PixelType.MCH15)]
+        public void ToPixelType_WhenInvoked_ShouldConvertToPixelType(ColorSpaceSignature from, PixelType to)
         {
             // Arrange
-            ColorSpaceSignature space = ColorSpaceSignature.YCbCrData;
-            PixelType expected = PixelType.YCbCr;
+            PixelType expected = to;
 
             // Act
-            var actual = Cms.ToPixelType(space);
+            var actual = Cms.ToPixelType(from);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ChannelsOfTest()
+        [DataRow(ColorSpaceSignature.GrayData, 1u)]
+        [DataRow(ColorSpaceSignature.RgbData, 3u)]
+        [DataRow(ColorSpaceSignature.CmyData, 3u)]
+        [DataRow(ColorSpaceSignature.CmykData, 4u)]
+        [DataRow(ColorSpaceSignature.YCbCrData, 3u)]
+        [DataRow(ColorSpaceSignature.LuvData, 3u)]
+        [DataRow(ColorSpaceSignature.XYZData, 3u)]
+        [DataRow(ColorSpaceSignature.LabData, 3u)]
+        [DataRow(ColorSpaceSignature.LuvKData, 4u)]
+        [DataRow(ColorSpaceSignature.HsvData, 3u)]
+        [DataRow(ColorSpaceSignature.HlsData, 3u)]
+        [DataRow(ColorSpaceSignature.YxyData, 3u)]
+        [DataRow(ColorSpaceSignature.MCH1Data, 1u)]
+        [DataRow(ColorSpaceSignature.MCH2Data, 2u)]
+        [DataRow(ColorSpaceSignature.MCH3Data, 3u)]
+        [DataRow(ColorSpaceSignature.MCH4Data, 4u)]
+        [DataRow(ColorSpaceSignature.MCH5Data, 5u)]
+        [DataRow(ColorSpaceSignature.MCH6Data, 6u)]
+        [DataRow(ColorSpaceSignature.MCH7Data, 7u)]
+        [DataRow(ColorSpaceSignature.MCH8Data, 8u)]
+        [DataRow(ColorSpaceSignature.MCH9Data, 9u)]
+        [DataRow(ColorSpaceSignature.MCHAData, 10u)]
+        [DataRow(ColorSpaceSignature.MCHBData, 11u)]
+        [DataRow(ColorSpaceSignature.MCHCData, 12u)]
+        [DataRow(ColorSpaceSignature.MCHDData, 13u)]
+        [DataRow(ColorSpaceSignature.MCHEData, 14u)]
+        [DataRow(ColorSpaceSignature.MCHFData, 15u)]
+        [DataRow(ColorSpaceSignature._1colorData, 1u)]
+        [DataRow(ColorSpaceSignature._2colorData, 2u)]
+        [DataRow(ColorSpaceSignature._3colorData, 3u)]
+        [DataRow(ColorSpaceSignature._4colorData, 4u)]
+        [DataRow(ColorSpaceSignature._5colorData, 5u)]
+        [DataRow(ColorSpaceSignature._6colorData, 6u)]
+        [DataRow(ColorSpaceSignature._7colorData, 7u)]
+        [DataRow(ColorSpaceSignature._8colorData, 8u)]
+        [DataRow(ColorSpaceSignature._9colorData, 9u)]
+        [DataRow(ColorSpaceSignature._10colorData, 10u)]
+        [DataRow(ColorSpaceSignature._11colorData, 11u)]
+        [DataRow(ColorSpaceSignature._12colorData, 12u)]
+        [DataRow(ColorSpaceSignature._13colorData, 13u)]
+        [DataRow(ColorSpaceSignature._14colorData, 14u)]
+        [DataRow(ColorSpaceSignature._15colorData, 15u)]
+        public void ChannelsOf_WhenInvoked_ShouldReturnChannelCount(ColorSpaceSignature from, uint count)
         {
             // Arrange
-            ColorSpaceSignature space = ColorSpaceSignature._11colorData;
-            uint expected = 11;
+            uint expected = count;
 
             // Act
-            uint actual = Cms.ChannelsOf(space);
+            uint actual = Cms.ChannelsOf(from);
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void AlarmCodesTest()
+        public void AlarmCodes_WhenGetting_ShouldReturnValuesSet()
         {
             // Arrange
-            ushort[] alarmCodes = [10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678];
+            ushort[] expected = [10, 23, 46, 92, 1007, 2009, 6789, 7212, 8114, 9032, 10556, 11267, 12980, 13084, 14112, 15678];
 
             // Act
-            Cms.AlarmCodes = alarmCodes;
-            var values = Cms.AlarmCodes;
+            Cms.AlarmCodes = expected;
+            var actual = Cms.AlarmCodes;
 
             // Assert
-            for (int i = 0; i < alarmCodes.Length; i++)
-            {
-                Assert.AreEqual(alarmCodes[i], values[i]);
-            }
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void SetAdaptationStateTest()
+        public void AdaptationState_WhenGetting_ShouldReturnValueSet()
         {
             // Arrange
             double expected = 0.7;
 
             // Act
             Cms.AdaptationState = expected;
+            double actual = Cms.AdaptationState;
 
             // Assert
-            double actual = Cms.AdaptationState;
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void WhitePointFromTempTest()
+        public void WhitePointFromTemp_WhenConverting_ShouldSucceed()
         {
             // Arrange
             double tempK = 6504;
@@ -373,7 +433,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void TempFromWhitePointTest()
+        public void TempFromWhitePoint_WhenConverting_ShouldSucceed()
         {
             // Arrange
             double expected = 6504;
@@ -386,112 +446,15 @@ namespace lcmsNET.Tests
             Assert.IsTrue(success);
         }
 
-        [TestMethod()]
-        public void ICCMeasurementConditions_FromHandleTest()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            ICCMeasurementConditions expected = new()
-            {
-                Observer = Observer.CIE1931,
-                Backing = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                Geometry = MeasurementGeometry.ZeroDOrDZero,
-                Flare = 0.5,
-                IlluminantType = IlluminantType.D65
-            };
-
-            profile.WriteTag(TagSignature.Measurement, expected);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = profile.ReadTag<ICCMeasurementConditions>(TagSignature.Measurement);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ICCViewingConditions_FromHandleTest()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new ICCViewingConditions
-            {
-                IlluminantXYZ = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
-                SurroundXYZ = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                IlluminantType = IlluminantType.E
-            };
-
-            profile.WriteTag(TagSignature.ViewingConditions, expected);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = profile.ReadTag<ICCViewingConditions>(TagSignature.ViewingConditions);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void VideoSignalType_FromHandleTest()
-        {
-            try
-            {
-                // Arrange
-                using var profile = Profile.CreatePlaceholder(null);
-                var expected = new VideoSignalType
-                {
-                    ColourPrimaries = 1,
-                    TransferCharacteristics = 13,
-                    MatrixCoefficients = 0,
-                    VideoFullRangeFlag = 1
-                };
-
-                profile.WriteTag(TagSignature.Cicp, expected);
-
-                // Act
-                // implicit call to FromHandle
-                var actual = profile.ReadTag<VideoSignalType>(TagSignature.Cicp);
-
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
-            catch (LcmsNETException)
-            {
-                Assert.Inconclusive("Possibly requires later version of Little CMS.");
-            }
-        }
-
-        // https://www.argyllcms.com/doc/ArgyllCMS_arts_tag.html
-        [TestMethod()]
-        public void TagSignatureTest_ArgyllArts()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            // Bradford matrix
-            CIEXYZTRIPLE expected = new()
-            {
-                Red = new CIEXYZ { X = 0.89509583, Y = 0.26640320, Z = -0.16140747 },
-                Green = new CIEXYZ { X = -0.75019836, Y = 1.71350098, Z = 0.03669739 },
-                Blue = new CIEXYZ { X = 0.03889465, Y = -0.06849670, Z = 1.02960205 }
-            };
-
-            // Act
-            profile.WriteTag(TagSignature.ArgyllArts, expected);
-            var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ArgyllArts);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
         [TestMethod]
-        public void SupportedIntentsTest()
+        public void SupportedIntents_WhenGetting_ShouldReturnNonEmptyCollection()
         {
             // Act
             var supportedIntents = Cms.SupportedIntents;
 
             // Assert
             Assert.IsNotNull(supportedIntents);
+            Assert.AreNotEqual(0, supportedIntents.Count());
 
             foreach (var (code, description) in supportedIntents)
             {

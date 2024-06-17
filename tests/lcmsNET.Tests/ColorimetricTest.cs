@@ -25,56 +25,8 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class ColorimetricTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void XYZ2LabTest()
+        public void XYZ2Lab_WhenInvoked_ShouldConvertXYZToLab()
         {
             // Arrange
             CIEXYZ whitePoint = new() { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
@@ -90,7 +42,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void Lab2XYZTest()
+        public void Lab2XYZ_WhenInvoked_ShouldConvertLabToXYZ()
         {
             // Arrange
             CIEXYZ whitePoint = new() { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
@@ -106,7 +58,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void Lab2LChTest()
+        public void Lab2LCh_WhenInvoked_ShouldConvertLabToLCh()
         {
             // Arrange
             CIELab lab = new() { L = 100.0, a = 0.0, b = 0.0 };
@@ -121,7 +73,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void LCh2LabTest()
+        public void LCh2Lab_WhenInvoked_ShouldConvertLChToLab()
         {
             // Arrange
             CIELCh lch = new() { L = 100.0, C = 0.0, h = 0.0 };
@@ -136,64 +88,62 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void LabV4EncodingTest()
+        public void LabV4Encoding_WhenRoundTripped_ShouldHaveValueSet()
         {
+            // Arrange
             ushort[] inWLab = new ushort[3];
             for (ushort u = 0; u < ushort.MaxValue; u++)
             {
                 inWLab[0] = inWLab[1] = inWLab[2] = u;
 
+                // Act
                 CIELab lab = Colorimetric.LabEncoded2Float(inWLab);
                 ushort[] outWLab = Colorimetric.Float2LabEncoded(lab);
 
-                for (int i = 0; i < 3; i++)
-                {
-                    Assert.AreEqual(u, outWLab[i]);
-                }
+                // Assert
+                CollectionAssert.AreEqual(inWLab, outWLab);
             }
         }
 
         [TestMethod()]
-        public void LabV2EncodingTest()
+        public void LabV2Encoding_WhenRoundTripped_ShouldHaveValueSet()
         {
+            // Arrange
             ushort[] inWLab = new ushort[3];
             for (ushort u = 0; u < ushort.MaxValue; u++)
             {
                 inWLab[0] = inWLab[1] = inWLab[2] = u;
 
+                // Act
                 CIELab lab = Colorimetric.LabEncoded2FloatV2(inWLab);
                 ushort[] outWLab = Colorimetric.Float2LabEncodedV2(lab);
 
-                for (int i = 0; i < 3; i++)
-                {
-                    Assert.AreEqual(u, outWLab[i]);
-                }
+                // Assert
+                CollectionAssert.AreEqual(inWLab, outWLab);
             }
         }
 
         [TestMethod()]
-        public void XYZEncodingTest()
+        public void XYZEncoding_WhenRoundTripped_ShouldHaveValueSet()
         {
+            // Arrange
             ushort[] inXyz = new ushort[3];
             for (ushort u = 0; u < ushort.MaxValue; u++)
             {
                 inXyz[0] = inXyz[1] = inXyz[2] = u;
 
+                // Act
                 CIEXYZ fxyz = Colorimetric.XYZEncoded2Float(inXyz);
                 ushort[] outXyz = Colorimetric.Float2XYZEncoded(fxyz);
 
-                for (int i = 0; i < 3; i++)
-                {
-                    Assert.AreEqual(u, outXyz[i]);
-                }
+                // Assert
+                CollectionAssert.AreEqual(inXyz, outXyz);
             }
         }
 
         [TestMethod()]
-        public void D50_XYZTest()
+        public void D50_XYZ_WhenGetting_ShouldHaveCorrectValue()
         {
-            // Arrange
-
             // Act
             var d50 = Colorimetric.D50_XYZ;
 
@@ -204,10 +154,8 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void D50_xyYTest()
+        public void D50_xyY_WhenGetting_ShouldHaveCorrectValue()
         {
-            // Arrange
-
             // Act
             var d50 = Colorimetric.D50_xyY;
 
@@ -218,7 +166,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void DesaturateTest()
+        public void Desaturate_WhenInvoked_ShouldSucceed()
         {
             // Arrange
             CIELab lab = new() { L = 97.4, a = 62.3, b = 81.2 };
@@ -229,186 +177,6 @@ namespace lcmsNET.Tests
 
             // Assert
             Assert.IsTrue(desaturated);
-        }
-
-        [TestMethod()]
-        public void CIEXYZ_D50Test()
-        {
-            // Arrange
-
-            // Act
-            var d50 = CIEXYZ.D50;
-
-            // Assert
-            Assert.AreEqual(0.9642, d50.X, double.Epsilon);
-            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
-            Assert.AreEqual(0.8249, d50.Z, double.Epsilon);
-        }
-
-        [TestMethod()]
-        public void CIEXYZ_FromHandleTest()
-        {
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 };
-
-            profile.WriteTag(TagSignature.BlueColorant, expected);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = profile.ReadTag<CIEXYZ>(TagSignature.BlueColorant);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void CIEXYZ_ToLabTest()
-        {
-            // Arrange
-            CIEXYZ whitePoint = new() { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
-            CIEXYZ xyz = new() { X = 0.9642, Y = 1.0, Z = 0.8249 };
-
-            // Act
-            CIELab lab = xyz.ToLab(whitePoint);
-
-            // Assert
-            Assert.AreEqual(100.0, lab.L);
-            Assert.AreEqual(0.0, lab.a);
-            Assert.AreEqual(0.0, lab.b);
-        }
-
-        [TestMethod()]
-        public void CIEXYZ_operatorCIExyYTest()
-        {
-            // Arrange
-            CIEXYZ xyz = new() { X = 0.9642, Y = 1.0, Z = 0.8249 };
-            CIExyY expected = Colorimetric.XYZ2xyY(xyz);
-
-            // Act
-            CIExyY actual = xyz;
-
-            // Assert
-            Assert.AreEqual(expected.x, actual.x, double.Epsilon);
-            Assert.AreEqual(expected.y, actual.y, double.Epsilon);
-            Assert.AreEqual(expected.Y, actual.Y, double.Epsilon);
-        }
-
-        [TestMethod()]
-        public void CIExyY_D50Test()
-        {
-            // Arrange
-
-            // Act
-            var d50 = CIExyY.D50;
-
-            // Assert
-            Assert.AreEqual(0.3457, d50.x, 0.0001);
-            Assert.AreEqual(0.3585, d50.y, 0.0001);
-            Assert.AreEqual(1.0, d50.Y, double.Epsilon);
-        }
-
-        [TestMethod()]
-        public void CIExyY_operatorCIEXYZTest()
-        {
-            // Arrange
-            CIExyY xyY = Colorimetric.D50_xyY;
-            CIEXYZ expected = Colorimetric.xyY2XYZ(xyY);
-
-            // Act
-            CIEXYZ actual = xyY;
-
-            // Assert
-            Assert.AreEqual(expected.X, actual.X, double.Epsilon);
-            Assert.AreEqual(expected.Y, actual.Y, double.Epsilon);
-            Assert.AreEqual(expected.Z, actual.Z, double.Epsilon);
-        }
-
-        [TestMethod()]
-        public void CIExyYTRIPLE_FromHandleTest()
-        {
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new CIExyYTRIPLE
-            {
-                Red = new CIExyY { x = 0.64, y = 0.33, Y = 1 },
-                Green = new CIExyY { x = 0.21, y = 0.71, Y = 1 },
-                Blue = new CIExyY { x = 0.15, y = 0.06, Y = 1 }
-            };
-
-            profile.WriteTag(TagSignature.Chromaticity, expected);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = profile.ReadTag<CIExyYTRIPLE>(TagSignature.Chromaticity);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void CIEXYZTRIPLE_FromHandleTest()
-        {
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new CIEXYZTRIPLE
-            {
-                Red = new CIEXYZ { X = 0.8322, Y = 1.0, Z = 0.7765 },
-                Green = new CIEXYZ { X = 0.9642, Y = 1.0, Z = 0.8249 },
-                Blue = new CIEXYZ { X = 0.7352, Y = 1.0, Z = 0.6115 }
-            };
-
-            profile.WriteTag(TagSignature.ChromaticAdaptation, expected);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = profile.ReadTag<CIEXYZTRIPLE>(TagSignature.ChromaticAdaptation);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void CIELab_ToXYZTest()
-        {
-            // Arrange
-            CIEXYZ whitePoint = new() { X = 0.9642, Y = 1.0, Z = 0.8249 }; // D50 XYZ normalized to Y = 1.0
-            CIELab lab = new() { L = 100.0, a = 0.0, b = 0.0 };
-
-            // Act
-            CIEXYZ xyz = lab.ToXYZ(whitePoint);
-
-            // Assert
-            Assert.AreEqual(0.9642, xyz.X);
-            Assert.AreEqual(1.0, xyz.Y);
-            Assert.AreEqual(0.8249, xyz.Z);
-        }
-
-        [TestMethod()]
-        public void CIELab_operatorCIELChTest()
-        {
-            // Arrange
-            CIELab lab = new() { L = 100.0, a = 0.0, b = 0.0 };
-
-            // Act
-            CIELCh lch = lab;
-
-            // Assert
-            Assert.AreEqual(100.0, lch.L);
-            Assert.AreEqual(0.0, lch.C);
-            Assert.AreEqual(0.0, lch.h);
-        }
-
-        [TestMethod()]
-        public void CIELCh_operatorCIELabTest()
-        {
-            // Arrange
-            CIELCh lch = new() { L = 100.0, C = 0.0, h = 0.0 };
-
-            // Act
-            CIELab lab = lch;
-
-            // Assert
-            Assert.AreEqual(100.0, lab.L);
-            Assert.AreEqual(0.0, lab.a);
-            Assert.AreEqual(0.0, lab.b);
         }
     }
 }

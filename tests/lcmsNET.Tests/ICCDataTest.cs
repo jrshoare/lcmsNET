@@ -26,73 +26,22 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class ICCDataTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void Constructor1Test()
+        public void Constructor_WhenStringParameter_ShouldSetAsASCII()
         {
             // Arrange
-            string expectedString = "constructor1test";
-            uint expectedFlag = ICCData.ASCII;
+            uint expected = ICCData.ASCII;
 
             // Act
-            var target = new ICCData(expectedString);
+            var sut = new ICCData("set as ascii");
+            var actual = sut.Flag;
 
             // Assert
-            var actualString = (string)target;
-            var actualFlag = target.Flag;
-            Assert.AreEqual(expectedString, actualString);
-            Assert.AreEqual(expectedFlag, actualFlag);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void Constructor1TestNullString()
+        public void Constructor_WhenStringParameterIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
             string s = null;
@@ -102,24 +51,21 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void Constructor2Test()
+        public void Constructor_WhenByeArrayParameter_ShouldSetAsBinary()
         {
             // Arrange
-            var expectedData = new byte[] { 12, 96, 14, 2 };
-            uint expectedFlag = ICCData.Binary;
+            uint expected = ICCData.Binary;
 
             // Act
-            var target = new ICCData(expectedData);
+            var target = new ICCData([12, 96, 14, 2]);
 
             // Assert
-            var actualData = (byte[])target;
-            var actualFlag = target.Flag;
-            Assert.AreEqual(expectedData, actualData);
-            Assert.AreEqual(expectedFlag, actualFlag);
+            var actual = target.Flag;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void Constructor2TestNullBytes()
+        public void Constructor_WhenByteArrayParameterIsNull_ShouldThrowArgumentNullException()
         {
             // Arrange
             byte[] bytes = null;
@@ -129,135 +75,51 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void StringOperatorTest()
+        public void ExplicitStringOperator_WhenASCII_ShouldConvertToString()
         {
             // Arrange
-            string expected = "stringoperatortest";
+            string expected = "string operator";
+            var sut = new ICCData(expected);
 
             // Act
-            var target = new ICCData(expected);
+            var actual = (string)sut;
 
             // Assert
-            var actual = (string)target;
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void StringOperatorTestNotAscii()
+        public void ExplicitStringOperator_WhenNotASCII_ShouldThrowInvalidCastException()
         {
             // Arrange
-            byte[] bytes = [12, 96, 14, 2];
+            var sut = new ICCData([12, 96, 14, 2]);
 
-            // Act
-            var target = new ICCData(bytes);
-
-            // Assert
-            var actual = Assert.ThrowsException<InvalidCastException>(() => (string)target);
+            // Act & Assert
+            var actual = Assert.ThrowsException<InvalidCastException>(() => (string)sut);
         }
 
         [TestMethod()]
-        public void ByteArrayOperatorTest()
+        public void ExplicitByteArrayOperator_WhenBinary_ShouldConvertToByteArray()
         {
             // Arrange
             byte[] expected = [12, 96, 14, 2];
+            var sut = new ICCData(expected);
 
             // Act
-            var target = new ICCData(expected);
+            byte[] actual = (byte[])sut;
 
             // Assert
-            byte[] actual = (byte[])target;
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void ByteArrayOperatorTestNotBinary()
+        public void ExplicitByteArrayOperator_WhenNotBinary_ShouldThrowInvalidCastException()
         {
             // Arrange
-            string s = "notbinarytest";
+            var target = new ICCData("not binary");
 
-            // Act
-            var target = new ICCData(s);
-
-            // Assert
+            // Act & Assert
             var actual = Assert.ThrowsException<InvalidCastException>(() => (byte[])target);
-        }
-
-        [TestMethod()]
-        public void FromHandleTestAscii()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = "fromhandletestascii";
-            var iccData = new ICCData(expected);
-
-            // do not use TagSignature.Data as this is not supported
-            profile.WriteTag(TagSignature.Ps2CRD0, iccData);
-
-            // Act
-            // implicit call to FromHandle
-            var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD0);
-
-            // Assert
-            var actual = (string)iccData2;
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void FromHandleTestAscii2()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = "fromhandletestascii2";
-            var iccData = new ICCData(expected);
-
-            // do not use TagSignature.Data as this is not supported
-            profile.WriteTag(TagSignature.Ps2CRD1, iccData);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = (string)profile.ReadTag<ICCData>(TagSignature.Ps2CRD1);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void FromHandleTestBinary()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
-            var iccData = new ICCData(expected);
-
-            // do not use TagSignature.Data as this is not supported
-            profile.WriteTag(TagSignature.Ps2CRD2, iccData);
-
-            // Act
-            // implicit call to FromHandle
-            var iccData2 = profile.ReadTag<ICCData>(TagSignature.Ps2CRD2);
-
-            // Assert
-            var actual = (byte[])iccData2;
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void FromHandleTestBinary2()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            var expected = new byte[] { 17, 99, 0, 253, 122, 19 };
-            var iccData = new ICCData(expected);
-
-            // do not use TagSignature.Data as this is not supported
-            profile.WriteTag(TagSignature.Ps2CRD3, iccData);
-
-            // Act
-            // implicit call to FromHandle
-            var actual = (byte[])profile.ReadTag<ICCData>(TagSignature.Ps2CRD3);
-
-            // Assert
-            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

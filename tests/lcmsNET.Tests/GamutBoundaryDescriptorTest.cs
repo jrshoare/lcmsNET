@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -26,126 +27,112 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class GamutBoundaryDescriptorTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var gbd = GamutBoundaryDescriptor.Create(context);
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
 
             // Assert
-            Assert.IsNotNull(gbd);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void AddPointTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            CIELab lab = new() { L = 99.3, a = 12.6, b = 14.2 };
-
-            using var context = Context.Create(plugin, userData);
-            using var gbd = GamutBoundaryDescriptor.Create(context);
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            bool added = gbd.AddPoint(lab);
+            using var sut = GamutBoundaryDescriptor.Create(expected);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.AreSame(expected, actual);
+        }
+
+        [TestMethod()]
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = GamutBoundaryDescriptor.Create(null);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void AddPoint_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
+            sut.Dispose();
+
+            CIELab lab = new() { L = 99.3, a = 12.6, b = 14.2 };
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.AddPoint(lab));
+        }
+
+        [TestMethod()]
+        public void AddPoint_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
+            CIELab lab = new() { L = 99.3, a = 12.6, b = 14.2 };
+
+            // Act
+            bool added = sut.AddPoint(lab);
 
             // Assert
             Assert.IsTrue(added);
         }
 
         [TestMethod()]
-        public void ComputeTest()
+        public void Compute_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
+            sut.Dispose();
 
-            using var context = Context.Create(plugin, userData);
-            using var gbd = GamutBoundaryDescriptor.Create(context);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Compute());
+        }
+
+        [TestMethod()]
+        public void Compute_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
 
             // Act
-            bool computed = gbd.Compute();
+            bool computed = sut.Compute();
 
             // Assert
             Assert.IsTrue(computed);
         }
 
         [TestMethod()]
-        public void CheckPointTest()
+        public void CheckPoint_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
+            sut.Dispose();
 
-            using var context = Context.Create(plugin, userData);
-            using var gbd = GamutBoundaryDescriptor.Create(context);
+            CIELab check = new();
 
-            CIELab add = new();
-            for (int L = 0; L <= 100; L += 10)
-                for (int a = -128; a <= 128; a += 5)
-                    for (int b = -128; b <= 128; b += 5)
-                    {
-                        add.L = L;
-                        add.a = a;
-                        add.b = b;
-                        gbd.AddPoint(add);
-                    }
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.CheckPoint(check));
+        }
 
-            gbd.Compute();
+        [TestMethod()]
+        public void CheckPoint_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = GamutBoundaryDescriptorUtils.CreateGamutBoundaryDescriptor();
+            GamutBoundaryDescriptorUtils.AddPoints(sut);
+            sut.Compute();
 
             // Act
             CIELab check = new();
@@ -158,7 +145,7 @@ namespace lcmsNET.Tests
                         check.b = b;
 
                         // Assert
-                        Assert.IsTrue(gbd.CheckPoint(check));
+                        Assert.IsTrue(sut.CheckPoint(check));
                     }
         }
     }

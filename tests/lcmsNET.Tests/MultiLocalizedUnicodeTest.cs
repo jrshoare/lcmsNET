@@ -18,166 +18,161 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Reflection;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class MultiLocalizedUnicodeTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [TestMethod()]
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+            // Arrange
+            using var context = ContextUtils.CreateContext();
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+            // Act
+            using var sut = MultiLocalizedUnicode.Create(context);
 
-        private static MemoryStream Save(string resourceName)
-        {
-            MemoryStream ms = new();
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                s.CopyTo(ms);
-            }
-            return ms;
+            // Assert
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 3;
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
+            using var sut = MultiLocalizedUnicode.Create(expected);
+            var actual = sut.Context;
 
             // Assert
-            Assert.IsNotNull(mlu);
+            Assert.AreSame(expected, actual);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
         {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "Duplicate");
-
-            using var duplicate = mlu.Duplicate();
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            var actual = sut.Context;
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.IsNull(actual);
         }
 
         [TestMethod()]
-        public void SetASCIITest()
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-            string languageCode = "en";
-            string countryCode = "US";
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            sut.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "duplicate");
+            sut.Dispose();
 
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            bool set = mlu.SetASCII(languageCode, countryCode, "SetASCII");
-
-            // Assert
-            Assert.IsTrue(set);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate());
         }
 
         [TestMethod()]
-        public void SetWideTest()
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-            string languageCode = "en";
-            string countryCode = "US";
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            sut.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "duplicate");
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            bool set = mlu.SetWide(languageCode, countryCode, "SetWide");
+            using var duplicate = sut.Duplicate();
 
             // Assert
-            Assert.IsTrue(set);
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void SetASCII_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() =>
+                sut.SetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "set_ascii_disposed"));
+        }
+
+        [TestMethod()]
+        public void SetASCII_WhenValid_ShouldSucceed()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+
+            // Act
+            bool result = sut.SetASCII(languageCode: "en", countryCode: "US", "set_ascii");
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod()]
+        public void SetWide_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() =>
+                sut.SetWide(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "set_wide_disposed"));
+        }
+
+        [TestMethod()]
+        public void SetWide_WhenValid_ShouldSucceed()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+
+            // Act
+            bool result = sut.SetWide(languageCode: "en", countryCode: "US", "set_wide");
+
+            // Assert
+            Assert.IsTrue(result);
         }
 
 #if NET5_0_OR_GREATER
         [TestMethod()]
-        public void SetUTF8Test()
+        public void SetUTF8_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() =>
+                sut.SetUTF8(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry, "set_utf8_disposed"));
+        }
+
+        [TestMethod()]
+        public void SetUTF8_WhenValid_ShouldSucceed()
         {
             try
             {
                 // Arrange
-                IntPtr plugin = IntPtr.Zero;
-                IntPtr userData = IntPtr.Zero;
-                uint nItems = 0;
-                string languageCode = "en";
-                string countryCode = "US";
+                using var context = ContextUtils.CreateContext();
+                using var sut = MultiLocalizedUnicode.Create(context);
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-                bool set = mlu.SetUTF8(languageCode, countryCode, "SetUTF8");
+                bool set = sut.SetUTF8(languageCode: "en", countryCode: "US", "set_utf8");
 
                 // Assert
                 Assert.IsTrue(set);
@@ -190,68 +185,84 @@ namespace lcmsNET.Tests
 #endif
 
         [TestMethod()]
-        public void GetASCIITest()
+        public void GetASCII_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "GetASCII";
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            string expected = "get_ascii_disposed";
+            sut.SetASCII(languageCode: "en", countryCode: "US", expected);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.GetASCII(languageCode: "en", countryCode: "US"));
+        }
+
+        [TestMethod()]
+        public void GetASCII_WhenRoundTripped_ShouldHaveValueSet()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+            string expected = "get_ascii";
+            sut.SetASCII(languageCode: "en", countryCode: "US", expected);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetASCII(languageCode, countryCode, expected);
-            var actual = mlu.GetASCII(languageCode, countryCode);
+            var actual = sut.GetASCII(languageCode: "en", countryCode: "US");
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void GetASCIITestNonExistent()
+        public void GetASCII_WhenNonExistent_ShouldReturnNull()
         {
             // Arrange
-            using var mlu = MultiLocalizedUnicode.Create(null);
+            using var sut = MultiLocalizedUnicode.Create(context: null);
 
             // Act
-            var actual = mlu.GetASCII("en", "US");
+            var actual = sut.GetASCII(languageCode: "en", countryCode: "US");
 
             // Assert
             Assert.IsNull(actual);
         }
 
         [TestMethod()]
-        public void GetWideTest()
+        public void GetWide_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-            string languageCode = "en";
-            string countryCode = "US";
-            string expected = "GetWide";
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            string expected = "get_wide_disposed";
+            sut.SetWide(languageCode: "en", countryCode: "US", expected);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.GetWide(languageCode: "en", countryCode: "US"));
+        }
+
+        [TestMethod()]
+        public void GetWide_WhenRoundTripped_ShouldHaveValueSet()
+        {
+            // Arrange
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            string expected = "get_wide";
+            sut.SetWide(languageCode: "en", countryCode: "US", expected);
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetWide(languageCode, countryCode, expected);
-            var actual = mlu.GetWide(languageCode, countryCode);
+            var actual = sut.GetWide(languageCode: "en", countryCode: "US");
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void GetWideTestNonExistent()
+        public void GetWideWhenNonExistent_ShouldReturnNull()
         {
             // Arrange
-            using var mlu = MultiLocalizedUnicode.Create(null);
+            using var sut = MultiLocalizedUnicode.Create(context: null);
 
             // Act
-            var actual = mlu.GetWide("en", "US");
+            var actual = sut.GetWide(languageCode: "en", countryCode: "US");
 
             // Assert
             Assert.IsNull(actual);
@@ -259,23 +270,37 @@ namespace lcmsNET.Tests
 
 #if NET5_0_OR_GREATER
         [TestMethod()]
-        public void GetUTF8Test()
+        public void GetUTF8_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             try
             {
                 // Arrange
-                IntPtr plugin = IntPtr.Zero;
-                IntPtr userData = IntPtr.Zero;
-                uint nItems = 0;
-                string languageCode = "en";
-                string countryCode = "US";
-                string expected = "GetUTF8";
+                string expected = "get_utf8";
+                using var sut = MultiLocalizedUnicode.Create(context: null);
+                sut.SetUTF8(languageCode: "en", countryCode: "US", expected);
+                sut.Dispose();
+
+                // Act & Assert
+                Assert.ThrowsException<ObjectDisposedException>(() => sut.GetUTF8(languageCode: "en", countryCode: "US"));
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
+        }
+
+        [TestMethod()]
+        public void GetUTF8_WhenRoundTripped_ShouldHaveValueSet()
+        {
+            try
+            {
+                // Arrange
+                string expected = "get_utf8";
+                using var sut = MultiLocalizedUnicode.Create(context: null);
 
                 // Act
-                using var context = Context.Create(plugin, userData);
-                using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-                mlu.SetUTF8(languageCode, countryCode, expected);
-                var actual = mlu.GetUTF8(languageCode, countryCode);
+                sut.SetUTF8(languageCode: "en", countryCode: "US", expected);
+                var actual = sut.GetUTF8(languageCode: "en", countryCode: "US");
 
                 // Assert
                 Assert.AreEqual(expected, actual);
@@ -287,15 +312,15 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void GetUTF8TestNonExistent()
+        public void GetUTF8_WhenNonExistent_ShouldReturnNull()
         {
             try
             {
                 // Arrange
-                using var mlu = MultiLocalizedUnicode.Create(null);
+                using var sut = MultiLocalizedUnicode.Create(null);
 
                 // Act
-                var actual = mlu.GetUTF8("en", "US");
+                var actual = sut.GetUTF8(languageCode: "en", countryCode: "US");
 
                 // Assert
                 Assert.IsNull(actual);
@@ -308,144 +333,148 @@ namespace lcmsNET.Tests
 #endif
 
         [TestMethod()]
-        public void GetTranslationTest()
+        public void GetTranslation_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
             string expectedLanguageCode = "en";
             string expectedCountryCode = "US";
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "get_translation_disposed");
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.GetTranslation(
+                expectedLanguageCode, expectedCountryCode, out string actualLanguageCode, out string actualCountryCode));
+        }
+
+        [TestMethod()]
+        public void GetTranslation_WhenValid_ShouldReturnTranslationRule()
+        {
+            // Arrange
+            string expectedLanguageCode = "en";
+            string expectedCountryCode = "US";
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "get_translation");
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "GetTranslation");
-            var actual = mlu.GetTranslation(expectedLanguageCode, expectedCountryCode,
+            var result = sut.GetTranslation(expectedLanguageCode, expectedCountryCode,
                     out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
+            Assert.IsTrue(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void GetTranslationTestNonExistent()
+        public void GetTranslation_WhenNonExistent_ShouldReturnFalse()
         {
             // Arrange
             string expectedLanguageCode = null;
             string expectedCountryCode = null;
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
+            using var sut = MultiLocalizedUnicode.Create(context: null);
 
             // Act
-            var actual = mlu.GetTranslation("en", "US",
+            var result = sut.GetTranslation("en", "US",
                     out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
-            Assert.IsFalse(actual);
+            Assert.IsFalse(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void GetTranslationTestNoLanguage()
+        public void GetTranslation_WhenNoLanguageSet_ShouldReturnNoLanguage()
         {
             // Arrange
             var expectedLanguageCode = MultiLocalizedUnicode.NoLanguage;
             var expectedCountryCode = "US";
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "GetTranslationNoLanguage");
+            using var sut = MultiLocalizedUnicode.Create(null);
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "get_translation_no_language");
 
             // Act
-            var actual = mlu.GetTranslation(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry,
+            var result = sut.GetTranslation(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry,
                     out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
-            Assert.IsTrue(actual);
+            Assert.IsTrue(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void GetTranslationTestLanguageOnlyMatch()
+        public void GetTranslation_WhenOnlyLanguageMatch_ShouldReturnTranslation()
         {
             // Arrange
             var expectedLanguageCode = "en";
             var expectedCountryCode = "US";
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
-            mlu.SetASCII("fr", "FR", "Pomme");
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII("fr", "FR", "Pomme");
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
 
             // Act
-            var actual = mlu.GetTranslation(expectedLanguageCode, "GB",
+            var result = sut.GetTranslation(expectedLanguageCode, countryCode: "GB",
                     out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
-            Assert.IsTrue(actual);
+            Assert.IsTrue(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void GetTranslationTestNoMatch()
+        public void GetTranslation_WhenNoMatch_ShouldReturnFirstTranslation()
         {
             // Arrange
             var expectedLanguageCode = "en";
             var expectedCountryCode = "US";
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "Apple");
 
             // Act
-            var actual = mlu.GetTranslation("fr", "FR",
+            var result = sut.GetTranslation("fr", "FR",
                     out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
-            Assert.IsTrue(actual);
+            Assert.IsTrue(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void TranslationsCountTest()
+        public void TranslationsCount_WhenValid_ShouldReturnNumberOfTranslations()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
-            string languageCode = "en";
-            string countryCode = "US";
-            uint notExpected = 0;
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII(languageCode: "en", countryCode: "US", "translations_count");
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetASCII(languageCode, countryCode, "TranslationsCount");
-            var actual = mlu.TranslationsCount;
+            var actual = sut.TranslationsCount;
 
             // Assert
-            Assert.AreNotEqual(notExpected, actual);
+            Assert.AreNotEqual(0u, actual);
         }
 
         [TestMethod()]
-        public void TranslationsCodesTest()
+        public void TranslationsCodes_WhenValid_ShouldReturnLanguageAndCountryForIndex()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nItems = 0;
             string expectedLanguageCode = "en";
             string expectedCountryCode = "US";
+
+            using var context = ContextUtils.CreateContext();
+            using var sut = MultiLocalizedUnicode.Create(context);
+
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "translation_codes");
             uint index = 0;
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var mlu = MultiLocalizedUnicode.Create(context, nItems);
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "TranslationsCodes");
-            var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
+            var actual = sut.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
@@ -453,73 +482,42 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void TranslationsCodesTestNoLanguageNoCountry()
+        public void TranslationsCodes_WhenNoTranslations_ShouldReturnNoLanguageNoCountry()
         {
             // Arrange
             var expectedLanguageCode = MultiLocalizedUnicode.NoLanguage;
             var expectedCountryCode = MultiLocalizedUnicode.NoCountry;
+
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            sut.SetASCII(expectedLanguageCode, expectedCountryCode, "translation_code_none");
             uint index = 0;
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
-            mlu.SetASCII(expectedLanguageCode, expectedCountryCode, "TranslationsCodes");
-
             // Act
-            var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
+            var result = sut.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
+            Assert.IsTrue(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
         }
 
         [TestMethod()]
-        public void TranslationsCodesTestIndexOutOfRange()
+        public void TranslationsCodes_WhenIndexOutOfRange_ShouldReturnFalse()
         {
             // Arrange
-            uint index = 3;
             string expectedLanguageCode = null;
             string expectedCountryCode = null;
 
-            using var mlu = MultiLocalizedUnicode.Create(null);
+            using var sut = MultiLocalizedUnicode.Create(context: null);
+            uint index = 3;
 
             // Act
-            var actual = mlu.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
+            var result = sut.TranslationsCodes(index, out string actualLanguageCode, out string actualCountryCode);
 
             // Assert
-            Assert.IsFalse(actual);
+            Assert.IsFalse(result);
             Assert.AreEqual(expectedLanguageCode, actualLanguageCode);
             Assert.AreEqual(expectedCountryCode, actualCountryCode);
-        }
-
-        [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            string expected = "sRGB IEC61966-2.1";
-
-            using MemoryStream ms = Save(".Resources.sRGB.icc");
-            using var profile = Profile.Open(ms.GetBuffer());
-
-            // Act
-            // implicit call to FromHandle
-            using var mlu = profile.ReadTag<MultiLocalizedUnicode>(TagSignature.ProfileDescription);
-            string actual = mlu.GetASCII(MultiLocalizedUnicode.NoLanguage, MultiLocalizedUnicode.NoCountry);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ReadTagTest()
-        {
-            // Arrange
-            using MemoryStream ms = Save(".Resources.sRGB.icc");
-
-            // Act
-            using var profile = Profile.Open(ms.GetBuffer());
-            using var mlu = profile.ReadTag<MultiLocalizedUnicode>(TagSignature.ProfileDescription);
-
-            // Assert
-            Assert.IsNotNull(mlu);
         }
     }
 }

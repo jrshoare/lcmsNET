@@ -18,130 +18,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Reflection;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class StageTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        private static MemoryStream Save(string resourceName)
-        {
-            MemoryStream ms = new();
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using (var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName))
-            {
-                s.CopyTo(ms);
-            }
-            return ms;
-        }
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenForEmptyStage_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nChannels = 3;
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, nChannels);
+            using var sut = Stage.Create(context, nChannels: 3);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest2()
+        public void Create_WhenToContainToneCurves_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nChannels = 3;
-
-            using var context = Context.Create(plugin, userData);
-            using var toneCurve = ToneCurve.BuildGamma(context, 2.2);
+            using var context = ContextUtils.CreateContext();
+            using var toneCurve = ToneCurve.BuildGamma(context, gamma: 2.2);
             ToneCurve[] curves = [toneCurve, toneCurve, toneCurve];
 
             // Act
-            using var stage = Stage.Create(context, nChannels, curves);
+            using var sut = Stage.Create(context, nChannels: 3, curves);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest2a()
+        public void Create_WhenToContainIdentityToneCurves_ShouldHaveValidHandle()
         {
-            // Arrange
-            uint nChannels = 3;
-
             // Act
-            using var stage = Stage.Create(null, nChannels, null);
+            using var sut = Stage.Create(context: null, nChannels: 3, curves: null);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest3()
+        public void Create_WhenToContainMatrixAndOffset_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             double[,] matrix = new double[3, 3]
             {
                 { 1.0, 0.0, 0.0 },
@@ -151,139 +80,87 @@ namespace lcmsNET.Tests
             double[] offset = [0, 0, 0];
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, matrix, offset);
+            using var sut = Stage.Create(context, matrix, offset);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest4()
+        public void Create_WhenToContain16BitLUT_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
-            ushort[] table =
-            [
-                0,    0,   0,                 // 0 0 0
-                0,    0,   0xffff,            // 0 0 1
-
-                0,    0xffff,    0,           // 0 1 0
-                0,    0xffff,    0xffff,      // 0 1 1
-
-                0xffff,    0,    0,           // 1 0 0
-                0xffff,    0,    0xffff,      // 1 0 1
-
-                0xffff,    0xffff,   0,       // 1 1 0
-                0xffff,    0xffff,   0xffff,  // 1 1 1
-            ];
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
+            using var sut = Stage.Create(context, nGridPoints: 2, inputChannels: 3, outputChannels: 3, Constants.Stage.Table1);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest5()
+        public void Create_WhenToContainFloatingPointLUT_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nGridPoints = 2;
-            uint inputChannels = 3;
-            uint outputChannels = 3;
-            float[] table =
-            [
-                0,    0,    0,
-                0,    0,    1.0f,
-
-                0,    1.0f,    0,
-                0,    1.0f,    1.0f,
-
-                1.0f,    0,    0,
-                1.0f,    0,    1.0f,
-
-                1.0f,    1.0f,    0,
-                1.0f,    1.0f,    1.0f
-            ];
+            using var context = ContextUtils.CreateContext();
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, nGridPoints, inputChannels, outputChannels, table);
+            using var sut = Stage.Create(context, nGridPoints: 2, inputChannels: 3, outputChannels: 3, Constants.Stage.Table3);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTest6()
+        public void Create_WhenToContain16BitLUTWithDifferentDimensions_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint[] clutPoint = new uint[] { 7, 8, 9 };
-            uint outputChannels = 3;
-
-            // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, clutPoint, outputChannels, (ushort[])null);
-
-            // Assert
-            Assert.IsNotNull(stage);
-        }
-
-        [TestMethod()]
-        public void CreateTest7()
-        {
-            // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            using var context = ContextUtils.CreateContext();
             uint[] clutPoint = [7, 8, 9];
-            uint outputChannels = 3;
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, clutPoint, outputChannels, (float[])null);
+            using var sut = Stage.Create(context, clutPoint, outputChannels: 3, (ushort[])null);
 
             // Assert
-            Assert.IsNotNull(stage);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Create_WhenToContainFloatingPointLUTWithDifferentDimensions_ShouldHaveValidHandle()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nChannels = 3;
+            using var context = ContextUtils.CreateContext();
+            uint[] clutPoint = [7, 8, 9];
 
             // Act
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, nChannels);
-            using var duplicate = stage.Duplicate();
+            using var sut = Stage.Create(context, clutPoint, outputChannels: 3, (float[])null);
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void StageTypeTest()
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-            uint nChannels = 3;
+            using var context = ContextUtils.CreateContext();
+            using var sut = Stage.Create(context, nChannels: 3);
+
+            // Act
+            using var duplicate = sut.Duplicate();
+
+            // Assert
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void StageType_WhenEmpty_ShouldBeIdentityElemType()
+        {
+            // Arrange
+            using var context = ContextUtils.CreateContext();
+            using var stage = Stage.Create(context, nChannels: 3);
             StageSignature expected = StageSignature.IdentityElemType;
-
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, nChannels);
 
             // Act
             StageSignature actual = stage.StageType;
@@ -293,172 +170,121 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void InputChannelsTest()
+        public void InputChannels_WhenGetting_ShouldBeValueUsedToCreate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
             uint expected = 3;
 
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, expected);
+            using var context = ContextUtils.CreateContext();
+            using var sut = Stage.Create(context, expected);
 
             // Act
-            uint actual = stage.InputChannels;
+            uint actual = sut.InputChannels;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void OutputChannelsTest()
+        public void OutputChannels_WhenGetting_ShouldBeValueUsedToCreate()
         {
             // Arrange
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
             uint expected = 3;
 
-            using var context = Context.Create(plugin, userData);
-            using var stage = Stage.Create(context, expected);
+            using var context = ContextUtils.CreateContext();
+            using var sut = Stage.Create(context, expected);
 
             // Act
-            uint actual = stage.OutputChannels;
+            uint actual = sut.OutputChannels;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
-        private static ushort Fn8D1(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
-        {
-            return (ushort)((a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8) / m);
-        }
-
-        private static ushort Fn8D2(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
-        {
-            return (ushort)((a1 + 3 * a2 + 3 * a3 + a4 + a5 + a6 + a7 + a8) / (m + 4));
-        }
-
-        private static ushort Fn8D3(ushort a1, ushort a2, ushort a3, ushort a4, ushort a5, ushort a6, ushort a7, ushort a8, uint m)
-        {
-            return (ushort)((3 * a1 + 2 * a2 + 3 * a3 + a4 + a5 + a6 + a7 + a8) / (m + 5));
-        }
-
-        private static int Sampler3D16Bit(ushort[] input, ushort[] output, IntPtr cargo)
-        {
-            output[0] = Fn8D1(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
-            output[1] = Fn8D2(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
-            output[2] = Fn8D3(input[0], input[1], input[2], 0, 0, 0, 0, 0, 3);
-
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void SampleCLUTTest1()
+        public void SampleCLUT_WhenValidFor16BitSampler_ShouldSucceed()
         {
             // Arrange
-            using var stage = Stage.Create(null, 9, 3, 3, (ushort[])null);
+            using var sut = Stage.Create(context: null, nGridPoints: 9, inputChannels: 3, outputChannels: 3, (ushort[])null);
 
             // Act
-            var actual = stage.SampleCLUT(Sampler3D16Bit, IntPtr.Zero, StageSamplingFlags.None);
+            var actual = sut.SampleCLUT((Sampler16)StageUtils.Sampler3D, cargo: nint.Zero, StageSamplingFlags.None);
 
             // Assert
             Assert.IsTrue(actual);
         }
 
-        private static int Sampler3DFloat(float[] input, float[] output, IntPtr cargo)
-        {
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void SampleCLUTTest2()
+        public void SampleCLUT_WhenValidForFloatingPointSampler_ShouldSucceed()
         {
             // Arrange
-            using var stage = Stage.Create(null, 9, 3, 3, (float[])null);
+            using var sut = Stage.Create(context: null, nGridPoints: 9, inputChannels: 3, outputChannels: 3, (float[])null);
 
             // Act
-            var actual = stage.SampleCLUT(Sampler3DFloat, IntPtr.Zero, StageSamplingFlags.None);
+            var actual = sut.SampleCLUT((SamplerFloat)StageUtils.Sampler3D, cargo: nint.Zero, StageSamplingFlags.None);
 
             // Assert
             Assert.IsTrue(actual);
         }
 
-        private static int EstimateTAC16Bit(ushort[] input, ushort[] output, IntPtr cargo)
-        {
-            Assert.IsNull(output);
-
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void SliceSpaceTest1()
+        public void SliceSpace_WhenInvoked_ShouldSliceTargetSpaceCalling16BitSamplerOnEachNode()
         {
             // Arrange
             uint[] gridPoints = [6, 74, 74];
 
             // Act
-            var actual = Stage.SliceSpace(gridPoints, EstimateTAC16Bit, IntPtr.Zero);
+            var actual = Stage.SliceSpace(gridPoints, (Sampler16)StageUtils.EstimateTAC, cargo: IntPtr.Zero);
 
             // Assert
             // (in callback)
         }
 
-        private static int EstimateTACFloat(float[] input, float[] output, IntPtr cargo)
-        {
-            Assert.IsNull(output);
-
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void SliceSpaceTest2()
+        public void SliceSpace_WhenInvoked_ShouldSliceTargetSpaceCallingFloatingPointSamplerOnEachNode()
         {
             // Arrange
             uint[] gridPoints = [2, 16, 16];
 
             // Act
-            var actual = Stage.SliceSpace(gridPoints, EstimateTACFloat, IntPtr.Zero);
+            var actual = Stage.SliceSpace(gridPoints, (SamplerFloat)StageUtils.EstimateTAC, cargo: IntPtr.Zero);
 
             // Assert
             // (in callback)
         }
 
-        private static int SamplerInspect16Bit(ushort[] input, ushort[] output, IntPtr cargo)
-        {
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void InspectA2B0UsingStageSampleCLUT()
+        public void SampleCLUT_WhenInvoked_ShouldCall16BitSamplerOnEachNode()
         {
-            using MemoryStream ms = Save(".Resources.Lab.icc");
+            // Arrange
+            using MemoryStream ms = ResourceUtils.Save(".Resources.Lab.icc");
             using var profile = Profile.Open(ms.GetBuffer());
             using var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0);
-            foreach (var stage in pipeline)
+
+            foreach (var sut in pipeline)
             {
-                if (stage.StageType == StageSignature.CLutElemType)
+                if (sut.StageType == StageSignature.CLutElemType)
                 {
-                    stage.SampleCLUT(SamplerInspect16Bit, IntPtr.Zero, StageSamplingFlags.Inspect);
+                    // Act
+                    sut.SampleCLUT((Sampler16)StageUtils.SamplerInspect, cargo: IntPtr.Zero, StageSamplingFlags.Inspect);
                 }
             }
         }
 
-        private static int SamplerInspectFloat(float[] input, float[] output, IntPtr cargo)
-        {
-            return 1; // 1 = true, 0 = false
-        }
-
         [TestMethod()]
-        public void InspectA2B0UsingStageSampleCLUT2()
+        public void SampleCLUT_WhenInvoked_ShouldCallFloatingPointSamplerOnEachNode()
         {
-            using MemoryStream ms = Save(".Resources.Lab.icc");
+            // Arrange
+            using MemoryStream ms = ResourceUtils.Save(".Resources.Lab.icc");
             using var profile = Profile.Open(ms.GetBuffer());
             using var pipeline = profile.ReadTag<Pipeline>(TagSignature.AToB0);
-            foreach (var stage in pipeline)
+
+            foreach (var sut in pipeline)
             {
-                if (stage.StageType == StageSignature.CLutElemType)
+                if (sut.StageType == StageSignature.CLutElemType)
                 {
-                    stage.SampleCLUT(SamplerInspectFloat, IntPtr.Zero, StageSamplingFlags.Inspect);
+                    // Act
+                    sut.SampleCLUT((SamplerFloat)StageUtils.SamplerInspect, cargo: IntPtr.Zero, StageSamplingFlags.Inspect);
                 }
             }
         }

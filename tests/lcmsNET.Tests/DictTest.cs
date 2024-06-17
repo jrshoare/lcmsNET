@@ -18,180 +18,133 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
+using static lcmsNET.Tests.TestUtils.MultiLocalizedUnicodeUtils;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class DictTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            // Arrange
-
             // Act
-            using var dict = Dict.Create(null);
+            using var sut = DictUtils.CreateDict();
 
             // Assert
-            Assert.IsNotNull(dict);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            using var dict = Dict.Create(null);
-            using var duplicate = dict.Duplicate();
+            using var sut = Dict.Create(expected);
+            var actual = sut.Context;
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.AreSame(expected, actual);
         }
 
         [TestMethod()]
-        public void AddTest()
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = Dict.Create(null);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            string name = "name";
-            string value = "value";
+            using var sut = DictUtils.CreateDict();
+            sut.Dispose();
 
-            using var dict = Dict.Create(null);
-            using var displayName = MultiLocalizedUnicode.Create(null, 0);
-            displayName.SetWide("en", "US", "Hello");
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate());
+        }
+
+
+        [TestMethod()]
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
+        {
+            // Arrange
+            using var sut = DictUtils.CreateDict();
 
             // Act
-            bool added = dict.Add(name, value, displayName, null);
+            using var duplicate = sut.Duplicate();
+
+            // Assert
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void Add_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = DictUtils.CreateDict();
+            sut.Dispose();
+
+            using var mlu = CreateAsWide(Constants.Dict.DisplayName);
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Add(Constants.Dict.Name, Constants.Dict.Value, mlu, null));
+        }
+
+        [TestMethod()]
+        public void Add_WhenInvoked_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = DictUtils.CreateDict();
+            using var mlu = CreateAsWide(Constants.Dict.DisplayName);
+
+            // Act
+            bool added = sut.Add(Constants.Dict.Name, Constants.Dict.Value, mlu, null);
 
             // Assert
             Assert.IsTrue(added);
         }
 
         [TestMethod()]
-        public void EnumerateTest()
+        public void GetEnumerator_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
-            using var dict = Dict.Create(null);
-            using var mlu = MultiLocalizedUnicode.Create(null, 0);
-            mlu.SetASCII("en", "GB", "Hello");
+            using var sut = DictUtils.CreateDict();
+            sut.Add("first", null, null, null);
+            sut.Dispose();
 
-            dict.Add("first", null, null, null);
-            dict.Add("second", "second-value", null, null);
-            dict.Add("third", "third-value", mlu, null);
-            int expected = 3;
-
-            // Act
-            var actual = dict.Count();
-
-            var list = dict.ToArray();
-
-            // Assert
-            Assert.AreEqual(expected, actual);
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.GetEnumerator());
         }
 
         [TestMethod()]
-        public void FromHandleTest()
+        public void GetEnumerator_WhenInvoked_ShouldReturnAddedItems()
         {
             // Arrange
+            using var sut = DictUtils.CreateDict();
+            using var mlu = CreateAsASCII(Constants.Dict.DisplayName);
+
+            sut.Add("first", null, null, null);
+            sut.Add("second", "second-value", null, null);
+            sut.Add("third", "third-value", mlu, null);
             int expected = 3;
 
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var dict = Dict.Create(null))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-            {
-                mlu.SetASCII("en", "GB", "Hello");
-
-                dict.Add("first", null, null, null);
-                dict.Add("second", "second-value", null, null);
-                dict.Add("third", "third-value", mlu, null);
-
-                profile.WriteTag(TagSignature.Meta, dict);
-            }
-
             // Act
-            // implicit call to FromHandle
-            using var roDict = profile.ReadTag<Dict>(TagSignature.Meta);
+            var actual = sut.Count();   // use LINQ to enumerate count
+
             // Assert
-            int actual = roDict.Count();
             Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod()]
-        public void ReadTagTest()
-        {
-            // Arrange
-            int expected = 3;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var dict = Dict.Create(null))
-            using (var mlu = MultiLocalizedUnicode.Create(null, 0))
-            {
-                mlu.SetASCII("en", "GB", "Hello");
-
-                dict.Add("first", null, null, null);
-                dict.Add("second", "second-value", null, null);
-                dict.Add("third", "third-value", mlu, null);
-
-                profile.WriteTag(TagSignature.Meta, dict);
-            }
-
-            // Act
-            using (var dict = profile.ReadTag<Dict>(TagSignature.Meta))
-            {
-                // Assert
-                int actual = dict.Count();
-                Assert.AreEqual(expected, actual);
-            }
         }
     }
 }

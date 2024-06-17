@@ -18,204 +18,228 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class NamedColorListTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            // Arrange
-
             // Act
-            using var ncl = NamedColorList.Create(null, 0, 4, "prefix", "suffix");
+            using var sut = NamedColorList.Create(context: null, n: 0, colorantCount: 4, "prefix", "suffix");
 
             // Assert
-            Assert.IsNotNull(ncl);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void CreateTestNullPrefix()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            using var ncl = NamedColorList.Create(null, 0, 4, null, "suffix");
+            using var sut = NamedColorList.Create(expected, n: 0, colorantCount: 4, "prefix", "suffix");
+            var actual = sut.Context;
 
             // Assert
-            Assert.IsNotNull(ncl);
+            Assert.AreSame(expected, actual);
         }
 
         [TestMethod()]
-        public void CreateTestNullSuffix()
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = NamedColorList.Create(context: null, n: 0, colorantCount: 4, "prefix", "suffix");
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void Create_WhenNullPrefix_ShouldHaveValidHandle()
+        {
+            // Act
+            using var sut = NamedColorList.Create(context: null, n: 0, colorantCount: 4, prefix: null, "suffix");
+
+            // Assert
+            Assert.IsFalse(sut.IsInvalid);
+        }
+
+        [TestMethod()]
+        public void Create_WhenNullSuffix_ShouldHaveValidHandle()
+        {
+            // Act
+            using var sut = NamedColorList.Create(context: null, n: 0, colorantCount: 4, "prefix", suffix: null);
+
+            // Assert
+            Assert.IsFalse(sut.IsInvalid);
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
         {
             // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate());
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
+        {
+            // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
 
             // Act
-            using var ncl = NamedColorList.Create(null, 0, 4, "prefix", null);
+            using var duplicate = sut.Duplicate();
 
             // Assert
-            Assert.IsNotNull(ncl);
+            Assert.AreNotSame(duplicate, sut);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Add_WhenInvalidPcsLength_ShouldThrowArgumentException()
         {
             // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+            ushort[] pcs = [1]; // length not 3 throws
+            ushort[] colorant = new ushort[16];
+            colorant[0] = colorant[1] = colorant[2] = 1;
 
-            // Act
-            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
-            using var duplicate = ncl.Duplicate();
-
-            // Assert
-            Assert.IsNotNull(duplicate);
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Add(name: "#1", pcs, colorant));
         }
 
         [TestMethod()]
-        public void AddTest()
+        public void Add_WhenInvalidColorantLength_ShouldThrowArgumentException()
         {
             // Arrange
-            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
-            ushort[] pcs = new ushort[3] { 1, 1, 1 };
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+            ushort[] pcs = [1, 1, 1];
+            ushort[] colorant = new ushort[17]; // length not 16 throws
+            colorant[0] = colorant[1] = colorant[2] = 1;
+
+            // Act & Assert
+            Assert.ThrowsException<ArgumentException>(() => sut.Add(name: "#1", pcs, colorant));
+        }
+
+        [TestMethod()]
+        public void Add_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+            sut.Dispose();
+
+            ushort[] pcs = [1, 1, 1];
+            ushort[] colorant = new ushort[16];
+            colorant[0] = colorant[1] = colorant[2] = 1;
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Add(name: "#1", pcs, colorant));
+        }
+
+        [TestMethod()]
+        public void Add_WhenValid_ShouldSucceed()
+        {
+            // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+
+            ushort[] pcs = [1, 1, 1];
             ushort[] colorant = new ushort[16];
             colorant[0] = colorant[1] = colorant[2] = 1;
 
             // Act
-            bool added = ncl.Add("#1", pcs, colorant);
+            bool result = sut.Add(name: "#1", pcs, colorant);
 
             // Assert
-            Assert.IsTrue(added);
+            Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void CountTest()
+        public void Count_WhenInvoked_ShouldGetNumberOfSpotColors()
         {
             // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
             uint expected = 256;
 
-            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
             for (uint i = 0; i < expected; i++)
             {
                 ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
                 ushort[] colorant = new ushort[16];
                 colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                bool added = ncl.Add($"#{i}", pcs, colorant);
+                bool added = sut.Add($"#{i}", pcs, colorant);
             }
 
             // Act
-            uint actual = ncl.Count;
+            uint actual = sut.Count;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void CountTestEmptyList()
+        public void Count_WhenEmpty_ShouldReturnZero()
         {
             // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: null, suffix: null);
             uint expected = 0;
 
-            using var ncl = NamedColorList.Create(null, 256, 3, null, null);
-
             // Act
-            var actual = ncl.Count;
+            var actual = sut.Count;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void IndexerTest()
+        public void Indexer_WhenNamedSpotColorPresent_ShouldReturnIndex()
         {
             // Arrange
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
             int expected = 23;
 
-            using var ncl = NamedColorList.Create(null, 256, 3, "pre", "post");
             for (uint i = 0; i < 256; i++)
             {
                 ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
                 ushort[] colorant = new ushort[16];
                 colorant[0] = colorant[1] = colorant[2] = (ushort)i;
 
-                bool added = ncl.Add($"#{i}", pcs, colorant);
+                sut.Add($"#{i}", pcs, colorant);
             }
 
             // Act
-            int actual = ncl[$"#{expected}"];
+            int actual = sut[$"#{expected}"];
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void IndexerTestNotFound()
+        public void Indexer_WhenNamedSpotColorNotPresent_ShouldReturnError()
         {
             // Arrange
-            int expected = -1;
-
-            using var ncl = NamedColorList.Create(null, 256, 3, null, null);
+            using var sut = NamedColorList.Create(context: null, n: 256, colorantCount: 3, prefix: "pre", suffix: "post");
+            int expected = Constants.NamedColorList.IndexNotFound;
 
             // Act
-            int actual = ncl["notfound"];
+            int actual = sut["not_found"];
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void GetInfoTest()
+        public void GetInfo_WhenValid_ShouldGetSpotColorInfoForIndex()
         {
             // Arrange
             string expectedPrefix = "pre";
@@ -223,19 +247,17 @@ namespace lcmsNET.Tests
             uint expectedNColor = 42;
             string expectedName = $"#{expectedNColor}";
 
-            using var ncl = NamedColorList.Create(null, 256, 3, expectedPrefix, expectedSuffix);
+            using var sut = NamedColorList.Create(null, 256, 3, expectedPrefix, expectedSuffix);
             for (uint i = 0; i < 256; i++)
             {
                 ushort[] pcs = [(ushort)i, (ushort)i, (ushort)i];
                 ushort[] colorant = new ushort[16];
                 colorant[0] = colorant[1] = colorant[2] = (ushort)i;
-
-                // Act
-                bool added = ncl.Add($"#{i}", pcs, colorant);
+                sut.Add($"#{i}", pcs, colorant);
             }
 
             // Act
-            bool getInfo = ncl.GetInfo(expectedNColor, out string actualName, out string actualPrefix, out string actualSuffix,
+            bool getInfo = sut.GetInfo(expectedNColor, out string actualName, out string actualPrefix, out string actualSuffix,
                     out ushort[] actualPcs, out ushort[] actualColorant);
 
             // Assert
@@ -247,36 +269,6 @@ namespace lcmsNET.Tests
                 Assert.AreEqual(expectedNColor, actualPcs[i]);
                 Assert.AreEqual(expectedNColor, actualColorant[i]);
             }
-        }
-
-        [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            int expected = 23;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var ncl = NamedColorList.Create(null, 256, 3, "pre", "post"))
-            {
-                for (uint i = 0; i < 256; i++)
-                {
-                    ushort[] pcs = new ushort[3] { (ushort)i, (ushort)i, (ushort)i };
-                    ushort[] colorant = new ushort[16];
-                    colorant[0] = colorant[1] = colorant[2] = (ushort)i;
-
-                    bool added = ncl.Add($"#{i}", pcs, colorant);
-                }
-
-                profile.WriteTag(TagSignature.NamedColor2, ncl);
-            }
-
-            // Act
-            // implicit call to FromHandle
-            using var roNcl = profile.ReadTag<NamedColorList>(TagSignature.NamedColor2);
-
-            // Assert
-            int actual = roNcl[$"#{expected}"];
-            Assert.AreEqual(expected, actual);
         }
     }
 }

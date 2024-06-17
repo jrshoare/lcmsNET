@@ -26,56 +26,8 @@ namespace lcmsNET.Tests.Plugin
     [TestClass()]
     public class FixedPointTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod]
-        public void ToDoubleFrom8Dot8Test()
+        public void ToDoubleFrom8Dot8_WhenFixed8Dot8_ShouldSucceed()
         {
             // Arrange
             double expected = 1.0;
@@ -89,7 +41,7 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void ToFixed8Dot8Test()
+        public void ToFixed8Dot8_WhenInRange_ShouldSucceed()
         {
             // Arrange
             ushort expected = 0xffff;
@@ -103,7 +55,7 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void ToDoubleFrom15Dot16Test()
+        public void ToDouble_WhenSigned15Dot16_ShouldSucceed()
         {
             // Arrange
             double expected = 1.0;
@@ -117,7 +69,7 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void ToFixed15Dot16Test()
+        public void ToFixed15Dot16_WhenInRange_ShouldSucceed()
         {
             // Arrange
             int expected = 0x7fff_ffff;

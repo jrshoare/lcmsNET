@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 using lcmsNET.Plugin;
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -27,65 +28,16 @@ namespace lcmsNET.Tests.Plugin
     [TestClass()]
     public class MD5Test
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
             try
             {
                 // Act
-                using (var md5 = MD5.Create())
-                {
-                    // Assert
-                    Assert.IsNotNull(md5);
-                }
+                using var sut = MD5.Create();
+
+                // Assert
+                Assert.IsFalse(sut.IsInvalid);
             }
             catch (EntryPointNotFoundException)
             {
@@ -94,21 +46,17 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void AddTest()
+        public void Add_WhenInvoked_ShouldAddToDigest()
         {
             try
             {
                 // Arrange
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var md5 = MD5.Create(context))
-                {
-                    byte[] memory = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                using var context = ContextUtils.CreateContext();
+                using var sut = MD5.Create(context);
+                byte[] memory = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-                    // Act
-                    md5.Add(memory);
-
-                    // Assert
-                }
+                // Act
+                sut.Add(memory);
             }
             catch (EntryPointNotFoundException)
             {
@@ -117,22 +65,18 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void FreezeTest()
+        public void Freeze_WhenInvoked_ShouldComputeDigestAndFreeze()
         {
             try
             {
                 // Arrange
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var md5 = MD5.Create(context))
-                {
-                    byte[] memory = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                    md5.Add(memory);
+                using var context = Context.Create(IntPtr.Zero, IntPtr.Zero);
+                using var sut = MD5.Create(context);
+                byte[] memory = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                sut.Add(memory);
 
-                    // Act
-                    md5.Freeze();
-
-                    // Assert
-                }
+                // Act
+                sut.Freeze();
             }
             catch (EntryPointNotFoundException)
             {
@@ -141,16 +85,15 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void DigestNotFrozenTest()
+        public void Digest_WhenNotFrozen_ShouldThrowLcmsNETException()
         {
             try
             {
                 // Arrange
-                using (var md5 = MD5.Create())
-                {
-                    // Act & Assert
-                    Assert.ThrowsException<LcmsNETException>(() => _ = md5.Digest);
-                }
+                using var sut = MD5.Create();
+
+                // Act & Assert
+                Assert.ThrowsException<LcmsNETException>(() => _ = sut.Digest);
             }
             catch (EntryPointNotFoundException)
             {
@@ -159,24 +102,22 @@ namespace lcmsNET.Tests.Plugin
         }
 
         [TestMethod]
-        public void DigestTest()
+        public void Digest_WhenFrozen_ShouldReturnDigest()
         {
             try
             {
                 // Arrange
-                using (var context = Context.Create(IntPtr.Zero, IntPtr.Zero))
-                using (var md5 = MD5.Create(context))
-                {
-                    byte[] memory = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                    md5.Add(memory);
+                using var context = ContextUtils.CreateContext();
+                using var sut = MD5.Create(context);
+                byte[] memory = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                sut.Add(memory);
+                sut.Freeze();
 
-                    // Act
-                    md5.Freeze();
-                    var digest = md5.Digest;
+                // Act
+                var digest = sut.Digest;
 
-                    // Assert
-                    Assert.IsNotNull(digest);
-                }
+                // Assert
+                Assert.IsNotNull(digest);
             }
             catch (EntryPointNotFoundException)
             {

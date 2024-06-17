@@ -18,180 +18,99 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace lcmsNET.Tests
 {
     [TestClass()]
     public class ProfileSequenceDescriptorTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-        static MultiLocalizedUnicode Create(string enUS, string esES)
-        {
-            var mlu = MultiLocalizedUnicode.Create(null, 0);
-            mlu.SetWide("en", "US", enUS);
-            mlu.SetWide("es", "ES", esES);
-            return mlu;
-        }
-
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenInstantiated_ShouldHaveValidHandle()
         {
-            // Arrange
-            uint nItems = 3;
-
             // Act
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var sut = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
 
             // Assert
-            Assert.IsNotNull(psd);
+            Assert.IsFalse(sut.IsInvalid);
         }
 
         [TestMethod()]
-        public void DuplicateTest()
+        public void Create_WhenInstantiatedWithNonNullContext_ShouldHaveNonNullContext()
         {
             // Arrange
-            uint nItems = 1;
+            using var expected = ContextUtils.CreateContext();
 
             // Act
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            using var duplicate = psd.Duplicate();
+            using var sut = ProfileSequenceDescriptor.Create(expected, nItems: 3);
+            var actual = sut.Context;
 
             // Assert
-            Assert.IsNotNull(duplicate);
+            Assert.AreSame(expected, actual);
         }
 
         [TestMethod()]
-        public void LengthTest()
+        public void Create_WhenInstantiatedWithNullContext_ShouldHaveNullContext()
+        {
+            // Act
+            using var sut = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+            var actual = sut.Context;
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenDisposed_ShouldThrowObjectDisposedException()
+        {
+            // Arrange
+            using var sut = ProfileSequenceDescriptor.Create(context: null, nItems: 3);
+            sut.Dispose();
+
+            // Act & Assert
+            Assert.ThrowsException<ObjectDisposedException>(() => sut.Duplicate());
+        }
+
+        [TestMethod()]
+        public void Duplicate_WhenInvoked_ShouldReturnDuplicate()
+        {
+            // Arrange
+            using var sut = ProfileSequenceDescriptor.Create(context: null, nItems: 1);
+
+            // Act
+            using var duplicate = sut.Duplicate();
+
+            // Assert
+            Assert.AreNotSame(duplicate, sut);
+        }
+
+        [TestMethod()]
+        public void Length_WhenInvoked_ShouldGetNumberOfProfilesInSequence()
         {
             // Arrange
             uint expected = 7;
-
-            using var psd = ProfileSequenceDescriptor.Create(null, expected);
+            using var sut = ProfileSequenceDescriptor.Create(context: null, expected);
 
             // Act
-            uint actual = psd.Length;
+            uint actual = sut.Length;
 
             // Assert
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod()]
-        public void IndexerTest()
+        public void Indexer_WhenInvoked_ShouldGetItemAtIndex()
         {
             // Arrange
-            uint nItems = 4;
-
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
+            using var sut = ProfileSequenceDescriptor.Create(context: null, nItems: 4);
 
             // Act
-            ProfileSequenceItem item = psd[2];
+            ProfileSequenceItem item = sut[2];
 
             // Assert
             Assert.IsNotNull(item);
-        }
-
-        [TestMethod()]
-        public void WriteTagTest()
-        {
-            // Arrange
-            uint nItems = 3;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using var psd = ProfileSequenceDescriptor.Create(null, nItems);
-            var item = psd[0];
-            item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
-            item.Manufacturer = Create("Hello 0", "Hola 0");
-            item.Model = Create("Hello 0", "Hola 0");
-
-            item = psd[1];
-            item.Attributes = DeviceAttributes.Reflective | DeviceAttributes.Matte;
-            item.Manufacturer = Create("Hello 1", "Hola 1");
-            item.Model = Create("Hello 1", "Hola 1");
-
-            item = psd[2];
-            item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Glossy;
-            item.Manufacturer = Create("Hello 2", "Hola 2");
-            item.Model = Create("Hello 2", "Hola 2");
-
-            // Act
-            bool written = profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
-
-            // Assert
-            Assert.IsTrue(written);
-        }
-
-        [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            uint expected = 1;
-
-            using var profile = Profile.CreatePlaceholder(null);
-            using (var psd = ProfileSequenceDescriptor.Create(null, expected))
-            {
-                var item = psd[0];
-                item.Attributes = DeviceAttributes.Transparency | DeviceAttributes.Matte;
-                item.Manufacturer = Create("Hello 0", "Hola 0");
-                item.Model = Create("Hello 0", "Hola 0");
-
-                profile.WriteTag(TagSignature.ProfileSequenceDesc, psd);
-            }
-
-            // Act
-            // implicit call to FromHandle
-            using var roPsd = profile.ReadTag<ProfileSequenceDescriptor>(TagSignature.ProfileSequenceDesc);
-
-            // Assert
-            uint actual = roPsd.Length;
-            Assert.AreEqual(expected, actual);
         }
     }
 }

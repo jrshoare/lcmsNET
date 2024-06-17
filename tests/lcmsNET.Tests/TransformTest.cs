@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using lcmsNET.Tests.TestUtils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET.Tests
@@ -29,398 +29,220 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class TransformTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [TestMethod()]
+        public void Create_WhenWithoutContext_ShouldHaveValidHandle()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
 
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
+                    // Act
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-        /// <summary>
-        /// Extracts the named resource and saves to the specified file path.
-        /// </summary>
-        /// <param name="resourceName"></param>
-        /// <param name="path"></param>
-        private static void Save(string resourceName, string path)
-        {
-            var thisExe = Assembly.GetExecutingAssembly();
-            var assemblyName = new AssemblyName(thisExe.FullName);
-            using var s = thisExe.GetManifestResourceStream(assemblyName.Name + resourceName);
-            using var fs = File.Create(path);
-            s.CopyTo(fs);
+                    // Assert
+                    Assert.IsFalse(sut.IsInvalid);
+                })
+            );
         }
 
         [TestMethod()]
-        public void CreateTest()
+        public void Create_WhenWithContext_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var context = ContextUtils.CreateContext();
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                    // Act
+                    using var sut = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-                // Act
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-
-                // Assert
-                Assert.IsNotNull(transform);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                    // Assert
+                    Assert.IsFalse(sut.IsInvalid);
+                })
+            );
         }
 
         [TestMethod()]
-        public void CreateTest2()
+        public void Create_WhenForProofingWithoutContext_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "D50_XYZ.icc", (xyzPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var lab = Profile.Open(labPath, "r");
+                        using var proofing = Profile.Open(xyzPath, "r");
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                        // Act
+                        using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                    Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
 
-                // Act
-                using var context = Context.Create(plugin, userData);
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-
-                // Assert
-                Assert.IsNotNull(transform);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                        // Assert
+                        Assert.IsFalse(sut.IsInvalid);
+                    })
+                )
+            );
         }
 
         [TestMethod()]
-        public void CreateTest3()
+        public void Create_WhenForProofingWithContext_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "D50_XYZ.icc", (xyzPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var lab = Profile.Open(labPath, "r");
+                        using var proofing = Profile.Open(xyzPath, "r");
+                        using var context = ContextUtils.CreateContext();
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
-                var proofingpath = Path.Combine(tempPath, "D50_XYZ.icc");
-                Save(".Resources.D50_XYZ.icc", proofingpath);
+                        // Act
+                        using var sut = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
+                                    Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
 
-                // Act
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var proofing = Profile.Open(proofingpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
-
-                // Assert
-                Assert.IsNotNull(transform);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                        // Assert
+                        Assert.IsFalse(sut.IsInvalid);
+                    })
+                )
+            );
         }
 
         [TestMethod()]
-        public void CreateTest4()
+        public void Create_WhenMultipleProfilesWithoutContext_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
-                var proofingpath = Path.Combine(tempPath, "D50_XYZ.icc");
-                Save(".Resources.D50_XYZ.icc", proofingpath);
-
-                // Act
-                using var context = Context.Create(plugin, userData);
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var proofing = Profile.Open(proofingpath, "r");
-                using var transform = Transform.Create(context, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
-
-                // Assert
-                Assert.IsNotNull(transform);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
-        }
-
-        [TestMethod()]
-        public void CreateMultipleTest()
-        {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-
                 // Act
                 Profile[] profiles = new Profile[1];
-                using (profiles[0] = Profile.Open(srgbpath, "r"))
-                using (var transform = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
+                using (profiles[0] = Profile.Open(srgbPath, "r"))
+                using (var sut = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
                             Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     // Assert
-                    Assert.IsNotNull(transform);
+                    Assert.IsFalse(sut.IsInvalid);
                 }
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void CreateMultipleTest2()
+        public void Create_WhenMultipleProfilesWithContext_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-
                 // Act
                 Profile[] profiles = new Profile[1];
-                using (var context = Context.Create(plugin, userData))
-                using (profiles[0] = Profile.Open(srgbpath, "r"))
-                using (var transform = Transform.Create(context, profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
+                using var context = ContextUtils.CreateContext();
+
+                using (profiles[0] = Profile.Open(srgbPath, "r"))
+                using (var sut = Transform.Create(context, profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
                             Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     // Assert
-                    Assert.IsNotNull(transform);
+                    Assert.IsFalse(sut.IsInvalid);
                 }
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void CreateExtendedTest()
+        public void Create_WhenExtended_ShouldHaveValidHandle()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-
                 // Act
                 Profile[] profiles = new Profile[1];
-                bool[] bpc = [true];
-                Intent[] intents = [Intent.RelativeColorimetric];
-                double[] adaptationStates = [1.0];
-                Profile gamut = null;
-                int gamutPCSPosition = 0;
-                uint inputFormat = Cms.TYPE_RGB_8;
-                uint outputFormat = Cms.TYPE_XYZ_16;
-                CmsFlags flags = CmsFlags.None;
+                using var context = ContextUtils.CreateContext();
 
-                using (var context = Context.Create(plugin, userData))
-                using (profiles[0] = Profile.Open(srgbpath, "r"))
-                using (var transform = Transform.Create(context, profiles, bpc, intents, adaptationStates,
-                        gamut, gamutPCSPosition, inputFormat, outputFormat, flags))
+                using (profiles[0] = Profile.Open(srgbPath, "r"))
+                using (var sut = Transform.Create(context, profiles, bpc: [true], intents: [Intent.RelativeColorimetric],
+                        adaptationStates: [1.0], gamut: null, gamutPCSPosition: 0, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16, CmsFlags.None))
                 {
                     // Assert
-                    Assert.IsNotNull(transform);
+                    Assert.IsFalse(sut.IsInvalid);
                 }
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void DoTransformTest()
+        public void DoTransform_WhenSrgbToXLab_ShouldSucceed()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                    byte[] inputBuffer = [255, 147, 226];
+                    byte[] outputBuffer = new byte[3];
 
-                // Act
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-
-                byte[] inputBuffer = [255, 147, 226];
-                byte[] outputBuffer = new byte[3];
-                transform.DoTransform(inputBuffer, outputBuffer, 1);
-
-                // Assert
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                    // Act
+                    sut.DoTransform(inputBuffer, outputBuffer, 1);
+                })
+            );
         }
 
         [TestMethod()]
-        public void DoTransformTest2()
+        public void DoTransform_WhenSrgbToXyz_ShouldSucceed()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "xyz.icc", (xyzPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var xyz = Profile.Open(xyzPath, "r");
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var xyzpath = Path.Combine(tempPath, "xyz.icc");
-                Save(".Resources.D50_XYZ.icc", xyzpath);
+                    byte[] inputBuffer = [255, 255, 255];
+                    byte[] outputBuffer = new byte[3];
 
-                // Act
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var xyz = Profile.Open(xyzpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                            Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
-
-                byte[] inputBuffer = [255, 255, 255];
-                byte[] outputBuffer = new byte[3];
-                transform.DoTransform(inputBuffer, outputBuffer, 1);
-
-                // Assert
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                    // Act
+                    sut.DoTransform(inputBuffer, outputBuffer, 1);
+                })
+            );
         }
 
         [TestMethod()]
-        public void DoTransformTest3()
+        public void DoTransform_WhenLineStride_ShouldSucceed()
         {
             try
             {
                 // Arrange
-                var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-                Directory.CreateDirectory(tempPath);
-                const int pixelsPerLine = 3;
-                const int lineCount = 1;
-                const int bytesPerLineIn = pixelsPerLine * 3 + 4;
-                const int bytesPerLineOut = pixelsPerLine * 3 + 2;
-                const int bytesPerPlaneIn = 0; // ignored as not using planar formats
-                const int bytesPerPlaneOut = 0; // ditto
+                ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "xyz.icc", (xyzPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var xyz = Profile.Open(xyzPath, "r");
+                        using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                    Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
 
-                try
-                {
-                    var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                    Save(".Resources.sRGB.icc", srgbpath);
-                    var xyzpath = Path.Combine(tempPath, "xyz.icc");
-                    Save(".Resources.D50_XYZ.icc", xyzpath);
+                        const int pixelsPerLine = 3;
+                        const int lineCount = 1;
+                        const int bytesPerLineIn = pixelsPerLine * 3 + 4;
+                        const int bytesPerLineOut = pixelsPerLine * 3 + 2;
+                        byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
+                        byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
 
-                    // Act
-                    using var srgb = Profile.Open(srgbpath, "r");
-                    using var xyz = Profile.Open(xyzpath, "r");
-                    using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
-                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
-
-                    byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
-                    byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
-                    transform.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
-                            bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);    // >= 2.8
-
-                    // Assert
-                }
-                finally
-                {
-                    Directory.Delete(tempPath, true);
-                }
+                        // Act
+                        sut.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+                                bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn: 0, bytesPerPlaneOut: 0);    // >= 2.8
+                    })
+                );
             }
             catch (EntryPointNotFoundException)
             {
@@ -429,204 +251,143 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void DoTransformMultipleTest()
+        public void DoTransform_WhenMultipleProfiles_ShouldSucceed()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
-            try
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-
-                // Act
                 Profile[] profiles = new Profile[1];
-                using (profiles[0] = Profile.Open(srgbpath, "r"))
-                using (var transform = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
+                using (profiles[0] = Profile.Open(srgbPath, "r"))
+                using (var sut = Transform.Create(profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
                         Intent.RelativeColorimetric, CmsFlags.None))
                 {
                     byte[] inputBuffer = [255, 255, 255];
                     byte[] outputBuffer = new byte[6];
-                    transform.DoTransform(inputBuffer, outputBuffer, 1);
+
+                    // Act
+                    sut.DoTransform(inputBuffer, outputBuffer, 1);
+                }
+            });
+        }
+
+        [TestMethod()]
+        public void Context_WhenCreatedWithContext_ShouldReturnValuePassedToCreate()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var expected = ContextUtils.CreateContext();
+                    using var sut = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+
+                    // Act
+                    var actual = sut.Context;
 
                     // Assert
+                    Assert.AreSame(expected, actual);
+                })
+            );
+        }
+
+        [TestMethod()]
+        public void Context_WhenCreatedMultipleWithContext_ShouldReturnValuePassedToCreate()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+            {
+                Profile[] profiles = new Profile[1];
+
+                using var expected = ContextUtils.CreateContext();
+                using (profiles[0] = Profile.Open(srgbPath, "r"))
+                using (var sut = Transform.Create(expected, profiles, Cms.TYPE_RGB_8, Cms.TYPE_XYZ_16,
+                            Intent.RelativeColorimetric, CmsFlags.None))
+                {
+                    // Act
+                    var actual = sut.Context;
+
+                    // Assert
+                    Assert.AreSame(expected, actual);
                 }
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+            });
         }
 
         [TestMethod()]
-        public void ContextTest()
+        public void Context_WhenCreatedForProofingWithContext_ShouldReturnValuePassedToCreate()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "D50_XYZ.icc", (xyzPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var lab = Profile.Open(labPath, "r");
+                        using var proofing = Profile.Open(xyzPath, "r");
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                        using var expected = ContextUtils.CreateContext();
+                        using var sut = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
+                                    Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
 
-                // Act
-                using var expected = Context.Create(plugin, userData);
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-                var actual = transform.Context;
+                        // Act
+                        var actual = sut.Context;
 
-                // Assert
-                Assert.AreSame(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                        // Assert
+                        Assert.AreSame(expected, actual);
+                    })
+                )
+            );
         }
 
         [TestMethod()]
-        public void ContextMultipleTest()
+        public void InputFormat_WhenInvoked_ShouldReturnValuePassedToCreate()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    uint expected = Cms.TYPE_RGB_8;
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var sut = Transform.Create(srgb, inputFormat: expected, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
 
-                // Act
-                using var expected = Context.Create(plugin, userData);
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-                var actual = transform.Context;
+                    // Act
+                    uint actual = sut.InputFormat;
 
-                // Assert
-                Assert.AreSame(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                })
+            );
         }
 
         [TestMethod()]
-        public void ContextProofingTest()
+        public void OutputFormat_WhenInvoked_ShouldReturnValuePassedToCreate()
         {
             // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            IntPtr plugin = IntPtr.Zero;
-            IntPtr userData = IntPtr.Zero;
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    uint expected = Cms.TYPE_Lab_8;
 
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
-                var proofingpath = Path.Combine(tempPath, "D50_XYZ.icc");
-                Save(".Resources.D50_XYZ.icc", proofingpath);
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                outputFormat: expected, Intent.Perceptual, CmsFlags.None);
 
-                // Act
-                using var expected = Context.Create(plugin, userData);
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var proofing = Profile.Open(proofingpath, "r");
-                using var transform = Transform.Create(expected, srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, proofing, Intent.Perceptual, Intent.AbsoluteColorimetric, CmsFlags.None);
-                var actual = transform.Context;
+                    // Act
+                    uint actual = sut.OutputFormat;
 
-                // Assert
-                Assert.AreSame(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
+                    // Assert
+                    Assert.AreEqual(expected, actual);
+                })
+            );
         }
 
         [TestMethod()]
-        public void InputFormatTest()
-        {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            uint expected = Cms.TYPE_RGB_8;
-
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
-
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-
-                // Act
-                uint actual = transform.InputFormat;
-
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
-        }
-
-        [TestMethod()]
-        public void OutputFormatTest()
-        {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-            uint expected = Cms.TYPE_Lab_8;
-
-            try
-            {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
-
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
-
-                // Act
-                uint actual = transform.OutputFormat;
-
-                // Assert
-                Assert.AreEqual(expected, actual);
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
-            }
-        }
-
-        [TestMethod()]
-        public void ChangeBuffersFormatTest()
+        public void ChangeBuffersFormat_WhenInvokedFor16BitPrecision_ShouldChangeBufferEncoding()
         {
             // Arrange
             using var profile = Profile.Create_sRGB();
@@ -641,7 +402,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void NamedColorListTest()
+        public void NamedColorList_WhenNamedColors_ShouldGetNamedColorList()
         {
             // TODO:
             // Need to understand how to create a transform where the cmsStage type
@@ -649,7 +410,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void UserDataTest()
+        public void UserData_WhenInvoked_ShouldReturnPointerToUserData()
         {
             // Arrange
             IntPtr expected = Marshal.AllocHGlobal(99);
@@ -680,37 +441,30 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void FlagsTest()
+        public void Flags_WhenInvoked_ShouldReturnFlagsInEffectForTransform()
         {
-            // Arrange
-            var tempPath = Path.Combine(Path.GetTempPath(), "lcmsNET.Tests");
-            Directory.CreateDirectory(tempPath);
-
             try
             {
-                var srgbpath = Path.Combine(tempPath, "srgb.icc");
-                Save(".Resources.sRGB.icc", srgbpath);
-                var labpath = Path.Combine(tempPath, "lab.icc");
-                Save(".Resources.Lab.icc", labpath);
+                // Arrange
+                ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var lab = Profile.Open(labPath, "r");
+                        using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                    Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.NoOptimize | CmsFlags.BlackPointCompensation);
 
-                using var srgb = Profile.Open(srgbpath, "r");
-                using var lab = Profile.Open(labpath, "r");
-                using var transform = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
-                            Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.NoOptimize | CmsFlags.BlackPointCompensation);
+                        // Act
+                        CmsFlags actual = sut.Flags;
 
-                // Act
-                CmsFlags actual = transform.Flags;
-
-                // Assert
-                // transform creation may add or remove flags so do not assert equality with values passed to create method
+                        // Assert
+                        // transform creation may add or remove flags so do not assert equality with values used to create
+                    })
+                );
             }
             catch (EntryPointNotFoundException)
             {
                 Assert.Inconclusive("Requires Little CMS 2.12 or later.");
-            }
-            finally
-            {
-                Directory.Delete(tempPath, true);
             }
         }
     }

@@ -26,56 +26,8 @@ namespace lcmsNET.Tests
     [TestClass()]
     public class ColorantOrderTest
     {
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
         [TestMethod()]
-        public void ConstructorTest()
+        public void Constructor_WhenInstantiated_ShouldHaveValueOfSuppliedByteArray()
         {
             // Arrange
             byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -89,7 +41,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ConstructorTestNullArrayArgument()
+        public void Constructor_WhenNullByteArray_ShouldThrowArgumentException()
         {
             // Arrange
             byte[] expected = null;
@@ -99,7 +51,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ConstructorTestInvalidArrayLength()
+        public void Constructor_WhenIncorrectByteArrayLength_ShouldThrowArgumentException()
         {
             // Arrange
             const int invalidLength = 13;
@@ -110,7 +62,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ByteArrayOperatorTest()
+        public void ImplicitByteArrayOperator_WhenInvoked_ShouldReturnByteArrayUsedToInstantiate()
         {
             // Arrange
             byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -124,7 +76,7 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
-        public void ColorantOrderOperatorTest()
+        public void ExplicitColorantOrderOperator_WhenInvoked_ShouldInstantiateFromByteArray()
         {
             // Arrange
             byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -134,24 +86,6 @@ namespace lcmsNET.Tests
 
             // Assert
             byte[] actual = target;
-            CollectionAssert.AreEqual(expected, actual);
-        }
-
-
-        [TestMethod()]
-        public void FromHandleTest()
-        {
-            // Arrange
-            using var profile = Profile.CreatePlaceholder(null);
-            byte[] expected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
-            profile.WriteTag(TagSignature.ColorantOrder, (ColorantOrder)expected);
-
-            // Act
-            // implicit call to FromHandle
-            byte[] actual = profile.ReadTag<ColorantOrder>(TagSignature.ColorantOrder);
-
-            // Assert
             CollectionAssert.AreEqual(expected, actual);
         }
     }
