@@ -326,38 +326,45 @@ namespace lcmsNET.Tests
             using var context = ContextUtils.CreateContext();
             float[] sampled = [0.0f, 1.0f];
 
-            MemoryUtils.UsingPinnedMemory(sampled, (pSampled) =>
+            try
             {
-                CurveSegment[] segments = ToneCurveUtils.CreateCurveSegments(pSampled);
-                using var sut = ToneCurve.BuildSegmented(context, segments);
-
-                // Act
-                CurveSegment curveSegment = sut.GetCurveSegment(segmentIndex: 1);
-                var x0 = curveSegment.x0;
-                var x1 = curveSegment.x1;
-                var type = curveSegment.type;
-                var parameters = curveSegment.parameters;
-                var nGridPoints = curveSegment.nGridPoints;
-                var sampledPoints = curveSegment.sampledPoints;
-
-                // Assert
-                Assert.AreEqual(segments[1].x0, x0);
-                Assert.AreEqual(segments[1].x1, x1);
-                Assert.AreEqual(segments[1].type, type);
-                CollectionAssert.AreEqual(segments[1].parameters, parameters);
-                Assert.AreEqual(segments[1].nGridPoints, nGridPoints);
-                if (type == 0)
+                MemoryUtils.UsingPinnedMemory(sampled, (pSampled) =>
                 {
-                    unsafe
+                    CurveSegment[] segments = ToneCurveUtils.CreateCurveSegments(pSampled);
+                    using var sut = ToneCurve.BuildSegmented(context, segments);
+
+                    // Act
+                    CurveSegment curveSegment = sut.GetCurveSegment(segmentIndex: 1);
+                    var x0 = curveSegment.x0;
+                    var x1 = curveSegment.x1;
+                    var type = curveSegment.type;
+                    var parameters = curveSegment.parameters;
+                    var nGridPoints = curveSegment.nGridPoints;
+                    var sampledPoints = curveSegment.sampledPoints;
+
+                    // Assert
+                    Assert.AreEqual(segments[1].x0, x0);
+                    Assert.AreEqual(segments[1].x1, x1);
+                    Assert.AreEqual(segments[1].type, type);
+                    CollectionAssert.AreEqual(segments[1].parameters, parameters);
+                    Assert.AreEqual(segments[1].nGridPoints, nGridPoints);
+                    if (type == 0)
                     {
-                        float* points = (float*)sampledPoints.ToPointer();
-                        for (var i = 0; i < nGridPoints; i++)
+                        unsafe
                         {
-                            Assert.AreEqual(sampled[i], points[i]);
+                            float* points = (float*)sampledPoints.ToPointer();
+                            for (var i = 0; i < nGridPoints; i++)
+                            {
+                                Assert.AreEqual(sampled[i], points[i]);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.16 or later.");
+            }
         }
     }
 }
