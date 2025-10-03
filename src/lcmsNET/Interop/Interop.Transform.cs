@@ -168,6 +168,14 @@ namespace lcmsNET
             }
         }
 
+        internal unsafe static void DoTransform(IntPtr transform, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer, int pixelCount)
+        {
+            fixed (void* pInBuffer = inputBuffer, pOutBuffer = outputBuffer)
+            {
+                DoTransform_Internal(transform, pInBuffer, pOutBuffer, pixelCount);
+            }
+        }
+
         [DllImport(Liblcms, EntryPoint = "cmsDoTransformLineStride", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern void DoTransformLineStride_Internal(IntPtr transform,
                 /*const*/ void* inputBuffer,
@@ -184,6 +192,16 @@ namespace lcmsNET
                 int pixelsPerLine, int lineCount, int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
         {
             fixed (void* pInBuffer = &inputBuffer[0], pOutBuffer = &outputBuffer[0])
+            {
+                DoTransformLineStride_Internal(transform, pInBuffer, pOutBuffer, pixelsPerLine, lineCount,
+                        bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
+            }
+        }
+
+        internal unsafe static void DoTransform(IntPtr transform, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer,
+                int pixelsPerLine, int lineCount, int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
+        {
+            fixed (void* pInBuffer = inputBuffer, pOutBuffer = outputBuffer)
             {
                 DoTransformLineStride_Internal(transform, pInBuffer, pOutBuffer, pixelsPerLine, lineCount,
                         bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
