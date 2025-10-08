@@ -255,6 +255,22 @@ namespace lcmsNET
         /// <summary>
         /// Translates a bitmap according to the parameters setup when creating the transform.
         /// </summary>
+        /// <param name="inputBuffer">A span of bytes containing the input bitmap.</param>
+        /// <param name="outputBuffer">A span of bytes to contain the output bitmap.</param>
+        /// <param name="pixelCount">The number of pixels to be transformed.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Profile has already been disposed.
+        /// </exception>
+        public void DoTransform(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer, int pixelCount)
+        {
+            EnsureNotClosed();
+
+            Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelCount);
+        }
+
+        /// <summary>
+        /// Translates a bitmap according to the parameters setup when creating the transform.
+        /// </summary>
         /// <param name="inputBuffer">An array of bytes containing the input bitmap.</param>
         /// <param name="outputBuffer">An array of bytes to contain the output bitmap.</param>
         /// <param name="pixelsPerLine">The number of pixels per line; same on input and in output.</param>
@@ -275,6 +291,37 @@ namespace lcmsNET
         /// </para>
         /// </remarks>
         public void DoTransform(byte[] inputBuffer, byte[] outputBuffer, int pixelsPerLine, int lineCount,
+                int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
+        {
+            EnsureNotClosed();
+
+            Interop.DoTransform(handle, inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+                    bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn, bytesPerPlaneOut);
+        }
+
+        /// <summary>
+        /// Translates a bitmap according to the parameters setup when creating the transform.
+        /// </summary>
+        /// <param name="inputBuffer">A span of bytes containing the input bitmap.</param>
+        /// <param name="outputBuffer">A span of bytes to contain the output bitmap.</param>
+        /// <param name="pixelsPerLine">The number of pixels per line; same on input and in output.</param>
+        /// <param name="lineCount">The number of lines; same on input as in output.</param>
+        /// <param name="bytesPerLineIn">The distance in bytes from one line to the next on the input bitmap.</param>
+        /// <param name="bytesPerLineOut">The distance in bytes from one line to the next in the output bitmap.</param>
+        /// <param name="bytesPerPlaneIn">The distance in bytes from one plane to the next inside a line on the input bitmap.</param>
+        /// <param name="bytesPerPlaneOut">The distance in bytes from one plane to the next inside a line in the output bitmap.</param>
+        /// <exception cref="ObjectDisposedException">
+        /// The Transform has already been disposed.
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// <paramref name="bytesPerPlaneIn"/> and <paramref name="bytesPerPlaneOut"/> are only used in planar formats.
+        /// </para>
+        /// <para>
+        /// Requires Little CMS version 2.8 or later.
+        /// </para>
+        /// </remarks>
+        public void DoTransform(ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer, int pixelsPerLine, int lineCount,
                 int bytesPerLineIn, int bytesPerLineOut, int bytesPerPlaneIn, int bytesPerPlaneOut)
         {
             EnsureNotClosed();

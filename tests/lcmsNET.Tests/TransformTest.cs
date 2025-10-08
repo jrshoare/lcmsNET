@@ -197,6 +197,27 @@ namespace lcmsNET.Tests
         }
 
         [TestMethod()]
+        public void DoTransform_Span_WhenSrgbToXLab_ShouldSucceed()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.Lab.icc", "lab.icc", (labPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var lab = Profile.Open(labPath, "r");
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, lab,
+                                Cms.TYPE_Lab_8, Intent.Perceptual, CmsFlags.None);
+
+                    byte[] inputBuffer = [255, 147, 226];
+                    byte[] outputBuffer = new byte[3];
+
+                    // Act
+                    sut.DoTransform(inputBuffer.AsSpan(), outputBuffer.AsSpan(), 1);
+                })
+            );
+        }
+
+        [TestMethod()]
         public void DoTransform_WhenSrgbToXyz_ShouldSucceed()
         {
             // Arrange
@@ -213,6 +234,27 @@ namespace lcmsNET.Tests
 
                     // Act
                     sut.DoTransform(inputBuffer, outputBuffer, 1);
+                })
+            );
+        }
+
+        [TestMethod()]
+        public void DoTransform_Span_WhenSrgbToXyz_ShouldSucceed()
+        {
+            // Arrange
+            ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "xyz.icc", (xyzPath) =>
+                {
+                    using var srgb = Profile.Open(srgbPath, "r");
+                    using var xyz = Profile.Open(xyzPath, "r");
+                    using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
+
+                    byte[] inputBuffer = [255, 255, 255];
+                    byte[] outputBuffer = new byte[3];
+
+                    // Act
+                    sut.DoTransform(inputBuffer.AsSpan(), outputBuffer.AsSpan(), 1);
                 })
             );
         }
@@ -240,6 +282,39 @@ namespace lcmsNET.Tests
 
                         // Act
                         sut.DoTransform(inputBuffer, outputBuffer, pixelsPerLine, lineCount,
+                                bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn: 0, bytesPerPlaneOut: 0);    // >= 2.8
+                    })
+                );
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Assert.Inconclusive("Requires Little CMS 2.8 or later.");
+            }
+        }
+
+        [TestMethod()]
+        public void DoTransform_Span_WhenLineStride_ShouldSucceed()
+        {
+            try
+            {
+                // Arrange
+                ResourceUtils.SaveTemporarily(".Resources.sRGB.icc", "srgb.icc", (srgbPath) =>
+                    ResourceUtils.SaveTemporarily(".Resources.D50_XYZ.icc", "xyz.icc", (xyzPath) =>
+                    {
+                        using var srgb = Profile.Open(srgbPath, "r");
+                        using var xyz = Profile.Open(xyzPath, "r");
+                        using var sut = Transform.Create(srgb, Cms.TYPE_RGB_8, xyz,
+                                    Cms.TYPE_RGB_8, Intent.Perceptual, CmsFlags.None);
+
+                        const int pixelsPerLine = 3;
+                        const int lineCount = 1;
+                        const int bytesPerLineIn = pixelsPerLine * 3 + 4;
+                        const int bytesPerLineOut = pixelsPerLine * 3 + 2;
+                        byte[] inputBuffer = new byte[bytesPerLineIn * lineCount]; // uninitialised is ok
+                        byte[] outputBuffer = new byte[bytesPerLineOut * lineCount];
+
+                        // Act
+                        sut.DoTransform(inputBuffer.AsSpan(), outputBuffer.AsSpan(), pixelsPerLine, lineCount,
                                 bytesPerLineIn, bytesPerLineOut, bytesPerPlaneIn: 0, bytesPerPlaneOut: 0);    // >= 2.8
                     })
                 );
