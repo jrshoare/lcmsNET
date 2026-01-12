@@ -84,5 +84,10 @@ using (var transform = Transform.Create(input, Cms.TYPE_RGB_8, output, Cms.TYPE_
 ## Other
 See the unit tests for examples of how to invoke each supported method and property.
 
+## Documentation
+
+Why not check out the Gemini-generated documentation for this project on
+[Code Wiki](https://codewiki.google/github.com/jrshoare/lcmsnet)?
+
 # Future work
 * Improved [documentation](docs/index.md)
