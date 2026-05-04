@@ -65,7 +65,7 @@ namespace lcmsNET
         private static partial IntPtr BuildParametricToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int type,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R8)] double[] parameters);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R8)] [In] double[] parameters);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsBuildParametricToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildParametricToneCurve_Internal(
@@ -143,7 +143,7 @@ namespace lcmsNET
         private static partial IntPtr BuildTabulatedToneCurve16_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nEntries,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] parameters);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] [In] ushort[] parameters);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurve16", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildTabulatedToneCurve16_Internal(
@@ -162,7 +162,7 @@ namespace lcmsNET
         private static partial IntPtr BuildTabulatedToneCurveFloat_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nEntries,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] parameters);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] [In] float[] parameters);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurveFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildTabulatedToneCurveFloat_Internal(

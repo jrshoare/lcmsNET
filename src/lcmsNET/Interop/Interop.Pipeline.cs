@@ -279,10 +279,10 @@ namespace lcmsNET
         private static partial IntPtr DefaultICCIntents_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint nProfiles,
-                uint[] intents,
-                IntPtr[] profiles,
-                int[] bpc,
-                double[] adaptationStates,
+                [In] uint[] intents,
+                [In] IntPtr[] profiles,
+                [In] int[] bpc,
+                [In] double[] adaptationStates,
                 [MarshalAs(UnmanagedType.U4)] uint flags);
 #else
         [DllImport(Liblcms, EntryPoint = "_cmsDefaultICCintents", CallingConvention = CallingConvention.StdCall)]
