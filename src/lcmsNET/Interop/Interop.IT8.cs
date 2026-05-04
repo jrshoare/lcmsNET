@@ -364,7 +364,7 @@ namespace lcmsNET
             return IT8SetDataDbl_Internal(handle, patch, sample, value);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIT8FindDataFormat")]
         private unsafe static partial int IT8FindDataFormat_Internal(
             IntPtr handle,
@@ -381,7 +381,7 @@ namespace lcmsNET
             return IT8FindDataFormat_Internal(handle, sample);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIT8SetDataFormat")]
         private unsafe static partial int IT8SetDataFormat_Internal(
             IntPtr handle,
@@ -400,7 +400,7 @@ namespace lcmsNET
             return IT8SetDataFormat_Internal(handle, column, sample);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIT8EnumDataFormat")]
         private unsafe static partial int IT8EnumDataFormat_Internal(
                 IntPtr handle,
@@ -426,7 +426,7 @@ namespace lcmsNET
             return samples;
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIT8GetPatchName")]
         private unsafe static partial IntPtr IT8GetPatchName_Internal(
                 IntPtr handle,
@@ -446,7 +446,7 @@ namespace lcmsNET
             return Marshal.PtrToStringAnsi(ptr);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIT8DefineDblFormat")]
         private unsafe static partial void IT8DefineDblFormat_Internal(
             IntPtr handle,

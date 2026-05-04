@@ -25,7 +25,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsMalloc")]
         private static partial IntPtr Malloc_Internal(
                 IntPtr context,
@@ -42,7 +42,7 @@ namespace lcmsNET
             return Malloc_Internal(context, size);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsFree")]
         private static partial IntPtr Free_Internal(
                 IntPtr context,
@@ -59,7 +59,7 @@ namespace lcmsNET
             return Free_Internal(context, ptr);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsMallocZero")]
         private static partial IntPtr MallocZero_Internal(
                 IntPtr context,
@@ -76,7 +76,7 @@ namespace lcmsNET
             return MallocZero_Internal(context, size);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsCalloc")]
         private static partial IntPtr Calloc_Internal(
                 IntPtr context,
@@ -95,7 +95,7 @@ namespace lcmsNET
             return Calloc_Internal(context, num, size);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsRealloc")]
         private static partial IntPtr Realloc_Internal(
                 IntPtr context,
@@ -114,7 +114,7 @@ namespace lcmsNET
             return Realloc_Internal(context, ptr, size);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsDupMem")]
         private static partial IntPtr DupMem_Internal(
                 IntPtr context,

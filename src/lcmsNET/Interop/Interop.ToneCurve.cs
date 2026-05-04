@@ -26,7 +26,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsEvalToneCurveFloat")]
         private static partial float EvalToneCurveFloat_Internal(
                 IntPtr handle,
@@ -43,7 +43,7 @@ namespace lcmsNET
             return EvalToneCurveFloat_Internal(contextID, v);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsEvalToneCurve16")]
         private static partial ushort EvalToneCurve16_Internal(
                 IntPtr handle,
@@ -60,7 +60,7 @@ namespace lcmsNET
             return EvalToneCurve16_Internal(contextID, v);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsBuildParametricToneCurve")]
         private static partial IntPtr BuildParametricToneCurve_Internal(
                 IntPtr handle,
@@ -79,7 +79,7 @@ namespace lcmsNET
             return BuildParametricToneCurve_Internal(contextID, type, parameters);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsBuildGamma")]
         private static partial IntPtr BuildGamma_Internal(
                 IntPtr handle,
@@ -96,7 +96,7 @@ namespace lcmsNET
             return BuildGamma_Internal(contextID, gamma);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsBuildSegmentedToneCurve")]
         private static partial IntPtr BuildSegmentedToneCurve_Internal(
                 IntPtr handle,
@@ -138,7 +138,7 @@ namespace lcmsNET
             }
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurve16")]
         private static partial IntPtr BuildTabulatedToneCurve16_Internal(
                 IntPtr handle,
@@ -157,7 +157,7 @@ namespace lcmsNET
             return BuildTabulatedToneCurve16_Internal(contextID, values.Length, values);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurveFloat")]
         private static partial IntPtr BuildTabulatedToneCurveFloat_Internal(
                 IntPtr handle,
@@ -176,7 +176,7 @@ namespace lcmsNET
             return BuildTabulatedToneCurveFloat_Internal(contextID, values.Length, values);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsDupToneCurve")]
         private static partial IntPtr DupToneCurve_Internal(
                 IntPtr handle);
@@ -191,7 +191,7 @@ namespace lcmsNET
             return DupToneCurve_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsReverseToneCurve")]
         private static partial IntPtr ReverseToneCurve_Internal(
                 IntPtr handle);
@@ -206,7 +206,7 @@ namespace lcmsNET
             return ReverseToneCurve_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsReverseToneCurveEx")]
         private static partial IntPtr ReverseToneCurveEx_Internal(
                 [MarshalAs(UnmanagedType.I4)] int nResultSamples,
@@ -223,30 +223,30 @@ namespace lcmsNET
             return ReverseToneCurveEx_Internal(nResultSamples, handle);
         }
 
-#if NET8_0
-        // Use classic DllImport for this signature because source-generated P/Invoke
-        // does not support MarshalAs(UnmanagedType.U4) on int parameters (SYSLIB1052).
-        [DllImport(Liblcms, EntryPoint = "cmsJoinToneCurve", CallingConvention = CallingConvention.StdCall)]
-        private static extern IntPtr JoinToneCurve_Internal(
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsJoinToneCurve")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr JoinToneCurve_Internal(
                 IntPtr contextID,
                 IntPtr x,
                 IntPtr y,
-                [MarshalAs(UnmanagedType.U4)] int nPoints);
+                [MarshalAs(UnmanagedType.U4)] uint nPoints);
 #else
+        // Use classic DllImport but change parameter to uint to match UnmanagedType.U4.
         [DllImport(Liblcms, EntryPoint = "cmsJoinToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr JoinToneCurve_Internal(
                 IntPtr contextID,
                 IntPtr x,
                 IntPtr y,
-                [MarshalAs(UnmanagedType.U4)] int nPoints);
+                [MarshalAs(UnmanagedType.U4)] uint nPoints);
 #endif
 
         internal static IntPtr JoinToneCurve(IntPtr contextID, IntPtr x, IntPtr y, int nPoints)
         {
-            return JoinToneCurve_Internal(contextID, x, y, nPoints);
+            return JoinToneCurve_Internal(contextID, x, y, (uint)nPoints);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSmoothToneCurve")]
         private static partial int SmoothToneCurve_Internal(
                 IntPtr handle,
@@ -263,7 +263,7 @@ namespace lcmsNET
             return SmoothToneCurve_Internal(handle, lambda);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveMultisegment")]
         private static partial int IsToneCurveMultisegment_Internal(
                 IntPtr handle);
@@ -278,7 +278,7 @@ namespace lcmsNET
             return IsToneCurveMultisegment_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveLinear")]
         private static partial int IsToneCurveLinear_Internal(
                 IntPtr handle);
@@ -293,7 +293,7 @@ namespace lcmsNET
             return IsToneCurveLinear_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveMonotonic")]
         private static partial int IsToneCurveMonotonic_Internal(
                 IntPtr handle);
@@ -308,7 +308,7 @@ namespace lcmsNET
             return IsToneCurveMonotonic_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveDescending")]
         private static partial int IsToneCurveDescending_Internal(
                 IntPtr handle);
@@ -323,7 +323,7 @@ namespace lcmsNET
             return IsToneCurveDescending_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsEstimateGamma")]
         private static partial double EstimateGamma_Internal(
                 IntPtr handle,
@@ -340,7 +340,7 @@ namespace lcmsNET
             return EstimateGamma_Internal(handle, precision);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTableEntries")]
         private static partial uint GetToneCurveEstimatedTableEntries_Internal(
                 IntPtr handle);
@@ -355,7 +355,7 @@ namespace lcmsNET
             return GetToneCurveEstimatedTableEntries_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTable")]
         private static partial IntPtr GetToneCurveEstimatedTable_Internal(
                 IntPtr handle);
@@ -370,7 +370,7 @@ namespace lcmsNET
             return GetToneCurveEstimatedTable_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsFreeToneCurve")]
         private static partial void FreeToneCurve_Internal(IntPtr handle);
 #else
@@ -383,10 +383,19 @@ namespace lcmsNET
             FreeToneCurve_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGetToneCurveSegment")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr GetToneCurveSegment_Internal(
+                [MarshalAs(UnmanagedType.I4)] int segment,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGetToneCurveSegment", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetToneCurveSegment_Internal(
                 [MarshalAs(UnmanagedType.I4)] int segment,
                 IntPtr handle);
+#endif
+
         internal static IntPtr GetCurveSegment(IntPtr handle, int segment)
         {
             return GetToneCurveSegment_Internal(segment, handle);

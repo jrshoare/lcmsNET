@@ -28,7 +28,7 @@ namespace lcmsNET
     {
         internal const string Liblcms = "lcms2";
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetEncodedCMMversion")]
         private static partial int GetEncodedCMMVersion_Internal();
 #else
@@ -41,7 +41,7 @@ namespace lcmsNET
             return GetEncodedCMMVersion_Internal();
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetLogErrorHandler")]
         private static partial int SetLogErrorHandler_Internal(
                 IntPtr fn);
@@ -57,7 +57,7 @@ namespace lcmsNET
             SetLogErrorHandler_Internal(fn);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsLCMScolorSpace")]
         private static partial int LCMSColorSpace_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint iccColorSpaceSignature);
@@ -72,7 +72,7 @@ namespace lcmsNET
             return LCMSColorSpace_Internal(iccColorSpaceSignature);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsICCcolorSpace")]
         private static partial int ICCColorSpace_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint lcmsColorSpaceSignature);
@@ -87,7 +87,7 @@ namespace lcmsNET
             return ICCColorSpace_Internal(lcmsColorSpaceSignature);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsChannelsOf")]
         private static partial uint ChannelsOf_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint colorSpace);
@@ -102,7 +102,7 @@ namespace lcmsNET
             return ChannelsOf_Internal(colorSpace);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetAlarmCodes")]
         private static partial void GetAlarmCodes_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
@@ -117,7 +117,7 @@ namespace lcmsNET
             GetAlarmCodes_Internal(alarmCodes);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAlarmCodes")]
         private static partial void SetAlarmCodes_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
@@ -132,7 +132,7 @@ namespace lcmsNET
             SetAlarmCodes_Internal(alarmCodes);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAdaptationState")]
         private static partial double SetAdaptationState_Internal(
                 [MarshalAs(UnmanagedType.R8)] double adaptationState);
@@ -147,7 +147,7 @@ namespace lcmsNET
             return SetAdaptationState_Internal(adaptationState);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsWhitePointFromTemp")]
         private static partial double WhitePointFromTemp_Internal(
                 out CIExyY xyY,
@@ -164,7 +164,7 @@ namespace lcmsNET
             return WhitePointFromTemp_Internal(out xyY, tempK);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsTempFromWhitePoint")]
         private static partial double TempFromWhitePoint_Internal(
                 [MarshalAs(UnmanagedType.R8)] out double tempK,
@@ -181,7 +181,7 @@ namespace lcmsNET
             return TempFromWhitePoint_Internal(out tempK, xyY);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetSupportedIntents")]
         private static partial uint GetSupportedIntents_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint nMax,

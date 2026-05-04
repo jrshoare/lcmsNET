@@ -25,7 +25,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineAlloc")]
         private static partial IntPtr PipelineAlloc_Internal(
                 IntPtr contextID,
@@ -44,7 +44,7 @@ namespace lcmsNET
             return PipelineAlloc_Internal(contextID, inputChannels, outputChannels);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineFree")]
         private static partial void PipelineFree_Internal(IntPtr handle);
 #else
@@ -57,7 +57,7 @@ namespace lcmsNET
             PipelineFree_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineDup")]
         private static partial IntPtr PipelineDup_Internal(
                 IntPtr handle);
@@ -72,7 +72,7 @@ namespace lcmsNET
             return PipelineDup_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineCat")]
         private static partial int PipelineCat_Internal(
                 IntPtr handle,
@@ -89,7 +89,7 @@ namespace lcmsNET
             return PipelineCat_Internal(handle, other);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEvalFloat")]
         private static partial void PipelineEvalFloat_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
@@ -108,7 +108,7 @@ namespace lcmsNET
             PipelineEvalFloat_Internal(vIn, vOut, handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEvalReverseFloat")]
         private static partial int PipelineEvalReverseFloat_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
@@ -129,7 +129,7 @@ namespace lcmsNET
             return PipelineEvalReverseFloat_Internal(vIn, vOut, hint, handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEval16")]
         private static partial void PipelineEval16_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vIn,
@@ -148,7 +148,7 @@ namespace lcmsNET
             PipelineEval16_Internal(vIn, vOut, handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineInsertStage")]
         private static partial int PipelineInsertStage_Internal(
                 IntPtr handle,
@@ -167,7 +167,7 @@ namespace lcmsNET
             return PipelineInsertStage_Internal(handle, location, stage);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineInputChannels")]
         private static partial uint PipelineInputChannels_Internal(IntPtr handle);
 #else
@@ -180,7 +180,7 @@ namespace lcmsNET
             return PipelineInputChannels_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineOutputChannels")]
         private static partial uint PipelineOutputChannels_Internal(IntPtr handle);
 #else
@@ -193,7 +193,7 @@ namespace lcmsNET
             return PipelineOutputChannels_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineStageCount")]
         private static partial uint PipelineStageCount_Internal(IntPtr handle);
 #else
@@ -206,7 +206,7 @@ namespace lcmsNET
             return PipelineStageCount_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineUnlinkStage")]
         private static partial void PipelineUnlinkStage_Internal(
                 IntPtr handle,
@@ -231,7 +231,7 @@ namespace lcmsNET
             PipelineUnlinkStage_Internal(handle, location, ref stage);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToFirstStage")]
         private static partial IntPtr PipelineGetPtrToFirstStage_Internal(IntPtr handle);
 #else
@@ -244,7 +244,7 @@ namespace lcmsNET
             return PipelineGetPtrToFirstStage_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToLastStage")]
         private static partial IntPtr PipelineGetPtrToLastStage_Internal(IntPtr handle);
 #else
@@ -257,7 +257,7 @@ namespace lcmsNET
             return PipelineGetPtrToLastStage_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPipelineSetSaveAs8bitsFlag")]
         private static partial int PipelineSetSaveAs8bitsFlag_Internal(
                 IntPtr handle,
@@ -274,7 +274,7 @@ namespace lcmsNET
             return PipelineSetSaveAs8bitsFlag_Internal(handle, on);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsDefaultICCintents")]
         private static partial IntPtr DefaultICCIntents_Internal(
                 IntPtr contextID,
@@ -302,7 +302,7 @@ namespace lcmsNET
             return DefaultICCIntents_Internal(contextID, (uint)profiles.Length, intents, profiles, bpc, adaptationStates, flags);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "_cmsPipelineSetOptimizationParameters")]
         internal static partial void PipelineSetOptimizationParameters_Internal(
                 IntPtr handle,

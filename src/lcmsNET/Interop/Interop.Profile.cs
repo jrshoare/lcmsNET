@@ -28,7 +28,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateProfilePlaceholder")]
         private static partial IntPtr CreateProfilePlaceholder_Internal(
                 IntPtr contextID);
@@ -43,7 +43,7 @@ namespace lcmsNET
             return CreateProfilePlaceholder_Internal(contextID);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateRGBProfile")]
         private static partial IntPtr CreateRGBProfile_Internal(
                 in CIExyY whitePoint,
@@ -62,7 +62,7 @@ namespace lcmsNET
             return CreateRGBProfile_Internal(whitePoint, primaries, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateRGBProfileTHR")]
         private static partial IntPtr CreateRGBProfileTHR_Internal(
                 IntPtr contextID,
@@ -83,7 +83,7 @@ namespace lcmsNET
             return CreateRGBProfileTHR_Internal(contextID, whitePoint, primaries, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateGrayProfile")]
         private static partial IntPtr CreateGrayProfile_Internal(
                 in CIExyY whitePoint,
@@ -100,7 +100,7 @@ namespace lcmsNET
             return CreateGrayProfile_Internal(whitePoint, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateGrayProfileTHR")]
         private static partial IntPtr CreateGrayProfileTHR_Internal(
                 IntPtr contextID,
@@ -119,7 +119,7 @@ namespace lcmsNET
             return CreateGrayProfileTHR_Internal(contextID, whitePoint, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLink")]
         private static partial IntPtr CreateLinearizationDeviceLink_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint space,
@@ -136,7 +136,7 @@ namespace lcmsNET
             return CreateLinearizationDeviceLink_Internal(space, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLinkTHR")]
         private static partial IntPtr CreateLinearizationDeviceLinkTHR_Internal(
                 IntPtr contextID,
@@ -155,7 +155,7 @@ namespace lcmsNET
             return CreateLinearizationDeviceLinkTHR_Internal(contextID, space, transferFunction);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLink")]
         private static partial IntPtr CreateInkLimitingDeviceLink_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
@@ -172,7 +172,7 @@ namespace lcmsNET
             return CreateInkLimitingDeviceLink_Internal(colorSpaceSignature, limit);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLinkTHR")]
         private static partial IntPtr CreateInkLimitingDeviceLinkTHR_Internal(
                 IntPtr contextID,

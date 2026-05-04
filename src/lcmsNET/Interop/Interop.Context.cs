@@ -26,7 +26,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsCreateContext")]
         private static partial IntPtr CreateContext_Internal(
                 IntPtr plugin,
@@ -43,7 +43,7 @@ namespace lcmsNET
             return CreateContext_Internal(plugin, userData);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsDeleteContext")]
         private static partial void DeleteContext_Internal(
             IntPtr handle);
@@ -58,7 +58,7 @@ namespace lcmsNET
             DeleteContext_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsDupContext")]
         private static partial IntPtr DuplicateContext_Internal(
             IntPtr handle,
@@ -75,7 +75,7 @@ namespace lcmsNET
             return DuplicateContext_Internal(handle, userData);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetContextUserData")]
         private static partial IntPtr GetContextUserData_Internal(
             IntPtr handle);
@@ -90,7 +90,7 @@ namespace lcmsNET
             return GetContextUserData_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsPluginTHR")]
         private static partial int PluginTHR_Internal(
             IntPtr handle,
@@ -107,7 +107,7 @@ namespace lcmsNET
             return PluginTHR_Internal(handle, plugin);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsUnregisterPluginsTHR")]
         private static partial int UnregisterPluginsTHR_Internal(
             IntPtr handle);
@@ -122,7 +122,7 @@ namespace lcmsNET
             UnregisterPluginsTHR_Internal(handle);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR")]
         private static partial int SetLogErrorHandlerTHR_Internal(
                 IntPtr handle,
@@ -140,7 +140,7 @@ namespace lcmsNET
             SetLogErrorHandlerTHR_Internal(handle, fn);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetAlarmCodesTHR")]
         private static partial void GetAlarmCodesTHR_Internal(
                 IntPtr handle,
@@ -157,7 +157,7 @@ namespace lcmsNET
             GetAlarmCodesTHR_Internal(handle, alarmCodes);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAlarmCodesTHR")]
         private static partial void SetAlarmCodesTHR_Internal(
                 IntPtr handle,
@@ -174,7 +174,7 @@ namespace lcmsNET
             SetAlarmCodesTHR_Internal(handle, alarmCodes);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAdaptationStateTHR")]
         private static partial double SetAdaptationStateTHR_Internal(
                 IntPtr handle,
@@ -191,7 +191,7 @@ namespace lcmsNET
             return SetAdaptationStateTHR_Internal(handle, adaptationState);
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetSupportedIntentsTHR")]
         private static partial uint GetSupportedIntents_InternalTHR(
                 IntPtr handle,

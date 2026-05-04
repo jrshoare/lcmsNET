@@ -25,7 +25,6 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8'">
     <LangVersion>latest</LangVersion>
-    <DefineConstants>$(DefineConstants);LCMSNET_USE_LIBIMPORT;NET8_0</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

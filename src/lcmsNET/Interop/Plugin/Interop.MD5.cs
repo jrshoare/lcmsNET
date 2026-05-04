@@ -25,7 +25,7 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsMD5alloc")]
         private static partial IntPtr MD5alloc_Internal(
                 IntPtr contextID);
@@ -55,7 +55,7 @@ namespace lcmsNET
             }
         }
 
-#if NET8_0
+#if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsMD5finish")]
         private static partial void MD5Finish_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] byte[] profileID,
