@@ -23,6 +23,11 @@
     <PackageLicenseUrl></PackageLicenseUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8'">
+    <LangVersion>latest</LangVersion>
+    <DefineConstants>$(DefineConstants);LCMSNET_USE_LIBIMPORT;NET8_0</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -40,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Memory" Version="4.6.3" />
   </ItemGroup>
 
 </Project>

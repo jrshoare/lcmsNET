@@ -25,63 +25,108 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMalloc")]
+        private static partial IntPtr Malloc_Internal(
+                IntPtr context,
+                [MarshalAs(UnmanagedType.U4)] uint size);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMalloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr Malloc_Internal(
                 IntPtr context,
                 [MarshalAs(UnmanagedType.U4)] uint size);
+#endif
 
         internal static IntPtr Malloc(IntPtr context, uint size)
         {
             return Malloc_Internal(context, size);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsFree")]
+        private static partial IntPtr Free_Internal(
+                IntPtr context,
+                IntPtr ptr);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsFree", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr Free_Internal(
                 IntPtr context,
                 IntPtr ptr);
+#endif
 
         internal static IntPtr Free(IntPtr context, IntPtr ptr)
         {
             return Free_Internal(context, ptr);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMallocZero")]
+        private static partial IntPtr MallocZero_Internal(
+                IntPtr context,
+                [MarshalAs(UnmanagedType.U4)] uint size);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMallocZero", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr MallocZero_Internal(
                 IntPtr context,
                 [MarshalAs(UnmanagedType.U4)] uint size);
+#endif
 
         internal static IntPtr MallocZero(IntPtr context, uint size)
         {
             return MallocZero_Internal(context, size);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsCalloc")]
+        private static partial IntPtr Calloc_Internal(
+                IntPtr context,
+                [MarshalAs(UnmanagedType.U4)] uint num,
+                [MarshalAs(UnmanagedType.U4)] uint size);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsCalloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr Calloc_Internal(
                 IntPtr context,
                 [MarshalAs(UnmanagedType.U4)] uint num,
                 [MarshalAs(UnmanagedType.U4)] uint size);
+#endif
 
         internal static IntPtr Calloc(IntPtr context, uint num, uint size)
         {
             return Calloc_Internal(context, num, size);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsRealloc")]
+        private static partial IntPtr Realloc_Internal(
+                IntPtr context,
+                IntPtr ptr,
+                [MarshalAs(UnmanagedType.U4)] uint size);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsRealloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr Realloc_Internal(
                 IntPtr context,
                 IntPtr ptr,
                 [MarshalAs(UnmanagedType.U4)] uint size);
+#endif
 
         internal static IntPtr Realloc(IntPtr context, IntPtr ptr, uint size)
         {
             return Realloc_Internal(context, ptr, size);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "_cmsDupMem")]
+        private static partial IntPtr DupMem_Internal(
+                IntPtr context,
+                IntPtr org,
+                [MarshalAs(UnmanagedType.U4)] uint size);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsDupMem", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr DupMem_Internal(
                 IntPtr context,
                 IntPtr org,
                 [MarshalAs(UnmanagedType.U4)] uint size);
+#endif
 
         internal static IntPtr DupMem(IntPtr context, IntPtr org, uint size)
         {

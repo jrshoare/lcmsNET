@@ -28,95 +28,163 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateProfilePlaceholder")]
+        private static partial IntPtr CreateProfilePlaceholder_Internal(
+                IntPtr contextID);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateProfilePlaceholder", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateProfilePlaceholder_Internal(
                 IntPtr contextID);
+#endif
 
         internal static IntPtr CreatePlaceholder(IntPtr contextID)
         {
             return CreateProfilePlaceholder_Internal(contextID);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateRGBProfile")]
+        private static partial IntPtr CreateRGBProfile_Internal(
+                in CIExyY whitePoint,
+                in CIExyYTRIPLE primaries,
+                IntPtr[] transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateRGBProfile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateRGBProfile_Internal(
                 in CIExyY whitePoint,
                 in CIExyYTRIPLE primaries,
                 IntPtr[] transferFunction);
+#endif
 
         internal static IntPtr CreateRGB(in CIExyY whitePoint, in CIExyYTRIPLE primaries, IntPtr[] transferFunction)
         {
             return CreateRGBProfile_Internal(whitePoint, primaries, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateRGBProfileTHR")]
+        private static partial IntPtr CreateRGBProfileTHR_Internal(
+                IntPtr contextID,
+                in CIExyY whitePoint,
+                in CIExyYTRIPLE primaries,
+                IntPtr[] transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateRGBProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateRGBProfileTHR_Internal(
                 IntPtr contextID,
                 in CIExyY whitePoint,
                 in CIExyYTRIPLE primaries,
                 IntPtr[] transferFunction);
+#endif
 
         internal static IntPtr CreateRGB(IntPtr contextID, in CIExyY whitePoint, in CIExyYTRIPLE primaries, IntPtr[] transferFunction)
         {
             return CreateRGBProfileTHR_Internal(contextID, whitePoint, primaries, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateGrayProfile")]
+        private static partial IntPtr CreateGrayProfile_Internal(
+                in CIExyY whitePoint,
+                IntPtr transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateGrayProfile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateGrayProfile_Internal(
                 in CIExyY whitePoint,
                 IntPtr transferFunction);
+#endif
 
         internal static IntPtr CreateGray(in CIExyY whitePoint, IntPtr transferFunction)
         {
             return CreateGrayProfile_Internal(whitePoint, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateGrayProfileTHR")]
+        private static partial IntPtr CreateGrayProfileTHR_Internal(
+                IntPtr contextID,
+                in CIExyY whitePoint,
+                IntPtr transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateGrayProfileTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateGrayProfileTHR_Internal(
                 IntPtr contextID,
                 in CIExyY whitePoint,
                 IntPtr transferFunction);
+#endif
 
         internal static IntPtr CreateGray(IntPtr contextID, in CIExyY whitePoint, IntPtr transferFunction)
         {
             return CreateGrayProfileTHR_Internal(contextID, whitePoint, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLink")]
+        private static partial IntPtr CreateLinearizationDeviceLink_Internal(
+                [MarshalAs(UnmanagedType.U4)] uint space,
+                IntPtr[] transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLink", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLinearizationDeviceLink_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint space,
                 IntPtr[] transferFunction);
+#endif
 
         internal static IntPtr CreateLinearizationDeviceLink(uint space, IntPtr[] transferFunction)
         {
             return CreateLinearizationDeviceLink_Internal(space, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLinkTHR")]
+        private static partial IntPtr CreateLinearizationDeviceLinkTHR_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint space,
+                IntPtr[] transferFunction);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateLinearizationDeviceLinkTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateLinearizationDeviceLinkTHR_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint space,
                 IntPtr[] transferFunction);
+#endif
 
         internal static IntPtr CreateLinearizationDeviceLink(IntPtr contextID, uint space, IntPtr[] transferFunction)
         {
             return CreateLinearizationDeviceLinkTHR_Internal(contextID, space, transferFunction);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLink")]
+        private static partial IntPtr CreateInkLimitingDeviceLink_Internal(
+                [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
+                [MarshalAs(UnmanagedType.R8)] double limit);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLink", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateInkLimitingDeviceLink_Internal(
                 [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
                 [MarshalAs(UnmanagedType.R8)] double limit);
+#endif
 
         internal static IntPtr CreateInkLimitingDeviceLink(uint colorSpaceSignature, double limit)
         {
             return CreateInkLimitingDeviceLink_Internal(colorSpaceSignature, limit);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLinkTHR")]
+        private static partial IntPtr CreateInkLimitingDeviceLinkTHR_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
+                [MarshalAs(UnmanagedType.R8)] double limit);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCreateInkLimitingDeviceLinkTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CreateInkLimitingDeviceLinkTHR_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint colorSpaceSignature,
                 [MarshalAs(UnmanagedType.R8)] double limit);
+#endif
 
         internal static IntPtr CreateInkLimitingDeviceLink(IntPtr contextID, uint colorSpaceSignature, double limit)
         {

@@ -26,52 +26,89 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsEvalToneCurveFloat")]
+        private static partial float EvalToneCurveFloat_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R4)] float v);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsEvalToneCurveFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern float EvalToneCurveFloat_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R4)] float v);
+#endif
 
         internal static float EvaluateToneCurve(IntPtr contextID, float v)
         {
             return EvalToneCurveFloat_Internal(contextID, v);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsEvalToneCurve16")]
+        private static partial ushort EvalToneCurve16_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U2)] ushort v);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsEvalToneCurve16", CallingConvention = CallingConvention.StdCall)]
         private static extern ushort EvalToneCurve16_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U2)] ushort v);
+#endif
 
         internal static ushort EvaluateToneCurve(IntPtr contextID, ushort v)
         {
             return EvalToneCurve16_Internal(contextID, v);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsBuildParametricToneCurve")]
+        private static partial IntPtr BuildParametricToneCurve_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int type,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R8)] double[] parameters);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsBuildParametricToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildParametricToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int type,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R8)] double[] parameters);
+#endif
 
         internal static IntPtr BuildParametricToneCurve(IntPtr contextID, int type, double[] parameters)
         {
             return BuildParametricToneCurve_Internal(contextID, type, parameters);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsBuildGamma")]
+        private static partial IntPtr BuildGamma_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R8)] double gamma);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsBuildGamma", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildGamma_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R8)] double gamma);
+#endif
 
         internal static IntPtr BuildGammaToneCurve(IntPtr contextID, double gamma)
         {
             return BuildGamma_Internal(contextID, gamma);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsBuildSegmentedToneCurve")]
+        private static partial IntPtr BuildSegmentedToneCurve_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int nSegments,
+                IntPtr segments);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsBuildSegmentedToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildSegmentedToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nSegments,
                 IntPtr segments);
+#endif
 
         internal static IntPtr BuildSegmentedToneCurve(IntPtr contextID, CurveSegment[] segments)
         {
@@ -101,145 +138,245 @@ namespace lcmsNET
             }
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurve16")]
+        private static partial IntPtr BuildTabulatedToneCurve16_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int nEntries,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] parameters);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurve16", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildTabulatedToneCurve16_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nEntries,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] parameters);
+#endif
 
         internal static IntPtr BuildTabulatedToneCurve(IntPtr contextID, ushort[] values)
         {
             return BuildTabulatedToneCurve16_Internal(contextID, values.Length, values);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurveFloat")]
+        private static partial IntPtr BuildTabulatedToneCurveFloat_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int nEntries,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] parameters);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsBuildTabulatedToneCurveFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr BuildTabulatedToneCurveFloat_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nEntries,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] parameters);
+#endif
 
         internal static IntPtr BuildTabulatedToneCurve(IntPtr contextID, float[] values)
         {
             return BuildTabulatedToneCurveFloat_Internal(contextID, values.Length, values);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsDupToneCurve")]
+        private static partial IntPtr DupToneCurve_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsDupToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr DupToneCurve_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr DuplicateToneCurve(IntPtr handle)
         {
             return DupToneCurve_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsReverseToneCurve")]
+        private static partial IntPtr ReverseToneCurve_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsReverseToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr ReverseToneCurve_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr ReverseToneCurve(IntPtr handle)
         {
             return ReverseToneCurve_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsReverseToneCurveEx")]
+        private static partial IntPtr ReverseToneCurveEx_Internal(
+                [MarshalAs(UnmanagedType.I4)] int nResultSamples,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsReverseToneCurveEx", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr ReverseToneCurveEx_Internal(
                 [MarshalAs(UnmanagedType.I4)] int nResultSamples,
                 IntPtr handle);
+#endif
 
         internal static IntPtr ReverseToneCurve(IntPtr handle, int nResultSamples)
         {
             return ReverseToneCurveEx_Internal(nResultSamples, handle);
         }
 
+#if NET8_0
+        // Use classic DllImport for this signature because source-generated P/Invoke
+        // does not support MarshalAs(UnmanagedType.U4) on int parameters (SYSLIB1052).
         [DllImport(Liblcms, EntryPoint = "cmsJoinToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr JoinToneCurve_Internal(
                 IntPtr contextID,
                 IntPtr x,
                 IntPtr y,
                 [MarshalAs(UnmanagedType.U4)] int nPoints);
+#else
+        [DllImport(Liblcms, EntryPoint = "cmsJoinToneCurve", CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr JoinToneCurve_Internal(
+                IntPtr contextID,
+                IntPtr x,
+                IntPtr y,
+                [MarshalAs(UnmanagedType.U4)] int nPoints);
+#endif
 
         internal static IntPtr JoinToneCurve(IntPtr contextID, IntPtr x, IntPtr y, int nPoints)
         {
             return JoinToneCurve_Internal(contextID, x, y, nPoints);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsSmoothToneCurve")]
+        private static partial int SmoothToneCurve_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R8)] double lambda);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsSmoothToneCurve", CallingConvention = CallingConvention.StdCall)]
         private static extern int SmoothToneCurve_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R8)] double lambda);
+#endif
 
         internal static int SmoothToneCurve(IntPtr handle, double lambda)
         {
             return SmoothToneCurve_Internal(handle, lambda);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveMultisegment")]
+        private static partial int IsToneCurveMultisegment_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIsToneCurveMultisegment", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsToneCurveMultisegment_Internal(
                 IntPtr handle);
+#endif
 
         internal static int IsMultiSegmentToneCurve(IntPtr handle)
         {
             return IsToneCurveMultisegment_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveLinear")]
+        private static partial int IsToneCurveLinear_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIsToneCurveLinear", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsToneCurveLinear_Internal(
                 IntPtr handle);
+#endif
 
         internal static int IsLinearToneCurve(IntPtr handle)
         {
             return IsToneCurveLinear_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveMonotonic")]
+        private static partial int IsToneCurveMonotonic_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIsToneCurveMonotonic", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsToneCurveMonotonic_Internal(
                 IntPtr handle);
+#endif
 
         internal static int IsMonotonicToneCurve(IntPtr handle)
         {
             return IsToneCurveMonotonic_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIsToneCurveDescending")]
+        private static partial int IsToneCurveDescending_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIsToneCurveDescending", CallingConvention = CallingConvention.StdCall)]
         private static extern int IsToneCurveDescending_Internal(
                 IntPtr handle);
+#endif
 
         internal static int IsDescendingToneCurve(IntPtr handle)
         {
             return IsToneCurveDescending_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsEstimateGamma")]
+        private static partial double EstimateGamma_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R8)] double precision);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsEstimateGamma", CallingConvention = CallingConvention.StdCall)]
         private static extern double EstimateGamma_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R8)] double precision);
+#endif
 
         internal static double EstimateGamma(IntPtr handle, double precision)
         {
             return EstimateGamma_Internal(handle, precision);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTableEntries")]
+        private static partial uint GetToneCurveEstimatedTableEntries_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTableEntries", CallingConvention = CallingConvention.StdCall)]
         private static extern uint GetToneCurveEstimatedTableEntries_Internal(
                 IntPtr handle);
+#endif
 
         internal static uint GetEstimatedTableEntries(IntPtr handle)
         {
             return GetToneCurveEstimatedTableEntries_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTable")]
+        private static partial IntPtr GetToneCurveEstimatedTable_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGetToneCurveEstimatedTable", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetToneCurveEstimatedTable_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr GetEstimatedTable(IntPtr handle)
         {
             return GetToneCurveEstimatedTable_Internal(handle);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsFreeToneCurve")]
+        private static partial void FreeToneCurve_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsFreeToneCurve", CallingConvention = CallingConvention.StdCall)]
-        private static extern void FreeToneCurve_Internal(
-                IntPtr handle);
+        private static extern void FreeToneCurve_Internal(IntPtr handle);
+#endif
 
         internal static void FreeToneCurve(IntPtr handle)
         {

@@ -364,31 +364,53 @@ namespace lcmsNET
             return IT8SetDataDbl_Internal(handle, patch, sample, value);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIT8FindDataFormat")]
+        private unsafe static partial int IT8FindDataFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.LPStr)] string sample);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIT8FindDataFormat", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int IT8FindDataFormat_Internal(
             IntPtr handle,
             [MarshalAs(UnmanagedType.LPStr)] string sample);
+#endif
 
         internal static int IT8FindDataFormat(IntPtr handle, string sample)
         {
             return IT8FindDataFormat_Internal(handle, sample);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIT8SetDataFormat")]
+        private unsafe static partial int IT8SetDataFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.I4)] int n,
+            [MarshalAs(UnmanagedType.LPStr)] string sample);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIT8SetDataFormat", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int IT8SetDataFormat_Internal(
             IntPtr handle,
             [MarshalAs(UnmanagedType.I4)] int n,
             [MarshalAs(UnmanagedType.LPStr)] string sample);
+#endif
 
         internal static int IT8SetDataFormat(IntPtr handle, int column, string sample)
         {
             return IT8SetDataFormat_Internal(handle, column, sample);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIT8EnumDataFormat")]
+        private unsafe static partial int IT8EnumDataFormat_Internal(
+                IntPtr handle,
+                out IntPtr sampleNames);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIT8EnumDataFormat", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int IT8EnumDataFormat_Internal(
                 IntPtr handle,
                 out IntPtr sampleNames);
+#endif
 
         internal unsafe static string[] IT8EnumDataFormat(IntPtr handle)
         {
@@ -404,11 +426,19 @@ namespace lcmsNET
             return samples;
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIT8GetPatchName")]
+        private unsafe static partial IntPtr IT8GetPatchName_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int nPatch,
+                [MarshalAs(UnmanagedType.LPStr)] string sample);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIT8GetPatchName", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern IntPtr IT8GetPatchName_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int nPatch,
                 [MarshalAs(UnmanagedType.LPStr)] string sample);
+#endif
 
         internal static string IT8GetPatchName(IntPtr handle, int nPatch)
         {
@@ -416,10 +446,17 @@ namespace lcmsNET
             return Marshal.PtrToStringAnsi(ptr);
         }
 
+#if NET8_0
+        [LibraryImport(Liblcms, EntryPoint = "cmsIT8DefineDblFormat")]
+        private unsafe static partial void IT8DefineDblFormat_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.LPStr)] string format);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsIT8DefineDblFormat", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern void IT8DefineDblFormat_Internal(
             IntPtr handle,
             [MarshalAs(UnmanagedType.LPStr)] string format);
+#endif
 
         internal static void IT8DefineDblFormat(IntPtr handle, string format)
         {
