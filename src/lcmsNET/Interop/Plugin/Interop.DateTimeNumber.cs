@@ -24,16 +24,36 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsEncodeDateTimeNumber")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void EncodeDateTimeNumber_Internal(
+                ref DateTimeNumber d,
+                in Tm tm);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsEncodeDateTimeNumber", CallingConvention = CallingConvention.StdCall)]
         private static extern void EncodeDateTimeNumber_Internal(
                 ref DateTimeNumber d,
                 in Tm tm);
+#endif
 
         internal static void EncodeDateTimeNumber(ref DateTimeNumber d, in Tm tm)
         {
             EncodeDateTimeNumber_Internal(ref d, in tm);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsDecodeDateTimeNumber")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void DecodeDateTimeNumber_Internal(
+                in DateTimeNumber d,
+                ref Tm tm);
+
+        internal static void DecodeDateTimeNumber(in DateTimeNumber d, ref Tm tm)
+        {
+            DecodeDateTimeNumber_Internal(in d, ref tm);
+        }
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsDecodeDateTimeNumber", CallingConvention = CallingConvention.StdCall)]
         private static extern void DecodeDateTimeNumber_Internal(
                 in DateTimeNumber d,
@@ -43,5 +63,6 @@ namespace lcmsNET
         {
             DecodeDateTimeNumber_Internal(in d, ref tm);
         }
+#endif
     }
 }

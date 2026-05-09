@@ -22,17 +22,33 @@ namespace lcmsNET.Tests.TestUtils
 {
     public static class MultiLocalizedUnicodeUtils
     {
-        public record DisplayName(string Value, string LanguageCode = "en", string CountryCode = "GB");
+        // To ensure compatibility across frameworks without changing project settings,
+        // use this simple immutable class instead of a positional record.
+        public sealed class DisplayName
+        {
+            public string Value { get; }
+            public string LanguageCode { get; }
+            public string CountryCode { get; }
+
+            public DisplayName(string value, string languageCode = "en", string countryCode = "GB")
+            {
+                Value = value;
+                LanguageCode = languageCode;
+                CountryCode = countryCode;
+            }
+
+            public void Deconstruct(out string value, out string languageCode, out string countryCode)
+            {
+                value = Value;
+                languageCode = LanguageCode;
+                countryCode = CountryCode;
+            }
+
+            public override string ToString() => Value;
+        }
 
         public static MultiLocalizedUnicode CreateMultiLocalisedUnicode() =>
             MultiLocalizedUnicode.Create(null, 0);
-
-        public static MultiLocalizedUnicode CreateAsUTF8(DisplayName displayName)
-        {
-            var mlu = CreateMultiLocalisedUnicode();
-            mlu.SetUTF8(displayName.LanguageCode, displayName.CountryCode, displayName.Value);
-            return mlu;
-        }
 
         public static MultiLocalizedUnicode CreateAsWide(DisplayName displayName)
         {
