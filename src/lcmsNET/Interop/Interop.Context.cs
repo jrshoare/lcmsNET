@@ -109,11 +109,11 @@ namespace lcmsNET
 
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsUnregisterPluginsTHR")]
-        private static partial int UnregisterPluginsTHR_Internal(
+        private static partial void UnregisterPluginsTHR_Internal(
             IntPtr handle);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsUnregisterPluginsTHR", CallingConvention = CallingConvention.StdCall)]
-        private static extern int UnregisterPluginsTHR_Internal(
+        private static extern void UnregisterPluginsTHR_Internal(
             IntPtr handle);
 #endif
 
@@ -124,12 +124,12 @@ namespace lcmsNET
 
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR")]
-        private static partial int SetLogErrorHandlerTHR_Internal(
+        private static partial void SetLogErrorHandlerTHR_Internal(
                 IntPtr handle,
                 IntPtr fn);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandlerTHR", CallingConvention = CallingConvention.StdCall)]
-        private static extern int SetLogErrorHandlerTHR_Internal(
+        private static extern void SetLogErrorHandlerTHR_Internal(
                 IntPtr handle,
                 IntPtr fn);
 #endif
@@ -212,7 +212,7 @@ namespace lcmsNET
             // get intent count first
             uint count = GetSupportedIntents_InternalTHR(handle, 0, IntPtr.Zero, IntPtr.Zero);
 
-            List<(uint code, string description)> result = new List<(uint code, string description)>();
+            List<(uint code, string description)> result = [];
 
             unsafe
             {
