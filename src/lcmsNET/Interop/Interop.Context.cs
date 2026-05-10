@@ -144,12 +144,12 @@ namespace lcmsNET
         [LibraryImport(Liblcms, EntryPoint = "cmsGetAlarmCodesTHR")]
         private static partial void GetAlarmCodesTHR_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [Out] ushort[] alarmCodes);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsGetAlarmCodesTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern void GetAlarmCodesTHR_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [Out] ushort[] alarmCodes);
 #endif
 
         internal static void GetAlarmCodesTHR(IntPtr handle, ushort[] alarmCodes)
@@ -161,12 +161,12 @@ namespace lcmsNET
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAlarmCodesTHR")]
         private static partial void SetAlarmCodesTHR_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [In] ushort[] alarmCodes);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsSetAlarmCodesTHR", CallingConvention = CallingConvention.StdCall)]
         private static extern void SetAlarmCodesTHR_Internal(
                 IntPtr handle,
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [In] ushort[] alarmCodes);
 #endif
 
         internal static void SetAlarmCodesTHR(IntPtr handle, ushort[] alarmCodes)

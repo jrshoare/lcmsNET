@@ -43,11 +43,11 @@ namespace lcmsNET
 
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetLogErrorHandler")]
-        private static partial int SetLogErrorHandler_Internal(
+        private static partial void SetLogErrorHandler_Internal(
                 IntPtr fn);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsSetLogErrorHandler", CallingConvention = CallingConvention.StdCall)]
-        private static extern int SetLogErrorHandler_Internal(
+        private static extern void SetLogErrorHandler_Internal(
                 IntPtr fn);
 #endif
 
@@ -105,11 +105,11 @@ namespace lcmsNET
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsGetAlarmCodes")]
         private static partial void GetAlarmCodes_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [Out] ushort[] alarmCodes);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsGetAlarmCodes", CallingConvention = CallingConvention.StdCall)]
         private static extern void GetAlarmCodes_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [Out] ushort[] alarmCodes);
 #endif
 
         internal static void GetAlarmCodes(ushort[] alarmCodes)
@@ -200,7 +200,7 @@ namespace lcmsNET
             // get intent count first
             uint count = GetSupportedIntents_Internal(0, IntPtr.Zero, IntPtr.Zero);
 
-            List<(uint code, string description)> result = new List<(uint code, string description)>();
+            List<(uint code, string description)> result = [];
 
             unsafe
             {
