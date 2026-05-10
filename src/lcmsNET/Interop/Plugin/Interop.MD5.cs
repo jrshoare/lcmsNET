@@ -40,18 +40,26 @@ namespace lcmsNET
             return MD5alloc_Internal(contextID);
         }
 
-        // Keep DllImport for this signature to avoid SYSLIB1052 and source-generated duplicates.
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMD5add")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static unsafe partial void MD5Add_Internal(
+                IntPtr handle,
+                /*const*/ void* memPtr,
+                [MarshalAs(UnmanagedType.U4)] uint memSize);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMD5add", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern void MD5Add_Internal(
                 IntPtr handle,
                 /*const*/ void* memPtr,
-                [MarshalAs(UnmanagedType.U4)] int memSize);
+                [MarshalAs(UnmanagedType.U4)] uint memSize);
+#endif
 
         internal unsafe static void MD5Add(IntPtr md5, byte[] memory)
         {
             fixed (void* memPtr = &memory[0])
             {
-                MD5Add_Internal(md5, memPtr, memory.Length);
+                MD5Add_Internal(md5, memPtr, (uint)memory.Length);
             }
         }
 
