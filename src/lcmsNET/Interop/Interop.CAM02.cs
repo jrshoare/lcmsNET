@@ -25,41 +25,74 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsCIECAM02Init")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr CIECAM02Init_Internal(
+                IntPtr contextID,
+                in ViewingConditions conditions);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCIECAM02Init", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr CIECAM02Init_Internal(
                 IntPtr contextID,
                 in ViewingConditions conditions);
+#endif
 
         internal static IntPtr CIECAM02Init(IntPtr contextID, in ViewingConditions conditions)
         {
             return CIECAM02Init_Internal(contextID, conditions);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsCIECAM02Done")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void CIECAM02Done_Internal(
+                IntPtr model);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCIECAM02Done", CallingConvention = CallingConvention.StdCall)]
         private static extern void CIECAM02Done_Internal(
                 IntPtr model);
+#endif
 
         internal static void CIECAM02Done(IntPtr model)
         {
             CIECAM02Done_Internal(model);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsCIECAM02Forward")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void CIECAM02Forward_Internal(
+                IntPtr model,
+                in CIEXYZ xyz,
+                out JCh jch);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCIECAM02Forward", CallingConvention = CallingConvention.StdCall)]
         private static extern void CIECAM02Forward_Internal(
                 IntPtr model,
                 in CIEXYZ xyz,
                 out JCh jch);
+#endif
 
         internal static void CIECAM02Forward(IntPtr model, in CIEXYZ xyz, out JCh jch)
         {
             CIECAM02Forward_Internal(model, xyz, out jch);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsCIECAM02Reverse")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void CIECAM02Reverse_Internal(
+                IntPtr model,
+                in JCh jch,
+                out CIEXYZ xyz);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCIECAM02Reverse", CallingConvention = CallingConvention.StdCall)]
         private static extern void CIECAM02Reverse_Internal(
                 IntPtr model,
                 in JCh jch,
                 out CIEXYZ xyz);
+#endif
 
         internal static void CIECAM02Reverse(IntPtr model, in JCh jch, out CIEXYZ xyz)
         {
