@@ -66,7 +66,7 @@ namespace lcmsNET
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsMD5finish")]
         private static partial void MD5Finish_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] byte[] profileID,
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] [Out] byte[] profileID,
                 IntPtr handle);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsMD5finish", CallingConvention = CallingConvention.StdCall)]
