@@ -32,17 +32,14 @@ namespace lcmsNET
         /// <summary>
         /// XYZ X.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double X;
         /// <summary>
         /// XYZ Y.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double Y;
         /// <summary>
         /// XYZ Z.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double Z;
 
         /// <summary>
@@ -50,7 +47,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="whitePoint">The white point to be used in the conversion.</param>
         /// <returns>The corresponding <see cref="CIELab"/> value.</returns>
-        public CIELab ToLab(in CIEXYZ whitePoint)
+        public readonly CIELab ToLab(in CIEXYZ whitePoint)
         {
             Interop.XYZ2Lab(whitePoint, out CIELab lab, this);
             return lab;
@@ -91,17 +88,14 @@ namespace lcmsNET
         /// <summary>
         /// xyY x.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double x;
         /// <summary>
         /// xyY y.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double y;
         /// <summary>
         /// xyY Y.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double Y;
 
         /// <summary>
@@ -132,7 +126,6 @@ namespace lcmsNET
         /// <remarks>
         /// Black is 0 and white is 100.
         /// </remarks>
-        [MarshalAs(UnmanagedType.R8)]
         public double L;
         /// <summary>
         /// CIELAB a axis value representing the green-red opponent colors.
@@ -140,7 +133,6 @@ namespace lcmsNET
         /// <remarks>
         /// Negative values are towards green and positive values towards red.
         /// </remarks>
-        [MarshalAs(UnmanagedType.R8)]
         public double a;
         /// <summary>
         /// CIELAB b axis value representing the blue-yellow opponent colors.
@@ -148,7 +140,6 @@ namespace lcmsNET
         /// <remarks>
         /// Negative values are towards blue and positive values towards yellow.
         /// </remarks>
-        [MarshalAs(UnmanagedType.R8)]
         public double b;
 
         /// <summary>
@@ -156,7 +147,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="whitePoint">The white point to be used in the conversion.</param>
         /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
-        public CIEXYZ ToXYZ(in CIEXYZ whitePoint)
+        public readonly CIEXYZ ToXYZ(in CIEXYZ whitePoint)
         {
             Interop.Lab2XYZ(whitePoint, out CIEXYZ xyz, this);
             return xyz;
@@ -182,17 +173,14 @@ namespace lcmsNET
         /// <summary>
         /// CIELCh L lightness value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double L;
         /// <summary>
         /// CIELCh C chroma value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double C;
         /// <summary>
         /// CIELCh h hue value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double h;
 
         /// <summary>
@@ -215,17 +203,14 @@ namespace lcmsNET
         /// <summary>
         /// CIE CAM02 J lightness value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double J;
         /// <summary>
         /// CIE CAM02 C chroma value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double C;
         /// <summary>
         /// CIE CAM02 h hue value.
         /// </summary>
-        [MarshalAs(UnmanagedType.R8)]
         public double h;
     }
 
@@ -485,10 +470,12 @@ namespace lcmsNET
         /// </summary>
         /// <param name="xyY">The <see cref="CIExyY"/> value to be converted.</param>
         /// <returns>The corresponding <see cref="CIEXYZ"/> value.</returns>
+#pragma warning disable IDE1006 // Naming Styles
         public static CIEXYZ xyY2XYZ(in CIExyY xyY)
         {
             Interop.xyY2XYZ(out CIEXYZ xyz, xyY);
             return xyz;
         }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

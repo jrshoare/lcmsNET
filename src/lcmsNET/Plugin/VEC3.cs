@@ -26,25 +26,18 @@ namespace lcmsNET.Plugin
     /// <summary>
     /// Represents a 3-component vector defined as using double precision floating point numbers.
     /// </summary>
+    /// <remarks>
+    /// Initialises the vector.
+    /// </remarks>
+    /// <param name="x">x component of the vector.</param>
+    /// <param name="y">y component of the vector.</param>
+    /// <param name="z">z component of the vector.</param>
     [StructLayout(LayoutKind.Sequential)]
-    public struct VEC3
+    public struct VEC3(double x, double y, double z)
     {
-        private double X;
-        private double Y;
-        private double Z;
-
-        /// <summary>
-        /// Initialises the vector.
-        /// </summary>
-        /// <param name="x">x component of the vector.</param>
-        /// <param name="y">y component of the vector.</param>
-        /// <param name="z">z component of the vector.</param>
-        public VEC3(double x, double y, double z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
+        private double X = x;
+        private double Y = y;
+        private double Z = z;
 
         /// <summary>
         /// Gets or sets the value of the vector component at the specified index.
@@ -53,7 +46,7 @@ namespace lcmsNET.Plugin
         /// <returns>The value of vector component at the specified index.</returns>
         public double this[int index]
         {
-            get
+            readonly get
             {
                 return index switch
                 {
@@ -130,7 +123,7 @@ namespace lcmsNET.Plugin
         /// <summary>
         /// Returns the Euclidean length of the vector.
         /// </summary>
-        public double Length
+        public readonly double Length
         {
             get => Math.Sqrt(X * X + Y * Y + Z * Z);
         }
