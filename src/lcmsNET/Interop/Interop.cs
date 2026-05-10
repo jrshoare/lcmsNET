@@ -120,11 +120,11 @@ namespace lcmsNET
 #if NET7_0_OR_GREATER
         [LibraryImport(Liblcms, EntryPoint = "cmsSetAlarmCodes")]
         private static partial void SetAlarmCodes_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [In] ushort[] alarmCodes);
 #else
         [DllImport(Liblcms, EntryPoint = "cmsSetAlarmCodes", CallingConvention = CallingConvention.StdCall)]
         private static extern void SetAlarmCodes_Internal(
-                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] alarmCodes);
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] [In] ushort[] alarmCodes);
 #endif
 
         internal static void SetAlarmCodes(ushort[] alarmCodes)
