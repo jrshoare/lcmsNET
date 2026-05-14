@@ -26,11 +26,20 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromFile")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr OpenIOhandlerFromFile_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.LPStr)] string filename,
+                [MarshalAs(UnmanagedType.LPStr)] string access);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromFile", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr OpenIOhandlerFromFile_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.LPStr)] string filename,
                 [MarshalAs(UnmanagedType.LPStr)] string access);
+#endif
 
         internal static IntPtr OpenIOHandler(IntPtr contextID, string filepath, string access)
         {
@@ -40,118 +49,212 @@ namespace lcmsNET
             return OpenIOhandlerFromFile_Internal(contextID, filepath, access);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromMem")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr OpenIOhandlerFromMem_Internal(
+                IntPtr contextID,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint size,
+                [MarshalAs(UnmanagedType.LPStr)] string access);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromMem", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr OpenIOhandlerFromMem_Internal(
                 IntPtr contextID,
                 IntPtr buffer,
                 [MarshalAs(UnmanagedType.U4)] uint size,
                 [MarshalAs(UnmanagedType.LPStr)] string access);
+#endif
 
         internal static IntPtr OpenIOHandler(IntPtr contextID, IntPtr buffer, uint bufferSize, string access)
         {
             return OpenIOhandlerFromMem_Internal(contextID, buffer, bufferSize, access);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromNULL")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr OpenIOhandlerFromNull_Internal(
+                IntPtr contextID);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsOpenIOhandlerFromNULL", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr OpenIOhandlerFromNull_Internal(
                 IntPtr contextID);
+#endif
 
         internal static IntPtr OpenIOHandler(IntPtr contextID)
         {
             return OpenIOhandlerFromNull_Internal(contextID);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsCloseIOhandler")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int CloseIOhandler_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsCloseIOhandler", CallingConvention = CallingConvention.StdCall)]
         private static extern int CloseIOhandler_Internal(IntPtr handle);
+#endif
 
         internal static int CloseIOHandler(IntPtr handle)
         {
             return CloseIOhandler_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGetProfileIOhandler")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr GetProfileIOHandler_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGetProfileIOhandler", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetProfileIOHandler_Internal(IntPtr handle);
+#endif
 
         internal static IntPtr GetProfileIOHandler(IntPtr handle)
         {
             return GetProfileIOHandler_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadUInt8Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadUint8Number_Internal(
+                IntPtr handle,
+                ref byte n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt8Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint8Number_Internal(
                 IntPtr handle,
                 ref byte n);
+#endif
 
         internal static bool ReadUint8(IntPtr handle, ref byte n)
         {
             return ReadUint8Number_Internal(handle, ref n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadUInt16Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadUint16Number_Internal(
+                IntPtr handle,
+                ref ushort n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint16Number_Internal(
                 IntPtr handle,
                 ref ushort n);
+#endif
 
         internal static bool ReadUint16(IntPtr handle, ref ushort n)
         {
             return ReadUint16Number_Internal(handle, ref n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadUInt32Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadUint32Number_Internal(
+                IntPtr handle,
+                ref uint n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint32Number_Internal(
                 IntPtr handle,
                 ref uint n);
+#endif
 
         internal static bool ReadUint32(IntPtr handle, ref uint n)
         {
             return ReadUint32Number_Internal(handle, ref n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadUInt64Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadUint64Number_Internal(
+                IntPtr handle,
+                ref ulong n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt64Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadUint64Number_Internal(
                 IntPtr handle,
                 ref ulong n);
+#endif
 
         internal static bool ReadUint64(IntPtr handle, ref ulong n)
         {
             return ReadUint64Number_Internal(handle, ref n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadFloat32Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadFloat32Number_Internal(
+                IntPtr handle,
+                ref float f);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadFloat32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadFloat32Number_Internal(
                 IntPtr handle,
                 ref float f);
+#endif
 
         internal static bool ReadFloat(IntPtr handle, ref float f)
         {
             return ReadFloat32Number_Internal(handle, ref f) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsRead15Fixed16Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int Read15Fixed16Number_Internal(
+                IntPtr handle,
+                ref double d);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsRead15Fixed16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int Read15Fixed16Number_Internal(
                 IntPtr handle,
                 ref double d);
+#endif
 
         internal static bool Read15Fixed16(IntPtr handle, ref double d)
         {
             return Read15Fixed16Number_Internal(handle, ref d) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadXYZNumber")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadXYZNumber_Internal(
+                IntPtr handle,
+                ref CIEXYZ xyz);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadXYZNumber", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadXYZNumber_Internal(
                 IntPtr handle,
                 ref CIEXYZ xyz);
+#endif
 
         internal static bool ReadXYZ(IntPtr handle, ref CIEXYZ xyz)
         {
             return ReadXYZNumber_Internal(handle, ref xyz) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadUInt16Array")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static unsafe partial int ReadUint16Array_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint n,
+                void* array);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadUInt16Array", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int ReadUint16Array_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U4)] uint n,
                 void* array);
+#endif
 
         internal unsafe static bool ReadUint16Array(IntPtr handle, ushort[] array)
         {
@@ -162,40 +265,72 @@ namespace lcmsNET
             }
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteUInt8Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteUint8Number_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U1)] byte n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteUInt8Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteUint8Number_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U1)] byte n);
+#endif
 
         internal static bool WriteUint8(IntPtr handle, byte n)
         {
             return WriteUint8Number_Internal(handle, n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteUInt16Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteUint16Number_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U2)] ushort n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteUInt16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteUint16Number_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U2)] ushort n);
+#endif
 
         internal static bool WriteUint16(IntPtr handle, ushort n)
         {
             return WriteUint16Number_Internal(handle, n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteUInt32Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteUint32Number_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteUInt32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteUint32Number_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U4)] uint n);
+#endif
 
         internal static bool WriteUint32(IntPtr handle, uint n)
         {
             return WriteUint32Number_Internal(handle, n) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteUInt64Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static unsafe partial int WriteUint64Number_Internal(
+                IntPtr handle,
+                /*const*/ ulong* n);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteUInt64Number", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int WriteUint64Number_Internal(
                 IntPtr handle,
                 /*const*/ ulong* n);
+#endif
 
         internal unsafe static bool WriteUint64(IntPtr handle, ulong n)
         {
@@ -206,41 +341,74 @@ namespace lcmsNET
             }
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteFloat32Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteFloat32Number_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R4)] float f);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteFloat32Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteFloat32Number_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R4)] float f);
+#endif
 
         internal static bool WriteFloat(IntPtr handle, float f)
         {
             return WriteFloat32Number_Internal(handle, f) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWrite15Fixed16Number")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int Write15Fixed16Number_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.R8)] double d);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWrite15Fixed16Number", CallingConvention = CallingConvention.StdCall)]
         private static extern int Write15Fixed16Number_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.R8)] double d);
+#endif
 
         internal static bool Write15Fixed16(IntPtr handle, double d)
         {
             return Write15Fixed16Number_Internal(handle, d) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteXYZNumber")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteXYZNumber_Internal(
+                IntPtr handle,
+                CIEXYZ xyz);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteXYZNumber", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteXYZNumber_Internal(
                 IntPtr handle,
                 CIEXYZ xyz);
+#endif
 
         internal static bool WriteXYZ(IntPtr handle, CIEXYZ xyz)
         {
             return WriteXYZNumber_Internal(handle, xyz) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteUInt16Array")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static unsafe partial int WriteUint16Array_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint n,
+                /*const*/ void* array);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteUInt16Array", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern int WriteUint16Array_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U4)] uint n,
                 /*const*/ void* array);
+#endif
 
         internal unsafe static bool WriteUint16Array(IntPtr handle, ushort[] array)
         {
@@ -251,37 +419,66 @@ namespace lcmsNET
             }
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadAlignment")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int ReadAlignment_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadAlignment", CallingConvention = CallingConvention.StdCall)]
         private static extern int ReadAlignment_Internal(
                 IntPtr handle);
+#endif
 
         internal static bool ReadAlignment(IntPtr handle)
         {
             return ReadAlignment_Internal(handle) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteAlignment")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteAlignment_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteAlignment", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteAlignment_Internal(
                 IntPtr handle);
+#endif
 
         internal static bool WriteAlignment(IntPtr handle)
         {
             return WriteAlignment_Internal(handle) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsReadTypeBase")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint ReadTypeBase_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsReadTypeBase", CallingConvention = CallingConvention.StdCall)]
         private static extern uint ReadTypeBase_Internal(
                 IntPtr handle);
+#endif
 
         internal static uint ReadTypeBase(IntPtr handle)
         {
             return ReadTypeBase_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsWriteTypeBase")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int WriteTypeBase_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint sig);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsWriteTypeBase", CallingConvention = CallingConvention.StdCall)]
         private static extern int WriteTypeBase_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U4)] uint sig);
+#endif
 
         internal static bool WriteTypeBase(IntPtr handle, uint sig)
         {
