@@ -19,12 +19,14 @@
     <PackageIconUrl>https://github.com/jrshoare/lcmsNET/raw/master/src/lcmsNET/icon.png</PackageIconUrl>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>keypair.snk</AssemblyOriginatorKeyFile>
-    <Copyright>Copyright (c) 2019-2025 John Stevenson-Hoare</Copyright>
+    <Copyright>Copyright (c) 2019-2026 John Stevenson-Hoare</Copyright>
     <PackageLicenseUrl></PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net8'">
     <LangVersion>latest</LangVersion>
+    <IsAotCompatible>false</IsAotCompatible>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

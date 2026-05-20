@@ -125,7 +125,7 @@ namespace lcmsNET
                     Marshal.StructureToPtr(segment, segmentPtr, false);
                     Marshal.Copy(segmentPtr, temp, start, segmentLength);
                     start += segmentLength;
-                    Marshal.DestroyStructure(segmentPtr, typeof(CurveSegment));
+                    Marshal.DestroyStructure<CurveSegment>(segmentPtr);
                     Marshal.FreeHGlobal(segmentPtr);
                 }
                 Marshal.Copy(temp, 0, ptr, totalSize);

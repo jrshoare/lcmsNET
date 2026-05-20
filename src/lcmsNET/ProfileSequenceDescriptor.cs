@@ -118,7 +118,7 @@ namespace lcmsNET
         private unsafe void CreateItems()
         {
             Items = new ProfileSequenceItem[Length];
-            int itemSize = Marshal.SizeOf(typeof(PSeqDesc));
+            int itemSize = Marshal.SizeOf<PSeqDesc>();
             byte* ptr = (byte*)SeqDesc->seq.ToPointer();
             for (uint i = 0; i < Length; i++)
             {

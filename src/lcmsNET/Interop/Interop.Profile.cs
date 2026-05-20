@@ -651,7 +651,7 @@ namespace lcmsNET
 
         internal static int GetHeaderCreationDateTime(IntPtr handle, out DateTime dest)
         {
-            int size = Marshal.SizeOf(typeof(Tm));
+            int size = Marshal.SizeOf<Tm>();
             IntPtr ptr = Marshal.AllocHGlobal(size);
 
             try
