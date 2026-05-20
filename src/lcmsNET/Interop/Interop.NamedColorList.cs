@@ -25,6 +25,16 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsAllocNamedColorList")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr AllocNamedColorList_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint n,
+                [MarshalAs(UnmanagedType.U4)] uint colorantCount,
+                [MarshalAs(UnmanagedType.LPStr)] string prefix,
+                [MarshalAs(UnmanagedType.LPStr)] string suffix);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsAllocNamedColorList", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr AllocNamedColorList_Internal(
                 IntPtr contextID,
@@ -32,69 +42,127 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.U4)] uint colorantCount,
                 [MarshalAs(UnmanagedType.LPStr)] string prefix,
                 [MarshalAs(UnmanagedType.LPStr)] string suffix);
+#endif
 
         internal static IntPtr AllocNamedColorList(IntPtr contextID, uint n, uint colorantCount, string prefix, string suffix)
         {
             return AllocNamedColorList_Internal(contextID, n, colorantCount, prefix, suffix);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsFreeNamedColorList")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void FreeNamedColorList_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsFreeNamedColorList", CallingConvention = CallingConvention.StdCall)]
         private static extern void FreeNamedColorList_Internal(IntPtr handle);
+#endif
 
         internal static void FreeNamedColorList(IntPtr handle)
         {
             FreeNamedColorList_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsDupNamedColorList")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr DupNamedColorList_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsDupNamedColorList", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr DupNamedColorList_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr DupNamedColorList(IntPtr handle)
         {
             return DupNamedColorList_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGetNamedColorList")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr GetNamedColorList_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGetNamedColorList", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GetNamedColorList_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr GetNamedColorList(IntPtr handle)
         {
             return GetNamedColorList_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsAppendNamedColor")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int AppendNamedColor_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name,
+                [In] ushort[] pcs,
+                [In] ushort[] colorant);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsAppendNamedColor", CallingConvention = CallingConvention.StdCall)]
         private static extern int AppendNamedColor_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPStr)] string name,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] pcs,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] colorant);
+#endif
 
         internal static int AppendNamedColor(IntPtr handle, string name, ushort[] pcs, ushort[] colorant)
         {
             return AppendNamedColor_Internal(handle, name, pcs, colorant);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsNamedColorCount")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint NamedColorCount_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsNamedColorCount", CallingConvention = CallingConvention.StdCall)]
         private static extern uint NamedColorCount_Internal(
                 IntPtr handle);
+#endif
 
         internal static uint NamedColorCount(IntPtr handle)
         {
             return NamedColorCount_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsNamedColorIndex")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int NamedColorIndex_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.LPStr)] string name);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsNamedColorIndex", CallingConvention = CallingConvention.StdCall)]
         private static extern int NamedColorIndex_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPStr)] string name);
+#endif
 
         internal static int NamedColorIndex(IntPtr handle, string name)
         {
             return NamedColorIndex_Internal(handle, name);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsNamedColorInfo")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int NamedColorInfo_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint nColor,
+                IntPtr name,
+                IntPtr prefix,
+                IntPtr suffix,
+                [Out] ushort[] pcs,
+                [Out] ushort[] colorant);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsNamedColorInfo", CallingConvention = CallingConvention.StdCall)]
         private static extern int NamedColorInfo_Internal(
                 IntPtr handle,
@@ -104,6 +172,7 @@ namespace lcmsNET
                 IntPtr suffix,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 3)] ushort[] pcs,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2, SizeConst = 16)] ushort[] colorant);
+#endif
 
         internal static int NamedColorInfo(IntPtr handle, uint nColor, out string name, out string prefix,
                 out string suffix, ushort[] pcs, ushort[] colorant)
