@@ -29,6 +29,9 @@ namespace lcmsNET
     /// Represents a data structure that contains either 7-bit ASCII or binary data.
     /// </summary>
     public class ICCData
+#if NET7_0_OR_GREATER
+        : IHandleConvertible
+#endif
     {
         /// <summary>
         /// 7-bit ASCII data type.
@@ -65,7 +68,11 @@ namespace lcmsNET
         /// </remarks>
         public ICCData(string s)
         {
+#if NET5_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(s);
+#else
             if (s is null) throw new ArgumentNullException(nameof(s));
+#endif
 
             Flag = ASCII;
             Data = Encoding.ASCII.GetBytes(s);
@@ -84,7 +91,11 @@ namespace lcmsNET
         /// </remarks>
         public ICCData(byte[] bytes)
         {
+#if NET5_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(bytes);
+#else
             if (bytes is null) throw new ArgumentNullException(nameof(bytes));
+#endif
 
             Flag = Binary;
             Data = bytes;
@@ -137,14 +148,23 @@ namespace lcmsNET
             }
 
             if (flag == ASCII)
-                return new ICCData(Helper.ToString(data).TrimEnd(new char[] { '\0' })); // remove 00h terminator byte
+                return new ICCData(Helper.ToString(data).TrimEnd(['\0'])); // remove 00h terminator byte
             else if (flag == Binary)
                 return new ICCData(data);
             else
-                throw new ArgumentException($"Value must be either {ASCII} or {Binary}.", nameof(flag));
+                throw new ArgumentException("Flag must be either ASCII or Binary.");
         }
 
-        internal IntPtr ToHandle()
+        /// <summary>
+        /// Converts the current instance to a native handle that can be used by the underlying implementation.
+        /// </summary>
+        /// <returns>A native handle that represents the current instance.</returns>
+#if NET7_0_OR_GREATER
+        public
+#else
+        internal
+#endif
+            IntPtr ToHandle()
         {
             int cb = sizeof(uint) + sizeof(uint) + Data.Length;
             int nulLen = (Flag == ASCII) ? 1 : 0;
