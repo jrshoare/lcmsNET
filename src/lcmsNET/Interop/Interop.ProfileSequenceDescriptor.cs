@@ -25,27 +25,48 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsAllocProfileSequenceDescription")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr AllocProfileSequenceDescription_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint nItems);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsAllocProfileSequenceDescription", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr AllocProfileSequenceDescription_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint nItems);
+#endif
 
         internal static IntPtr AllocProfileSequenceDescription(IntPtr contextID, uint nItems)
         {
             return AllocProfileSequenceDescription_Internal(contextID, nItems);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsFreeProfileSequenceDescription")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void FreeProfileSequenceDescription_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsFreeProfileSequenceDescription", CallingConvention = CallingConvention.StdCall)]
         private static extern void FreeProfileSequenceDescription_Internal(IntPtr handle);
+#endif
 
         internal static void FreeProfileSequenceDescription(IntPtr handle)
         {
             FreeProfileSequenceDescription_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsDupProfileSequenceDescription")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr DupProfileSequenceDescription_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsDupProfileSequenceDescription", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr DupProfileSequenceDescription_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr DupProfileSequenceDescription(IntPtr handle)
         {
