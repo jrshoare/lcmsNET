@@ -28,6 +28,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIEXYZ
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<CIEXYZ>
+#endif
     {
         /// <summary>
         /// XYZ X.
@@ -63,7 +66,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIEXYZ"/> instance.</returns>
-        internal static CIEXYZ FromHandle(IntPtr handle)
+        public static CIEXYZ FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZ>(handle);
         }
@@ -219,6 +222,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIEXYZTRIPLE
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<CIEXYZTRIPLE>
+#endif
     {
         /// <summary>
         /// The CIEXYZ Red component.
@@ -238,7 +244,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIEXYZTRIPLE"/> instance.</returns>
-        internal static CIEXYZTRIPLE FromHandle(IntPtr handle)
+        public static CIEXYZTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIEXYZTRIPLE>(handle);
         }
@@ -249,6 +255,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct CIExyYTRIPLE
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<CIExyYTRIPLE>
+#endif
     {
         /// <summary>
         /// The CIExyY Red component.
@@ -268,7 +277,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="CIExyYTRIPLE"/> instance.</returns>
-        internal static CIExyYTRIPLE FromHandle(IntPtr handle)
+        public static CIExyYTRIPLE FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<CIExyYTRIPLE>(handle);
         }

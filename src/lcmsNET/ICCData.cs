@@ -30,7 +30,7 @@ namespace lcmsNET
     /// </summary>
     public class ICCData
 #if NET7_0_OR_GREATER
-        : IHandleConvertible
+        : IHandleConvertible, ICreatableFromHandle<ICCData>
 #endif
     {
         /// <summary>
@@ -132,7 +132,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCData"/> instance.</returns>
-        internal static ICCData FromHandle(IntPtr handle)
+        public static ICCData FromHandle(IntPtr handle)
         {
             IntPtr ptr = handle;
             uint len = (uint)Marshal.ReadInt32(ptr); // len

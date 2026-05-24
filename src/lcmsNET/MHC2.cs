@@ -29,6 +29,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct MHC2
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<MHC2>
+#endif
     {
         /// <summary>
         /// Number of elements in each 1D LUT.
@@ -67,7 +70,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="MHC2"/> instance.</returns>
-        internal static MHC2 FromHandle(IntPtr handle)
+        public static MHC2 FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<MHC2>(handle);
         }

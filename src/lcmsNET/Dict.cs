@@ -27,7 +27,7 @@ using System.Runtime.InteropServices;
 namespace lcmsNET
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct _DictEntry
+    internal struct InternalDictEntry
     {
         public IntPtr Next;         // struct cmsDICTentry struct *
         public IntPtr DisplayName;  // cmsMLU *
@@ -42,6 +42,9 @@ namespace lcmsNET
     /// Represents a dictionary of <see cref="DictEntry"/> items.
     /// </summary>
     public sealed class Dict : TagBase<Dict>, IEnumerable<DictEntry>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<Dict>
+#endif
     {
         internal Dict(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)
@@ -58,7 +61,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        internal static Dict FromHandle(IntPtr handle)
+        public static Dict FromHandle(IntPtr handle)
         {
             return new Dict(handle, context: null, isOwner: false);
         }

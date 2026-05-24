@@ -28,6 +28,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct Tm
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<Tm>
+#endif
     {
         internal const int FILL_SIZE = 16;
 
@@ -75,7 +78,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing calendar date and time.</param>
         /// <returns>A new <see cref="Tm"/> instance referencing an existing calendar date and time.</returns>
-        internal static Tm FromHandle(IntPtr handle)
+        public static Tm FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Tm>(handle);
         }
@@ -128,7 +131,7 @@ namespace lcmsNET
         /// <param name="date">A <see cref="DateTimeNumber"/> instance.</param>
         public Tm(DateTimeNumber date)
         {
-            Tm tm = new Tm();
+            Tm tm = new();
             Interop.DecodeDateTimeNumber(in date, ref tm);
             this = tm;
         }

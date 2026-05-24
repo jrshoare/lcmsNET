@@ -65,6 +65,9 @@ namespace lcmsNET
     /// provides the input to the next and so on through the pipeline.
     /// </summary>
     public sealed class Pipeline : TagBase<Pipeline>, IEnumerable<Stage>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<Pipeline>
+#endif
     {
         internal Pipeline(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)
@@ -290,9 +293,9 @@ namespace lcmsNET
                 double[] adaptationStates, CmsFlags flags)
         {
             return new Pipeline(Interop.DefaultICCIntents(Helper.GetHandle(context),
-                    intents.Select(_ => Convert.ToUInt32(_)).ToArray(),
-                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
-                    bpc.Select(_ => _ ? 1 : 0).ToArray(),
+                    [.. intents.Select(_ => Convert.ToUInt32(_))],
+                    [.. profiles.Select(_ => Helper.GetHandle(_))],
+                    [.. bpc.Select(_ => _ ? 1 : 0)],
                     adaptationStates, Convert.ToUInt32(flags)),
                     context);
         }
@@ -360,15 +363,8 @@ namespace lcmsNET
             return GetEnumerator();
         }
 
-        private class StageEnumerator : IEnumerator<Stage>
+        private class StageEnumerator(IntPtr handle) : IEnumerator<Stage>
         {
-            public StageEnumerator(IntPtr handle)
-            {
-                First = GetFirst(handle);
-                Last = GetLast(handle);
-                Location = Position.Before;
-            }
-
             public Stage Current
             {
                 get
@@ -419,20 +415,20 @@ namespace lcmsNET
                 Location = Position.Before;
             }
 
-            private IntPtr First { get; set; }
-            private IntPtr GetFirst(IntPtr handle)
+            private IntPtr First { get; set; } = GetFirst(handle);
+            private static IntPtr GetFirst(IntPtr handle)
             {
                 return Interop.PipelineGetPtrToFirstStage(handle);
             }
 
-            private IntPtr Last { get; set; }
-            private IntPtr GetLast(IntPtr handle)
+            private IntPtr Last { get; set; } = GetLast(handle);
+            private static IntPtr GetLast(IntPtr handle)
             {
                 return Interop.PipelineGetPtrToLastStage(handle);
             }
 
             private enum Position { Before, During, After };
-            private Position Location { get; set; }
+            private Position Location { get; set; } = Position.Before;
 
             public void Dispose()
             {

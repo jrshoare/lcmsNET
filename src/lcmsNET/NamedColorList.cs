@@ -27,6 +27,9 @@ namespace lcmsNET
     /// Represents a named color list.
     /// </summary>
     public sealed class NamedColorList : TagBase<NamedColorList>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<NamedColorList>
+#endif
     {
         internal NamedColorList(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)
@@ -38,7 +41,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing named color list.</param>
         /// <returns>A new <see cref="NamedColorList"/> instance referencing an existing named color list.</returns>
-        internal static NamedColorList FromHandle(IntPtr handle)
+        public static NamedColorList FromHandle(IntPtr handle)
         {
             return new NamedColorList(handle, context: null, isOwner: false);
         }

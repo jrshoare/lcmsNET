@@ -28,7 +28,7 @@ namespace lcmsNET
     /// </summary>
     public sealed class VideoCardGamma
 #if NET7_0_OR_GREATER
-        : IHandleConvertible
+        : IHandleConvertible, ICreatableFromHandle<VideoCardGamma>
 #endif
     {
         /// <summary>
@@ -36,7 +36,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to an existing video card gamma table.</param>
         /// <returns>A new <see cref="VideoCardGamma"/> instance referencing an existing video card gamma table.</returns>
-        internal static VideoCardGamma FromHandle(IntPtr handle)
+        public static VideoCardGamma FromHandle(IntPtr handle)
         {
             return new VideoCardGamma(Marshal.PtrToStructure<Vcgt>(handle));
         }
