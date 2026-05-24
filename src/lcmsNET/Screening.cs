@@ -110,6 +110,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct Screening
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<Screening>
+#endif
     {
         /// <summary>
         /// Screening flags.
@@ -132,7 +135,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="Screening"/> instance.</returns>
-        internal static Screening FromHandle(IntPtr handle)
+        public static Screening FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Screening>(handle);
         }

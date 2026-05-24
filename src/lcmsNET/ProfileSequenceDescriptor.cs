@@ -28,6 +28,9 @@ namespace lcmsNET
     /// Represents a profile sequence descriptor.
     /// </summary>
     public sealed class ProfileSequenceDescriptor : TagBase<ProfileSequenceDescriptor>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<ProfileSequenceDescriptor>
+#endif
     {
         internal ProfileSequenceDescriptor(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)
@@ -46,7 +49,7 @@ namespace lcmsNET
         /// <exception cref="LcmsNETException">
         /// The <paramref name="handle"/> is <see cref="IntPtr.Zero"/>.
         /// </exception>
-        internal static ProfileSequenceDescriptor FromHandle(IntPtr handle)
+        public static ProfileSequenceDescriptor FromHandle(IntPtr handle)
         {
             return new ProfileSequenceDescriptor(handle, context: null, isOwner: false);
         }
@@ -118,7 +121,7 @@ namespace lcmsNET
         private unsafe void CreateItems()
         {
             Items = new ProfileSequenceItem[Length];
-            int itemSize = Marshal.SizeOf(typeof(PSeqDesc));
+            int itemSize = Marshal.SizeOf<PSeqDesc>();
             byte* ptr = (byte*)SeqDesc->seq.ToPointer();
             for (uint i = 0; i < Length; i++)
             {

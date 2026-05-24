@@ -27,18 +27,21 @@ namespace lcmsNET
     /// Represents a video card gamma table.
     /// </summary>
     public sealed class VideoCardGamma
+#if NET7_0_OR_GREATER
+        : IHandleConvertible, ICreatableFromHandle<VideoCardGamma>
+#endif
     {
         /// <summary>
         /// Creates a video card gamma table from the supplied handle.
         /// </summary>
         /// <param name="handle">A handle to an existing video card gamma table.</param>
         /// <returns>A new <see cref="VideoCardGamma"/> instance referencing an existing video card gamma table.</returns>
-        internal static VideoCardGamma FromHandle(IntPtr handle)
+        public static VideoCardGamma FromHandle(IntPtr handle)
         {
-            return new VideoCardGamma(Marshal.PtrToStructure<_vcgt>(handle));
+            return new VideoCardGamma(Marshal.PtrToStructure<Vcgt>(handle));
         }
 
-        private VideoCardGamma(_vcgt vcgt)
+        private VideoCardGamma(Vcgt vcgt)
         {
             this.vcgt = vcgt;
             Red = ToneCurve.FromHandle(vcgt.red);
@@ -77,21 +80,30 @@ namespace lcmsNET
         /// </summary>
         public ToneCurve Blue { get; private set; }
 
-        internal IntPtr ToHandle()
+        /// <summary>
+        /// Converts the current instance to a native handle that can be used by the underlying implementation.
+        /// </summary>
+        /// <returns>A native handle that represents the current instance.</returns>
+#if NET7_0_OR_GREATER
+        public
+#else
+        internal
+#endif
+            IntPtr ToHandle()
         {
-            int size = Marshal.SizeOf<_vcgt>();
+            int size = Marshal.SizeOf<Vcgt>();
             IntPtr ptr = Marshal.AllocHGlobal(size);
             Marshal.StructureToPtr(vcgt, ptr, false);
             return ptr;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct _vcgt
+        private struct Vcgt
         {
             public IntPtr red;
             public IntPtr green;
             public IntPtr blue;
         }
-        private _vcgt vcgt;
+        private Vcgt vcgt;
     }
 }

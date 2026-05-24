@@ -162,7 +162,7 @@ namespace lcmsNET
         /// </remarks>
         public static Stage Create(Context context, double[,] matrix, double[] offset)
         {
-            if (!(offset is null) && offset.Length != (matrix?.GetUpperBound(1) + 1))
+            if (offset is not null && offset.Length != (matrix?.GetUpperBound(1) + 1))
             {
                 throw new ArgumentException($"'{nameof(offset)}' array size must equal size of '{nameof(matrix)}' second dimension.");
             }

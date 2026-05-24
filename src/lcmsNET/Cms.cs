@@ -1390,6 +1390,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ICCMeasurementConditions
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<ICCMeasurementConditions>
+#endif
     {
         /// <summary>
         /// The standard observer.
@@ -1421,7 +1424,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCMeasurementConditions"/> instance.</returns>
-        internal static ICCMeasurementConditions FromHandle(IntPtr handle)
+        public static ICCMeasurementConditions FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ICCMeasurementConditions>(handle);
         }
@@ -1432,6 +1435,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct ICCViewingConditions
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<ICCViewingConditions>
+#endif
     {
         /// <summary>
         /// Un-normalized CIEXYZ values for illuminant (in which Y is in cd/m²).
@@ -1452,7 +1458,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ICCViewingConditions"/> instance.</returns>
-        internal static ICCViewingConditions FromHandle(IntPtr handle)
+        public static ICCViewingConditions FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ICCViewingConditions>(handle);
         }
@@ -1466,6 +1472,9 @@ namespace lcmsNET
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
     public struct VideoSignalType
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<VideoSignalType>
+#endif
     {
         /// <summary>
         /// Colour primaries code point.
@@ -1489,7 +1498,7 @@ namespace lcmsNET
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="VideoSignalType"/> instance.</returns>
-        internal static VideoSignalType FromHandle(IntPtr handle)
+        public static VideoSignalType FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<VideoSignalType>(handle);
         }

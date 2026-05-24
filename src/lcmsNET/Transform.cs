@@ -169,7 +169,7 @@ namespace lcmsNET
                 Intent intent, CmsFlags flags)
         {
             return new Transform(Interop.CreateMultiprofileTransform(
-                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
+                    [.. profiles.Select(_ => Helper.GetHandle(_))],
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)));
         }
 
@@ -195,7 +195,7 @@ namespace lcmsNET
                 Intent intent, CmsFlags flags)
         {
             return new Transform(Interop.CreateMultiprofileTransform(Helper.GetHandle(context),
-                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
+                    [.. profiles.Select(_ => Helper.GetHandle(_))],
                     inputFormat, outputFormat, Convert.ToUInt32(intent), Convert.ToUInt32(flags)), context);
         }
 
@@ -230,9 +230,9 @@ namespace lcmsNET
                 double[] adaptationStates, Profile gamut, int gamutPCSPosition, uint inputFormat, uint outputFormat, CmsFlags flags)
         {
             return new Transform(Interop.CreateExtendedTransform(Helper.GetHandle(context),
-                    profiles.Select(_ => Helper.GetHandle(_)).ToArray(),
-                    bpc.Select(_ => _ ? 1 : 0).ToArray(),
-                    intents.Select(_ => Convert.ToUInt32(_)).ToArray(), adaptationStates, Helper.GetHandle(gamut),
+                    [.. profiles.Select(_ => Helper.GetHandle(_))],
+                    [.. bpc.Select(_ => _ ? 1 : 0)],
+                    [.. intents.Select(_ => Convert.ToUInt32(_))], adaptationStates, Helper.GetHandle(gamut),
                     gamutPCSPosition, inputFormat, outputFormat, Convert.ToUInt32(flags)), context);
         }
 

@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace lcmsNET.Plugin
@@ -25,27 +26,18 @@ namespace lcmsNET.Plugin
     /// <summary>
     /// Represents a 3-component vector defined as using double precision floating point numbers.
     /// </summary>
+    /// <remarks>
+    /// Initialises the vector.
+    /// </remarks>
+    /// <param name="x">x component of the vector.</param>
+    /// <param name="y">y component of the vector.</param>
+    /// <param name="z">z component of the vector.</param>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct VEC3
+    public struct VEC3(double x, double y, double z)
     {
-        /// <summary>
-        /// The components of the vector.
-        /// </summary>
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 3)]
-        private readonly double[] n;
-
-        /// <summary>
-        /// Initialises the vector.
-        /// </summary>
-        /// <param name="x">x component of the vector.</param>
-        /// <param name="y">y component of the vector.</param>
-        /// <param name="z">z component of the vector.</param>
-        public VEC3(double x, double y, double z)
-        {
-            n = new double[3];
-
-            Interop.VEC3init(ref this, x, y, z);
-        }
+        private double X = x;
+        private double Y = y;
+        private double Z = z;
 
         /// <summary>
         /// Gets or sets the value of the vector component at the specified index.
@@ -54,8 +46,33 @@ namespace lcmsNET.Plugin
         /// <returns>The value of vector component at the specified index.</returns>
         public double this[int index]
         {
-            get => n[index];
-            set => n[index] = value;
+            readonly get
+            {
+                return index switch
+                {
+                    0 => X,
+                    1 => Y,
+                    2 => Z,
+                    _ => throw new IndexOutOfRangeException($"Index must be in the range [0, 2].")
+                };
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        X = value;
+                        break;
+                    case 1:
+                        Y = value;
+                        break;
+                    case 2:
+                        Z = value;
+                        break;
+                    default:
+                        throw new IndexOutOfRangeException($"Index must be in the range [0, 2].");
+                }
+            }
         }
 
         /// <summary>
@@ -68,7 +85,7 @@ namespace lcmsNET.Plugin
         /// </returns>
         public static VEC3 operator -(in VEC3 v1, in VEC3 v2)
         {
-            VEC3 result = new VEC3(0, 0, 0);
+            VEC3 result = new(default, default, default);
             Interop.VEC3minus(ref result, in v1, in v2);
             return result;
         }
@@ -83,9 +100,11 @@ namespace lcmsNET.Plugin
         /// </returns>
         public static VEC3 Cross(in VEC3 v1, in VEC3 v2)
         {
-            VEC3 result = new VEC3(0, 0, 0);
-            Interop.VEC3cross(ref result, in v1, in v2);
-            return result;
+            return new VEC3(
+                v1.Y * v2.Z - v1.Z * v2.Y,
+                v1.Z * v2.X - v1.X * v2.Z,
+                v1.X * v2.Y - v1.Y * v2.X
+            );
         }
 
         /// <summary>
@@ -98,13 +117,16 @@ namespace lcmsNET.Plugin
         /// </returns>
         public static double Dot(in VEC3 v1, in VEC3 v2)
         {
-            return Interop.VEC3dot(in v1, in v2);
+            return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
         }
 
         /// <summary>
         /// Returns the Euclidean length of the vector.
         /// </summary>
-        public double Length => Interop.VEC3length(in this);
+        public readonly double Length
+        {
+            get => Math.Sqrt(X * X + Y * Y + Z * Z);
+        }
 
         /// <summary>
         /// Calculates the Euclidean distance between two vector points.
@@ -114,7 +136,10 @@ namespace lcmsNET.Plugin
         /// <returns>The Euclidean distance between the points.</returns>
         public static double Distance(in VEC3 v1, in VEC3 v2)
         {
-            return Interop.VEC3distance(in v1, in v2);
+            var dx = v1.X - v2.X;
+            var dy = v1.Y - v2.Y;
+            var dz = v1.Z - v2.Z;
+            return Math.Sqrt(dx * dx + dy * dy + dz * dz);
         }
     }
 }

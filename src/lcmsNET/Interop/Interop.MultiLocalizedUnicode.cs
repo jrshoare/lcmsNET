@@ -27,39 +27,70 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUalloc")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr MLUalloc_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint nItems);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUalloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr MLUalloc_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint nItems);
+#endif
 
         internal static IntPtr MLUAlloc(IntPtr contextID, uint nItems)
         {
             return MLUalloc_Internal(contextID, nItems);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUfree")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void MLUfree_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUfree", CallingConvention = CallingConvention.StdCall)]
         private static extern void MLUfree_Internal(IntPtr handle);
+#endif
 
         internal static void MLUFree(IntPtr handle)
         {
             MLUfree_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUdup")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr MLUdup_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUdup", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr MLUdup_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr MLUDup(IntPtr handle)
         {
             return MLUdup_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUsetASCII")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MLUsetASCII_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                [MarshalAs(UnmanagedType.LPStr)] string asciiString);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUsetASCII", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUsetASCII_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 [MarshalAs(UnmanagedType.LPStr)] string asciiString);
+#endif
 
         internal static int MLUSetAscii(IntPtr handle, string languageCode, string countryCode, string value)
         {
@@ -69,12 +100,22 @@ namespace lcmsNET
             return MLUsetASCII_Internal(handle, language, country, value);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUsetWide")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MLUsetWide_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                [MarshalAs(UnmanagedType.LPWStr)] string wideString);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUsetWide", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUsetWide_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 [MarshalAs(UnmanagedType.LPWStr)] string wideString);
+#endif
 
         internal static int MLUSetWide(IntPtr handle, string languageCode, string countryCode, string value)
         {
@@ -85,12 +126,22 @@ namespace lcmsNET
         }
 
 #if NET5_0_OR_GREATER
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUsetUTF8")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MLUsetUTF8_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8String);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUsetUTF8", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUsetUTF8_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 [MarshalAs(UnmanagedType.LPUTF8Str)] string utf8String);
+#endif
 
         internal static int MLUSetUTF8(IntPtr handle, string languageCode, string countryCode, string value)
         {
@@ -101,6 +152,16 @@ namespace lcmsNET
         }
 #endif
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUgetASCII")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint MLUgetASCII_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetASCII", CallingConvention = CallingConvention.StdCall)]
         private static extern uint MLUgetASCII_Internal(
                 IntPtr handle,
@@ -108,6 +169,7 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 IntPtr buffer,
                 [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#endif
 
         internal static string MLUGetASCII(IntPtr handle, string languageCode, string countryCode)
         {
@@ -121,7 +183,7 @@ namespace lcmsNET
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
-                MLUgetASCII_Internal(handle, language, country, buffer, bytes);
+                _ = MLUgetASCII_Internal(handle, language, country, buffer, bytes);
                 return Marshal.PtrToStringAnsi(buffer);
             }
             finally
@@ -130,6 +192,16 @@ namespace lcmsNET
             }
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUgetWide")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint MLUgetWide_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetWide", CallingConvention = CallingConvention.StdCall)]
         private static extern uint MLUgetWide_Internal(
                 IntPtr handle,
@@ -137,6 +209,7 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 IntPtr buffer,
                 [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#endif
 
         internal static string MLUGetWide(IntPtr handle, string languageCode, string countryCode)
         {
@@ -150,7 +223,7 @@ namespace lcmsNET
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
-                MLUgetWide_Internal(handle, language, country, buffer, bytes);
+                _ = MLUgetWide_Internal(handle, language, country, buffer, bytes);
                 return Marshal.PtrToStringUni(buffer);
             }
             finally
@@ -160,6 +233,16 @@ namespace lcmsNET
         }
 
 #if NET5_0_OR_GREATER
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUgetUTF8")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint MLUgetUTF8_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                IntPtr buffer,
+                [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetUTF8", CallingConvention = CallingConvention.StdCall)]
         private static extern uint MLUgetUTF8_Internal(
                 IntPtr handle,
@@ -167,6 +250,7 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 IntPtr buffer,
                 [MarshalAs(UnmanagedType.U4)] uint bufferSize);
+#endif
 
         internal static string MLUGetUTF8(IntPtr handle, string languageCode, string countryCode)
         {
@@ -180,7 +264,7 @@ namespace lcmsNET
             buffer = Marshal.AllocHGlobal(Convert.ToInt32(bytes));
             try
             {
-                MLUgetUTF8_Internal(handle, language, country, buffer, bytes);
+                _ = MLUgetUTF8_Internal(handle, language, country, buffer, bytes);
                 return Marshal.PtrToStringUTF8(buffer);
             }
             finally
@@ -190,6 +274,16 @@ namespace lcmsNET
         }
 #endif
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUgetTranslation")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MLUgetTranslation_Internal(
+                IntPtr handle,
+                [In] byte[] languageCode,
+                [In] byte[] countryCode,
+                [Out] byte[] obtainedLanguage,
+                [Out] byte[] obtainedCountry);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUgetTranslation", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUgetTranslation_Internal(
                 IntPtr handle,
@@ -197,21 +291,27 @@ namespace lcmsNET
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] obtainedLanguage,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] obtainedCountry);
+#endif
 
         internal static int MLUGetTranslation(IntPtr handle, string languageCode, string countryCode,
                 out string translationLanguage, out string translationCountry)
         {
             byte[] language = Helper.ToASCIIBytes(languageCode);
             byte[] country = Helper.ToASCIIBytes(countryCode);
-            byte[] obtainedLanguage = new byte[3] { 0, 0, 0 };
-            byte[] obtainedCountry = new byte[3] { 0, 0, 0 };
+            byte[] obtainedLanguage = [0, 0, 0];
+            byte[] obtainedCountry = [0, 0, 0];
 
             int result = MLUgetTranslation_Internal(handle, language, country, obtainedLanguage, obtainedCountry);
             if (result != 0)
             {
                 // remove any single trailing null character
+#if NET5_0_OR_GREATER
+                translationLanguage = MatchSingleTrailingNull().Replace(Helper.ToString(obtainedLanguage), "");
+                translationCountry = MatchSingleTrailingNull().Replace(Helper.ToString(obtainedCountry), "");
+#else
                 translationLanguage = Regex.Replace(Helper.ToString(obtainedLanguage), "\0$", "");
                 translationCountry = Regex.Replace(Helper.ToString(obtainedCountry), "\0$", "");
+#endif
             }
             else
             {
@@ -220,9 +320,16 @@ namespace lcmsNET
             return result;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUtranslationsCount")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial uint MLUtranslationsCount_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUtranslationsCount", CallingConvention = CallingConvention.StdCall)]
         private static extern uint MLUtranslationsCount_Internal(
                 IntPtr handle);
+#endif
 
         internal static uint MLUTranslationsCount(IntPtr handle)
         {
@@ -230,24 +337,39 @@ namespace lcmsNET
         }
 
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMLUtranslationsCodes")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MLUtranslationsCodes_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.U4)] uint index,
+                [Out] byte[] languageCode,
+                [Out] byte[] countryCode);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMLUtranslationsCodes", CallingConvention = CallingConvention.StdCall)]
         private static extern int MLUtranslationsCodes_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.U4)] uint index,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] languageCode,
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I1, SizeConst = 3)] byte[] countryCode);
+#endif
 
         internal static int MLUTranslationsCodes(IntPtr handle, uint index, out string languageCode, out string countryCode)
         {
-            byte[] language = new byte[3] { 0, 0, 0 };
-            byte[] country = new byte[3] { 0, 0, 0 };
+            byte[] language = [0, 0, 0];
+            byte[] country = [0, 0, 0];
 
             int result = MLUtranslationsCodes_Internal(handle, index, language, country);
             if (result != 0)
             {
                 // remove any single trailing null character
+#if NET5_0_OR_GREATER
+                languageCode = MatchSingleTrailingNull().Replace(Helper.ToString(language), "");
+                countryCode = MatchSingleTrailingNull().Replace(Helper.ToString(country), "");
+#else
                 languageCode = Regex.Replace(Helper.ToString(language), "\0$", "");
                 countryCode = Regex.Replace(Helper.ToString(country), "\0$", "");
+#endif
             }
             else
             {
@@ -255,5 +377,10 @@ namespace lcmsNET
             }
             return result;
         }
+
+#if NET5_0_OR_GREATER
+        [GeneratedRegex("\0$")]
+        private static partial Regex MatchSingleTrailingNull();
+#endif
     }
 }

@@ -27,6 +27,9 @@ namespace lcmsNET
     /// Represents a multi-localized Unicode string.
     /// </summary>
     public sealed class MultiLocalizedUnicode : TagBase<MultiLocalizedUnicode>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<MultiLocalizedUnicode>
+#endif
     {
         /// <summary>
         /// The language code for 'no language'.

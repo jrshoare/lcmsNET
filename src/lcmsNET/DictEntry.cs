@@ -30,7 +30,7 @@ namespace lcmsNET
     {
         internal DictEntry(IntPtr handle)
         {
-            var entry = Marshal.PtrToStructure<_DictEntry>(handle);
+            var entry = Marshal.PtrToStructure<InternalDictEntry>(handle);
 
             Handle = handle;
             DisplayName = entry.DisplayName != IntPtr.Zero

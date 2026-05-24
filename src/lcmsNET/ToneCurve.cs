@@ -75,6 +75,9 @@ namespace lcmsNET
     /// Represents a tone curve.
     /// </summary>
     public sealed class ToneCurve : TagBase<ToneCurve>
+#if NET7_0_OR_GREATER
+        , ICreatableFromHandle<ToneCurve>
+#endif
     {
         internal ToneCurve(IntPtr handle, Context context = null, bool isOwner = true)
             : base(handle, context, isOwner)

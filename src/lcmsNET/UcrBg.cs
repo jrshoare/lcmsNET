@@ -27,18 +27,21 @@ namespace lcmsNET
     /// Represents an under color removal and black generation.
     /// </summary>
     public sealed class UcrBg
+#if NET7_0_OR_GREATER
+        : IHandleConvertible, ICreatableFromHandle<UcrBg>
+#endif
     {
         /// <summary>
         /// Creates an under color removal and black generation from the supplied handle.
         /// </summary>
         /// <param name="handle">A handle to an existing under color removal and black generation.</param>
         /// <returns>A new <see cref="UcrBg"/> instance referencing an existing under color removal and black generation.</returns>
-        internal static UcrBg FromHandle(IntPtr handle)
+        public static UcrBg FromHandle(IntPtr handle)
         {
-            return new UcrBg(Marshal.PtrToStructure<_ucrBg>(handle));
+            return new UcrBg(Marshal.PtrToStructure<PrivateUcrBg>(handle));
         }
 
-        private UcrBg(_ucrBg ucrBg)
+        private UcrBg(PrivateUcrBg ucrBg)
         {
             this.ucrBg = ucrBg;
             Ucr = ToneCurve.FromHandle(ucrBg.ucr);
@@ -77,21 +80,30 @@ namespace lcmsNET
         /// </summary>
         public MultiLocalizedUnicode Desc { get; private set; }
 
-        internal IntPtr ToHandle()
+        /// <summary>
+        /// Converts the current instance to a native handle that can be used by the underlying implementation.
+        /// </summary>
+        /// <returns>A native handle that represents the current instance.</returns>
+#if NET7_0_OR_GREATER
+        public
+#else
+        internal
+#endif
+            IntPtr ToHandle()
         {
-            int size = Marshal.SizeOf<_ucrBg>();
+            int size = Marshal.SizeOf<PrivateUcrBg>();
             IntPtr ptr = Marshal.AllocHGlobal(size);
             Marshal.StructureToPtr(ucrBg, ptr, false);
             return ptr;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct _ucrBg
+        private struct PrivateUcrBg
         {
             public IntPtr ucr;
             public IntPtr bg;
             public IntPtr desc;
         }
-        private _ucrBg ucrBg;
+        private PrivateUcrBg ucrBg;
     }
 }

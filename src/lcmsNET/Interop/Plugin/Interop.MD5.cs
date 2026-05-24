@@ -25,33 +25,55 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMD5alloc")]
+        private static partial IntPtr MD5alloc_Internal(
+                IntPtr contextID);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMD5alloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr MD5alloc_Internal(
                 IntPtr contextID);
+#endif
 
         internal static IntPtr MD5Alloc(IntPtr contextID)
         {
             return MD5alloc_Internal(contextID);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMD5add")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static unsafe partial void MD5Add_Internal(
+                IntPtr handle,
+                /*const*/ void* memPtr,
+                [MarshalAs(UnmanagedType.U4)] uint memSize);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMD5add", CallingConvention = CallingConvention.StdCall)]
         private unsafe static extern void MD5Add_Internal(
                 IntPtr handle,
                 /*const*/ void* memPtr,
-                [MarshalAs(UnmanagedType.U4)] int memSize);
+                [MarshalAs(UnmanagedType.U4)] uint memSize);
+#endif
 
         internal unsafe static void MD5Add(IntPtr md5, byte[] memory)
         {
             fixed (void* memPtr = &memory[0])
             {
-                MD5Add_Internal(md5, memPtr, memory.Length);
+                MD5Add_Internal(md5, memPtr, (uint)memory.Length);
             }
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsMD5finish")]
+        private static partial void MD5Finish_Internal(
+                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] [Out] byte[] profileID,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsMD5finish", CallingConvention = CallingConvention.StdCall)]
         private static extern void MD5Finish_Internal(
                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)] byte[] profileID,
                 IntPtr handle);
+#endif
 
         internal static void MD5Finish(IntPtr md5, byte[] profileID)
         {

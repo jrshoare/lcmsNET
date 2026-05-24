@@ -208,7 +208,7 @@ namespace lcmsNET.Tests
             using var sut = Stage.Create(context: null, nGridPoints: 9, inputChannels: 3, outputChannels: 3, (ushort[])null);
 
             // Act
-            var actual = sut.SampleCLUT((Sampler16)StageUtils.Sampler3D, cargo: nint.Zero, StageSamplingFlags.None);
+            var actual = sut.SampleCLUT((Sampler16)StageUtils.Sampler3D, cargo: IntPtr.Zero, StageSamplingFlags.None);
 
             // Assert
             Assert.IsTrue(actual);
@@ -221,7 +221,7 @@ namespace lcmsNET.Tests
             using var sut = Stage.Create(context: null, nGridPoints: 9, inputChannels: 3, outputChannels: 3, (float[])null);
 
             // Act
-            var actual = sut.SampleCLUT((SamplerFloat)StageUtils.Sampler3D, cargo: nint.Zero, StageSamplingFlags.None);
+            var actual = sut.SampleCLUT((SamplerFloat)StageUtils.Sampler3D, cargo: IntPtr.Zero, StageSamplingFlags.None);
 
             // Assert
             Assert.IsTrue(actual);

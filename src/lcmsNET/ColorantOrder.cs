@@ -28,6 +28,9 @@ namespace lcmsNET
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct ColorantOrder
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<ColorantOrder>
+#endif
     {
         [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 16)]
         private readonly byte[] _;
@@ -52,14 +55,14 @@ namespace lcmsNET
         /// Explicitly converts a <see cref="byte"/> array of 16 values to a <see cref="ColorantOrder"/>.
         /// </summary>
         /// <param name="bytes">The byte array to be converted.</param>
-        public static explicit operator ColorantOrder(byte[] bytes) => new ColorantOrder(bytes);
+        public static explicit operator ColorantOrder(byte[] bytes) => new(bytes);
 
         /// <summary>
         /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="ColorantOrder"/> object.
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="ColorantOrder"/> instance.</returns>
-        internal static ColorantOrder FromHandle(IntPtr handle)
+        public static ColorantOrder FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<ColorantOrder>(handle);
         }

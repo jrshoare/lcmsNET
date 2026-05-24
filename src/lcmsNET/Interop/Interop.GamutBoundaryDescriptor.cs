@@ -25,48 +25,86 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGBDAlloc")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial IntPtr GBDAlloc_Internal(
+                IntPtr contextID);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGBDAlloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr GBDAlloc_Internal(
                 IntPtr contextID);
+#endif
 
         internal static IntPtr GBDAlloc(IntPtr contextID)
         {
             return GBDAlloc_Internal(contextID);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGBDFree")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void GBDFree_Internal(
+            IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGBDFree", CallingConvention = CallingConvention.StdCall)]
         private static extern void GBDFree_Internal(
             IntPtr handle);
+#endif
 
         internal static void GBDFree(IntPtr handle)
         {
             GBDFree_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGDBAddPoint")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int GDBAddPoint_Internal(
+            IntPtr handle,
+            in CIELab lab);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGDBAddPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int GDBAddPoint_Internal(
             IntPtr handle,
             in CIELab lab);
+#endif
 
         internal static int GBDAddPoint(IntPtr handle, in CIELab lab)
         {
             return GDBAddPoint_Internal(handle, lab);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGDBCompute")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int GDBCompute_Internal(
+            IntPtr handle,
+            [MarshalAs(UnmanagedType.U4)] uint flags);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGDBCompute", CallingConvention = CallingConvention.StdCall)]
         private static extern int GDBCompute_Internal(
             IntPtr handle,
             [MarshalAs(UnmanagedType.U4)] uint flags);
+#endif
 
         internal static int GBDCompute(IntPtr handle, uint flags)
         {
             return GDBCompute_Internal(handle, flags);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsGDBCheckPoint")]
+        [UnmanagedCallConv(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int GDBCheckPoint_Internal(
+            IntPtr handle,
+            in CIELab lab);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsGDBCheckPoint", CallingConvention = CallingConvention.StdCall)]
         private static extern int GDBCheckPoint_Internal(
             IntPtr handle,
             in CIELab lab);
+#endif
 
         internal static int GBDCheckPoint(IntPtr handle, in CIELab lab)
         {

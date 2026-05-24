@@ -21,11 +21,42 @@
 using lcmsNET.Impl;
 using System;
 using System.Linq;
+#if NETSTANDARD2_0_OR_GREATER
 using System.Reflection;
+#endif
 using System.Runtime.InteropServices;
 
 namespace lcmsNET
 {
+#if NET7_0_OR_GREATER
+    /// <summary>
+    /// Defines an interface for types that can be created from a handle to an existing object.
+    /// </summary>
+    /// <typeparam name="T">The type of the instance to create.</typeparam>
+    public interface ICreatableFromHandle<out T>
+    {
+        /// <summary>
+        /// Creates an instance of T that represents the specified native handle.
+        /// </summary>
+        /// <param name="handle">A native handle that identifies the underlying resource; must be a valid handle for the implementation.</param>
+        /// <returns>An instance of T that wraps the provided native handle.</returns>
+        static abstract T FromHandle(IntPtr handle);
+    }
+
+    /// <summary>
+    /// Represents a type that can produce a native handle for use by underlying native or platform-specific
+    /// implementations.
+    /// </summary>
+    public interface IHandleConvertible
+    {
+        /// <summary>
+        /// Converts the current instance to a native handle that can be used by the underlying implementation.
+        /// </summary>
+        /// <returns>A native handle that represents the current instance.</returns>
+        IntPtr ToHandle();
+    }
+#endif
+
     /// <summary>
     /// Represents an International Color Consortium Profile.
     /// </summary>
@@ -91,7 +122,7 @@ namespace lcmsNET
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
-            return new Profile(Interop.CreateRGB(whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()));
+            return new Profile(Interop.CreateRGB(whitePoint, primaries, [.. transferFunction.Select(_ => _.Handle)]));
         }
 
         /// <summary>
@@ -112,7 +143,7 @@ namespace lcmsNET
         {
             if (transferFunction?.Length != 3) throw new ArgumentException($"'{nameof(transferFunction)}' array size must equal 3.");
 
-            return new Profile(Interop.CreateRGB(Helper.GetHandle(context), whitePoint, primaries, transferFunction.Select(_ => _.Handle).ToArray()), context);
+            return new Profile(Interop.CreateRGB(Helper.GetHandle(context), whitePoint, primaries, [.. transferFunction.Select(_ => _.Handle)]), context);
         }
 
         /// <summary>
@@ -164,7 +195,7 @@ namespace lcmsNET
         /// </remarks>
         public static Profile CreateLinearizationDeviceLink(ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
-            return new Profile(Interop.CreateLinearizationDeviceLink(Convert.ToUInt32(space), transferFunction.Select(_ => _.Handle).ToArray()));
+            return new Profile(Interop.CreateLinearizationDeviceLink(Convert.ToUInt32(space), [.. transferFunction.Select(_ => _.Handle)]));
         }
 
         /// <summary>
@@ -183,7 +214,7 @@ namespace lcmsNET
         public static Profile CreateLinearizationDeviceLink(Context context, ColorSpaceSignature space, ToneCurve[] transferFunction)
         {
             return new Profile(Interop.CreateLinearizationDeviceLink(Helper.GetHandle(context), Convert.ToUInt32(space),
-                    transferFunction.Select(_ => _.Handle).ToArray()), context);
+                    [.. transferFunction.Select(_ => _.Handle)]), context);
         }
 
         /// <summary>
@@ -852,18 +883,25 @@ namespace lcmsNET
         /// The Profile has already been disposed.
         /// </exception>
         public T ReadTag<T>(TagSignature tag)
+#if NET7_0_OR_GREATER
+            where T: ICreatableFromHandle<T>
+#endif
         {
             EnsureNotClosed();
 
             IntPtr ptr = ReadTag(tag);
             Helper.CheckCreated<T>(ptr);
 
+#if NET7_0_OR_GREATER
+            return T.FromHandle(ptr);
+#else
             Type t = typeof(T);
             MethodInfo method = t.GetMethod("FromHandle", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static,
-                    null, new Type[] { typeof(IntPtr) }, null);
-            if (method is null) throw new MissingMethodException(nameof(T), "FromHandle(IntPtr)");
-
-            return (T)method.Invoke(null, new object[] { ptr });
+                    null, [typeof(IntPtr)], null);
+            return method is null
+                ? throw new MissingMethodException(nameof(T), "FromHandle(IntPtr)")
+                : (T)method.Invoke(null, [ptr]);
+#endif
         }
 
         /// <summary>
@@ -958,15 +996,21 @@ namespace lcmsNET
         }
 
         private bool WriteTag<T>(TagSignature tag, T t)
+#if NET7_0_OR_GREATER
+            where T: class, IHandleConvertible
+#else
             where T: class
+#endif
         {
             EnsureNotClosed();
 
+#if NET7_0_OR_GREATER
+            IntPtr ptr = t.ToHandle();
+#else
             MethodInfo method = typeof(T).GetMethod("ToHandle", BindingFlags.NonPublic | BindingFlags.Instance,
-                    null, new Type[] { }, null);
-            if (method is null) throw new MissingMethodException(nameof(T), "ToHandle()");
-
-            IntPtr ptr = (IntPtr)method.Invoke(t, new object[] { });
+                    null, [], null) ?? throw new MissingMethodException(nameof(T), "ToHandle()");
+            IntPtr ptr = (IntPtr)method.Invoke(t, []);
+#endif
             try
             {
                 return WriteTag(tag, ptr);
@@ -1014,7 +1058,7 @@ namespace lcmsNET
 
             return (TagSignature)Interop.TagLinkedTo(handle, Convert.ToUInt32(tag));
         }
-        #endregion
+#endregion
 
         #region Intents
         /// <summary>
@@ -1256,10 +1300,7 @@ namespace lcmsNET
             {
                 EnsureNotClosed();
 
-                if (_iohandler is null)
-                {
-                    _iohandler = new IOHandler(Interop.GetProfileIOHandler(handle), Context, isOwner: false);
-                }
+                _iohandler ??= new IOHandler(Interop.GetProfileIOHandler(handle), Context, isOwner: false);
                 return _iohandler;
             }
             private set

@@ -25,118 +25,200 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineAlloc")]
+        private static partial IntPtr PipelineAlloc_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint inputChannels,
+                [MarshalAs(UnmanagedType.U4)] uint outputChannels);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineAlloc", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr PipelineAlloc_Internal(
                 IntPtr contextID,
                 [MarshalAs(UnmanagedType.U4)] uint inputChannels,
                 [MarshalAs(UnmanagedType.U4)] uint outputChannels);
+#endif
 
         internal static IntPtr PipelineAlloc(IntPtr contextID, uint inputChannels, uint outputChannels)
         {
             return PipelineAlloc_Internal(contextID, inputChannels, outputChannels);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineFree")]
+        private static partial void PipelineFree_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineFree", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineFree_Internal(IntPtr handle);
+#endif
 
         internal static void PipelineFree(IntPtr handle)
         {
             PipelineFree_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineDup")]
+        private static partial IntPtr PipelineDup_Internal(
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineDup", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr PipelineDup_Internal(
                 IntPtr handle);
+#endif
 
         internal static IntPtr PipelineDup(IntPtr handle)
         {
             return PipelineDup_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineCat")]
+        private static partial int PipelineCat_Internal(
+                IntPtr handle,
+                IntPtr other);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineCat", CallingConvention = CallingConvention.StdCall)]
         private static extern int PipelineCat_Internal(
                 IntPtr handle,
                 IntPtr other);
+#endif
 
         internal static int PipelineCat(IntPtr handle, IntPtr other)
         {
             return PipelineCat_Internal(handle, other);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEvalFloat")]
+        private static partial void PipelineEvalFloat_Internal(
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEvalFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineEvalFloat_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
                 [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
                 IntPtr handle);
+#endif
 
         internal static void PipelineEvalFloat(IntPtr handle, float[] vIn, float[] vOut)
         {
             PipelineEvalFloat_Internal(vIn, vOut, handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEvalReverseFloat")]
+        private static partial int PipelineEvalReverseFloat_Internal(
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] hint,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEvalReverseFloat", CallingConvention = CallingConvention.StdCall)]
         private static extern int PipelineEvalReverseFloat_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vIn,
                 [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] vOut,
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)] float[] hint,
                 IntPtr handle);
+#endif
 
         internal static int PipelineEvalReverseFloat(IntPtr handle, float[] vIn, float[] vOut, float[] hint)
         {
             return PipelineEvalReverseFloat_Internal(vIn, vOut, hint, handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineEval16")]
+        private static partial void PipelineEval16_Internal(
+                [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vIn,
+                [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vOut,
+                IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineEval16", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineEval16_Internal(
                 [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vIn,
                 [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)] ushort[] vOut,
                 IntPtr handle);
+#endif
 
         internal static void PipelineEval16(IntPtr handle, ushort[] vIn, ushort[] vOut)
         {
             PipelineEval16_Internal(vIn, vOut, handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineInsertStage")]
+        private static partial int PipelineInsertStage_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int location,
+                IntPtr stage);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineInsertStage", CallingConvention = CallingConvention.StdCall)]
         private static extern int PipelineInsertStage_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int location,
                 IntPtr stage);
+#endif
 
         internal static int PipelineInsertStage(IntPtr handle, IntPtr stage, int location)
         {
             return PipelineInsertStage_Internal(handle, location, stage);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineInputChannels")]
+        private static partial uint PipelineInputChannels_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineInputChannels", CallingConvention = CallingConvention.StdCall)]
         private static extern uint PipelineInputChannels_Internal(IntPtr handle);
+#endif
 
         internal static uint PipelineInputChannels(IntPtr handle)
         {
             return PipelineInputChannels_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineOutputChannels")]
+        private static partial uint PipelineOutputChannels_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineOutputChannels", CallingConvention = CallingConvention.StdCall)]
         private static extern uint PipelineOutputChannels_Internal(IntPtr handle);
+#endif
 
         internal static uint PipelineOutputChannels(IntPtr handle)
         {
             return PipelineOutputChannels_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineStageCount")]
+        private static partial uint PipelineStageCount_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineStageCount", CallingConvention = CallingConvention.StdCall)]
         private static extern uint PipelineStageCount_Internal(IntPtr handle);
+#endif
 
         internal static uint PipelineStageCount(IntPtr handle)
         {
             return PipelineStageCount_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineUnlinkStage")]
+        private static partial void PipelineUnlinkStage_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int location,
+                ref IntPtr stage);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineUnlinkStage", CallingConvention = CallingConvention.StdCall)]
         private static extern void PipelineUnlinkStage_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int location,
                 ref IntPtr stage);
+#endif
 
         internal static void PipelineUnlinkStage(IntPtr handle, int location)
         {
@@ -149,32 +231,60 @@ namespace lcmsNET
             PipelineUnlinkStage_Internal(handle, location, ref stage);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToFirstStage")]
+        private static partial IntPtr PipelineGetPtrToFirstStage_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToFirstStage", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr PipelineGetPtrToFirstStage_Internal(IntPtr handle);
+#endif
 
         internal static IntPtr PipelineGetPtrToFirstStage(IntPtr handle)
         {
             return PipelineGetPtrToFirstStage_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToLastStage")]
+        private static partial IntPtr PipelineGetPtrToLastStage_Internal(IntPtr handle);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineGetPtrToLastStage", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr PipelineGetPtrToLastStage_Internal(IntPtr handle);
+#endif
 
         internal static IntPtr PipelineGetPtrToLastStage(IntPtr handle)
         {
             return PipelineGetPtrToLastStage_Internal(handle);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "cmsPipelineSetSaveAs8bitsFlag")]
+        private static partial int PipelineSetSaveAs8bitsFlag_Internal(
+                IntPtr handle,
+                [MarshalAs(UnmanagedType.I4)] int on);
+#else
         [DllImport(Liblcms, EntryPoint = "cmsPipelineSetSaveAs8bitsFlag", CallingConvention = CallingConvention.StdCall)]
         private static extern int PipelineSetSaveAs8bitsFlag_Internal(
                 IntPtr handle,
                 [MarshalAs(UnmanagedType.I4)] int on);
+#endif
 
         internal static int PipelineSetSaveAs8BitsFlag(IntPtr handle, int on)
         {
             return PipelineSetSaveAs8bitsFlag_Internal(handle, on);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsDefaultICCintents")]
+        private static partial IntPtr DefaultICCIntents_Internal(
+                IntPtr contextID,
+                [MarshalAs(UnmanagedType.U4)] uint nProfiles,
+                [In] uint[] intents,
+                [In] IntPtr[] profiles,
+                [In] int[] bpc,
+                [In] double[] adaptationStates,
+                [MarshalAs(UnmanagedType.U4)] uint flags);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsDefaultICCintents", CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr DefaultICCIntents_Internal(
                 IntPtr contextID,
@@ -184,6 +294,7 @@ namespace lcmsNET
                 int[] bpc,
                 double[] adaptationStates,
                 [MarshalAs(UnmanagedType.U4)] uint flags);
+#endif
 
         internal static IntPtr DefaultICCIntents(IntPtr contextID, uint[] intents, IntPtr[] profiles, int[] bpc,
                 double[] adaptationStates, uint flags)
@@ -191,6 +302,15 @@ namespace lcmsNET
             return DefaultICCIntents_Internal(contextID, (uint)profiles.Length, intents, profiles, bpc, adaptationStates, flags);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsPipelineSetOptimizationParameters")]
+        internal static partial void PipelineSetOptimizationParameters_Internal(
+                IntPtr handle,
+                IntPtr eval16Ptr,
+                IntPtr privateData,
+                IntPtr freePrivateDataPtr,
+                IntPtr dupPrivateDataPtr);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsPipelineSetOptimizationParameters", CallingConvention = CallingConvention.StdCall)]
         internal static extern void PipelineSetOptimizationParameters_Internal(
                 IntPtr handle,
@@ -198,6 +318,7 @@ namespace lcmsNET
                 IntPtr privateData,
                 IntPtr freePrivateDataPtr,
                 IntPtr dupPrivateDataPtr);
+#endif
 
         internal static void PipelineSetOptimizationParameters(IntPtr handle, OptEval16 eval16, IntPtr privateData,
                 FreeUserData freePrivateDataFn, DupUserData dupUserDataFn)

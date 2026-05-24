@@ -25,61 +25,110 @@ namespace lcmsNET
 {
     internal static partial class Interop
     {
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3identity")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void MAT3identity_Internal(
+                ref MAT3 a);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3identity", CallingConvention = CallingConvention.StdCall)]
         private static extern void MAT3identity_Internal(
                 ref MAT3 a);
+#endif
 
         internal static void MAT3identity(ref MAT3 a)
         {
             MAT3identity_Internal(ref a);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3isIdentity")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MAT3isIdentity_Internal(
+                in MAT3 a);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3isIdentity", CallingConvention = CallingConvention.StdCall)]
         private static extern int MAT3isIdentity_Internal(
                 in MAT3 a);
+#endif
 
         internal static bool MAT3isIdentity(in MAT3 a)
         {
             return MAT3isIdentity_Internal(in a) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3per")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial void MAT3per_Internal(
+                ref MAT3 r,
+                in MAT3 a,
+                in MAT3 b);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3per", CallingConvention = CallingConvention.StdCall)]
         private static extern void MAT3per_Internal(
                 ref MAT3 r,
                 in MAT3 a,
                 in MAT3 b);
+#endif
 
         internal static void MAT3multiply(ref MAT3 r, in MAT3 a, in MAT3 b)
         {
             MAT3per_Internal(ref r, in a, in b);
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3inverse")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MAT3inverse_Internal(
+                in MAT3 a,
+                ref MAT3 b);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3inverse", CallingConvention = CallingConvention.StdCall)]
         private static extern int MAT3inverse_Internal(
                 in MAT3 a,
                 ref MAT3 b);
+#endif
 
         internal static bool MAT3invert(in MAT3 a, ref MAT3 b)
         {
             return MAT3inverse_Internal(in a, ref b) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3solve")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MAT3solve_Internal(
+                ref VEC3 x,
+                in MAT3 a,
+                in VEC3 b);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3solve", CallingConvention = CallingConvention.StdCall)]
         private static extern int MAT3solve_Internal(
                 ref VEC3 x,
                 in MAT3 a,
                 in VEC3 b);
+#endif
 
         internal static bool MAT3solve(ref VEC3 x, in MAT3 a, in VEC3 b)
         {
             return MAT3solve_Internal(ref x, in a, in b) != 0;
         }
 
+#if NET7_0_OR_GREATER
+        [LibraryImport(Liblcms, EntryPoint = "_cmsMAT3eval")]
+        [UnmanagedCallConv(CallConvs = new System.Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+        private static partial int MAT3eval_Internal(
+                ref VEC3 r,
+                in MAT3 a,
+                in VEC3 v);
+#else
         [DllImport(Liblcms, EntryPoint = "_cmsMAT3eval", CallingConvention = CallingConvention.StdCall)]
         private static extern int MAT3eval_Internal(
                 ref VEC3 r,
                 in MAT3 a,
                 in VEC3 v);
+#endif
 
         internal static bool MAT3eval(ref VEC3 r, in MAT3 a, in VEC3 v)
         {

@@ -987,6 +987,7 @@ namespace lcmsNET.Tests
             Assert.AreEqual(expected, actual);
         }
 
+#if NETSTANDARD2_0_OR_GREATER
         [TestMethod()]
         public void ReadTagT_WhenFromHandleMethodMissing_ShouldThrowMissingMethodException()
         {
@@ -999,6 +1000,7 @@ namespace lcmsNET.Tests
             var actual = Assert.ThrowsException<MissingMethodException>(() =>
                 sut.ReadTag<TestCIEXYZ>(TagSignature.BlueColorant));
         }
+#endif
 
         [TestMethod()]
         public void ReadTagTTagNotFound()

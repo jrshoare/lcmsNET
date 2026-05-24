@@ -26,20 +26,18 @@ namespace lcmsNET
     /// <summary>
     /// Represents a signature.
     /// </summary>
+    /// <remarks>
+    /// Initialises a new instance of the <see cref="Signature"/> class.
+    /// </remarks>
+    /// <param name="u">The signature value.</param>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Signature
+    public readonly struct Signature(uint u)
+#if NET7_0_OR_GREATER
+        : ICreatableFromHandle<Signature>
+#endif
     {
         [MarshalAs(UnmanagedType.U4)]
-        private readonly uint _;
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Signature"/> class.
-        /// </summary>
-        /// <param name="u">The signature value.</param>
-        public Signature(uint u)
-        {
-            _ = u;
-        }
+        private readonly uint _ = u;
 
         /// <summary>
         /// Implicitly converts a <see cref="Signature"/> to an unsigned integer.
@@ -51,14 +49,14 @@ namespace lcmsNET
         /// Explicitly converts an unsigned integer to a <see cref="Signature"/>.
         /// </summary>
         /// <param name="u">The unsigned integer to be converted.</param>
-        public static explicit operator Signature(uint u) => new Signature(u);
+        public static explicit operator Signature(uint u) => new(u);
 
         /// <summary>
         /// Marshals data from an unmanaged block of memory to a newly allocated <see cref="Signature"/> object.
         /// </summary>
         /// <param name="handle">A handle to the unmanaged block of memory.</param>
         /// <returns>A new <see cref="Signature"/> instance.</returns>
-        internal static Signature FromHandle(IntPtr handle)
+        public static Signature FromHandle(IntPtr handle)
         {
             return Marshal.PtrToStructure<Signature>(handle);
         }
